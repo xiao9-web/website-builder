@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MenuModule } from './menu/menu.module';
@@ -9,6 +10,7 @@ import { PageModule } from './page/page.module';
 import { SiteConfigModule } from './site-config/site-config.module';
 import { DeployModule } from './deploy/deploy.module';
 import { CommonModule } from './common/common.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -39,6 +41,12 @@ import { CommonModule } from './common/common.module';
     SiteConfigModule,
     DeployModule,
     CommonModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}
