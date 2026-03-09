@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnpm/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.local
+
+# Build outputs
+dist/
+build/
+output/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+*.db
+*.sqlite
+
+# Uploads
+uploads/
+temp/
+*.tmp
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Testing
+coverage/
+.nyc_output/
+
+# Secrets
+*.pem
+*.key
+*.p12
+credentials.json

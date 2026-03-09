@@ -1,0 +1,34 @@
+{
+  "name": "website-builder",
+  "version": "1.0.0",
+  "description": "可视化官网构建系统，支持一键部署到阿里云",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd admin && npm install && cd ../server && npm install && cd ../frontend && npm install",
+    "dev:admin": "cd admin && npm run dev",
+    "dev:server": "cd server && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:admin": "cd admin && npm run build",
+    "build:server": "cd server && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:admin && npm run build:server && npm run build:frontend",
+    "start:server": "cd server && npm run start:prod",
+    "lint": "npm run lint:admin && npm run lint:server && npm run lint:frontend",
+    "lint:admin": "cd admin && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint"
+  },
+  "keywords": [
+    "website-builder",
+    "cms",
+    "static-site-generator",
+    "aliyun-oss",
+    "vue3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
