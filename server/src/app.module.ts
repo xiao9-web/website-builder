@@ -31,6 +31,11 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV === 'development', // 开发环境自动同步表结构
       logging: process.env.NODE_ENV === 'development',
+      charset: 'utf8mb4',
+      extra: {
+        connectionLimit: 10,
+        charset: 'utf8mb4_unicode_ci',
+      },
     }),
     
     AuthModule,

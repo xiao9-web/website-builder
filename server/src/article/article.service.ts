@@ -13,17 +13,45 @@ export class ArticleService {
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number): Promise<Article> {
+    // 如果没有提供 slug，从标题生成
+    let slug = createArticleDto.slug;
+    if (!slug) {
+      slug = this.generateSlug(createArticleDto.title);
+      // 确保 slug 唯一
+      let counter = 1;
+      let uniqueSlug = slug;
+      while (await this.articleRepository.findOne({ where: { slug: uniqueSlug } })) {
+        uniqueSlug = `${slug}-${counter}`;
+        counter++;
+      }
+      slug = uniqueSlug;
+    }
+
     const article = this.articleRepository.create({
       ...createArticleDto,
+      slug,
       author_id: userId,
     });
-    
+
     // 如果是发布状态，设置发布时间
     if (article.status === ArticleStatus.PUBLISHED && !article.published_at) {
       article.published_at = new Date();
     }
-    
+
     return this.articleRepository.save(article);
+  }
+
+  private generateSlug(title: string): string {
+    // 简单的 slug 生成：转小写，替换空格和特殊字符
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[\s\u4e00-\u9fa5]+/g, '-') // 替换空格和中文字符为连字符
+      .replace(/[^\w\-]+/g, '') // 移除非字母数字和连字符的字符
+      .replace(/\-\-+/g, '-') // 替换多个连字符为单个
+      .replace(/^-+/, '') // 移除开头的连字符
+      .replace(/-+$/, '') // 移除结尾的连字符
+      || `article-${Date.now()}`; // 如果结果为空，使用时间戳
   }
 
   async findAll(params: {

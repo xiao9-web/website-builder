@@ -57,4 +57,25 @@ export class UserService implements OnModuleInit {
       select: ['id', 'username', 'nickname', 'email', 'role', 'is_active', 'avatar', 'created_at'],
     });
   }
+
+  async findOne(id: number): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'username', 'nickname', 'email', 'role', 'is_active', 'avatar', 'created_at'],
+    });
+  }
+
+  async update(id: number, updateData: Partial<User>): Promise<User> {
+    // 如果更新密码，需要加密
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
+    await this.userRepository.update(id, updateData);
+    return this.findOne(id);
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.userRepository.delete(id);
+  }
 }

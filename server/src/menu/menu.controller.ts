@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('menus')
 export class MenuController {
@@ -20,6 +21,12 @@ export class MenuController {
   @Get('tree')
   findTree() {
     return this.menuService.findTree();
+  }
+
+  @Public()
+  @Get('published')
+  findPublished() {
+    return this.menuService.findPublished();
   }
 
   @Get(':id')

@@ -1,20 +1,18 @@
 <template>
   <div id="app">
-    <ParticleBackground 
-      :color="siteConfig.template_theme_color || '#667eea'"
-      :count="80"
+    <ParticleBackground
+      :count="100"
       :interactive="true"
-      :background-color="backgroundColor"
     />
-    
+
     <header class="header">
       <div class="container">
         <div class="logo">
           <h1>{{ siteConfig.site_name || '我的官网' }}</h1>
         </div>
         <nav class="nav">
-          <a 
-            v-for="menu in menus" 
+          <a
+            v-for="menu in menus"
             :key="menu.id"
             :href="menu.path"
             :target="menu.target"
@@ -63,21 +61,24 @@ const siteConfig = ref<SiteConfig>({
   }
 })
 
-const menus = ref<Menu[]>([
-  { id: 1, name: '首页', path: '/', target: '_self' },
-  { id: 2, name: '关于', path: '/about', target: '_self' },
-  { id: 3, name: '文章', path: '/articles', target: '_self' },
-  { id: 4, name: '项目', path: '/projects', target: '_self' },
-  { id: 5, name: 'GitHub', path: 'https://github.com', target: '_blank' },
-])
+const menus = ref<Menu[]>([])
 
-const backgroundColor = ref('linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)')
-
-onMounted(() => {
-  // 实际部署时会从data.json加载真实数据
-  // const data = await fetch('/data.json').then(res => res.json())
-  // siteConfig.value = data.site
-  // menus.value = data.menus
+onMounted(async () => {
+  try {
+    // 从API获取菜单数据
+    const response = await fetch('http://localhost:3000/api/v1/menus/published')
+    if (response.ok) {
+      const data = await response.json()
+      menus.value = data.filter((menu: any) => menu.is_visible).sort((a: any, b: any) => a.sort - b.sort)
+    }
+  } catch (error) {
+    console.error('Failed to load menus:', error)
+    // 使用默认菜单作为后备
+    menus.value = [
+      { id: 1, name: '首页', path: '/', target: '_self' },
+      { id: 2, name: '关于', path: '/about', target: '_self' },
+    ]
+  }
 })
 </script>
 

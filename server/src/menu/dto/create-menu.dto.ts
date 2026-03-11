@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsBoolean } from 'class-validator';
 
 export class CreateMenuDto {
   @IsString()
@@ -14,7 +14,7 @@ export class CreateMenuDto {
 
   @IsNumber()
   @IsOptional()
-  sort_order?: number;
+  sort?: number;
 
   @IsString()
   @IsOptional()
@@ -23,4 +23,8 @@ export class CreateMenuDto {
   @IsString()
   @IsOptional()
   target?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  is_visible?: boolean;
 }

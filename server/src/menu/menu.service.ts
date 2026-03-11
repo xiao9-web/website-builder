@@ -29,6 +29,14 @@ export class MenuService {
     return this.buildTree(menus, null);
   }
 
+  // 获取已发布的菜单（用于前端官网）
+  async findPublished(): Promise<Menu[]> {
+    return this.menuRepository.find({
+      where: { is_visible: true },
+      order: { sort: 'ASC', id: 'ASC' },
+    });
+  }
+
   private buildTree(menus: Menu[], parentId: number | null): Menu[] {
     const tree: Menu[] = [];
     
