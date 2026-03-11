@@ -37,7 +37,7 @@ const animationId = ref<number | null>(null)
 const mouse = ref({ x: 0, y: 0, radius: 150 })
 const time = ref(0)
 
-// 流光溢彩的颜色数组
+// 流光溢彩的颜色数组 - 更多绚丽的颜色
 const colors = [
   '#667eea', // 紫色
   '#764ba2', // 深紫
@@ -48,7 +48,13 @@ const colors = [
   '#38f9d7', // 青绿
   '#fa709a', // 粉色
   '#fee140', // 黄色
-  '#ffa07a'  // 橙色
+  '#ffa07a', // 橙色
+  '#ff6b9d', // 玫瑰红
+  '#c471ed', // 淡紫
+  '#12c2e9', // 天蓝
+  '#f64f59', // 珊瑚红
+  '#a8edea', // 薄荷绿
+  '#fed6e3', // 樱花粉
 ]
 
 // 粒子类
@@ -79,24 +85,25 @@ class Particle {
 
   draw(ctx: CanvasRenderingContext2D, time: number) {
     // 粒子大小随时间脉动
-    this.size = this.baseSize + Math.sin(time * 0.002 + this.angle) * 1
+    this.size = this.baseSize + Math.sin(time * 0.002 + this.angle) * 1.5
 
-    // 创建径向渐变
-    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3)
+    // 创建更大的径向渐变光晕
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 5)
     gradient.addColorStop(0, this.color + 'ff')
-    gradient.addColorStop(0.5, this.color + '88')
+    gradient.addColorStop(0.3, this.color + 'cc')
+    gradient.addColorStop(0.6, this.color + '66')
     gradient.addColorStop(1, this.color + '00')
 
     ctx.beginPath()
-    ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2)
+    ctx.arc(this.x, this.y, this.size * 5, 0, Math.PI * 2)
     ctx.fillStyle = gradient
     ctx.fill()
 
-    // 绘制核心
+    // 绘制核心，增强发光效果
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
     ctx.fillStyle = this.color
-    ctx.shadowBlur = 15
+    ctx.shadowBlur = 25
     ctx.shadowColor = this.color
     ctx.fill()
     ctx.shadowBlur = 0
@@ -131,9 +138,9 @@ const drawLines = () => {
       const distance = Math.sqrt(dx * dx + dy * dy)
 
       if (distance < props.lineDistance) {
-        const opacity = (1 - distance / props.lineDistance) * 0.5
+        const opacity = (1 - distance / props.lineDistance) * 0.7
 
-        // 创建渐变连线
+        // 创建渐变连线，增强光效
         const gradient = ctx.value.createLinearGradient(
           particles.value[i].x, particles.value[i].y,
           particles.value[j].x, particles.value[j].y
@@ -143,10 +150,13 @@ const drawLines = () => {
 
         ctx.value.beginPath()
         ctx.value.strokeStyle = gradient
-        ctx.value.lineWidth = 1
+        ctx.value.lineWidth = 1.5
+        ctx.value.shadowBlur = 10
+        ctx.value.shadowColor = particles.value[i].color
         ctx.value.moveTo(particles.value[i].x, particles.value[i].y)
         ctx.value.lineTo(particles.value[j].x, particles.value[j].y)
         ctx.value.stroke()
+        ctx.value.shadowBlur = 0
       }
     }
 
@@ -191,8 +201,8 @@ const animate = () => {
   const width = canvasRef.value.width
   const height = canvasRef.value.height
 
-  // 半透明清除，产生拖尾效果
-  ctx.value.fillStyle = 'rgba(255, 255, 255, 0.05)'
+  // 半透明清除，产生拖尾效果，使用黑色让背景渐变更明显
+  ctx.value.fillStyle = 'rgba(0, 0, 0, 0.02)'
   ctx.value.fillRect(0, 0, width, height)
 
   time.value++
@@ -251,25 +261,26 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   z-index: -1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-  animation: gradientShift 15s ease infinite;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 20%, #f093fb 40%, #4facfe 60%, #00f2fe 80%, #43e97b 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
 }
 
 @keyframes gradientShift {
   0% {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+    background-position: 0% 50%;
   }
   25% {
-    background: linear-gradient(135deg, #f093fb 0%, #4facfe 25%, #00f2fe 50%, #43e97b 75%, #38f9d7 100%);
+    background-position: 50% 100%;
   }
   50% {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 25%, #fa709a 50%, #fee140 75%, #ffa07a 100%);
+    background-position: 100% 50%;
   }
   75% {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 25%, #667eea 50%, #764ba2 75%, #f093fb 100%);
+    background-position: 50% 0%;
   }
   100% {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+    background-position: 0% 50%;
   }
 }
 

@@ -1,14 +1,14 @@
 <template>
   <div id="app">
-    <ParticleBackground
-      :count="100"
-      :interactive="true"
-    />
+    <GradientBackground />
 
     <header class="header">
       <div class="container">
-        <div class="logo">
-          <h1>{{ siteConfig.site_name || '我的官网' }}</h1>
+        <div class="header-left">
+          <div class="logo">
+            <span class="logo-icon">🏙️</span>
+            <h1>{{ siteConfig.site_name || '我的博客' }}</h1>
+          </div>
         </div>
         <nav class="nav">
           <a
@@ -25,9 +25,7 @@
     </header>
 
     <main class="main">
-      <div class="container">
-        <router-view />
-      </div>
+      <Home />
     </main>
 
     <footer class="footer">
@@ -41,7 +39,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import ParticleBackground from './components/ParticleBackground.vue'
+import GradientBackground from './components/GradientBackground.vue'
+import Home from './views/Home.vue'
 import type { Menu, SiteConfig } from './types'
 
 // 模拟数据，实际部署时会替换为真实数据
@@ -108,11 +107,26 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
+  height: 64px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 28px;
 }
 
 .logo h1 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
   margin: 0;
@@ -120,24 +134,26 @@ onMounted(async () => {
 
 .nav {
   display: flex;
-  gap: 30px;
+  gap: 24px;
+  align-items: center;
 }
 
 .nav-link {
-  color: #666;
+  color: #555;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  transition: color 0.3s;
+  transition: color 0.2s;
+  padding: 4px 0;
 }
 
 .nav-link:hover {
-  color: #667eea;
+  color: #333;
 }
 
 .main {
   flex: 1;
-  padding: 40px 0;
+  width: 100%;
 }
 
 .footer {

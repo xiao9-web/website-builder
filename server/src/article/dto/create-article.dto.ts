@@ -18,6 +18,10 @@ export class CreateArticleDto {
 
   @IsString()
   @IsOptional()
+  summary?: string;
+
+  @IsString()
+  @IsOptional()
   cover_image?: string;
 
   @IsEnum(ArticleStatus)
