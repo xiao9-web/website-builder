@@ -24,7 +24,7 @@ export class PageController {
     return this.pageService.findAll({
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 10,
-      status: status !== undefined ? parseInt(status) as PageStatus : undefined,
+      status: status as PageStatus,
       keyword,
     });
   }

@@ -2,9 +2,9 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { User } from '../user/user.entity';
 
 export enum ArticleStatus {
-  DRAFT = 0,
-  PUBLISHED = 1,
-  ARCHIVED = 2,
+  DRAFT = '0',
+  PUBLISHED = '1',
+  ARCHIVED = '2',
 }
 
 @Entity('articles')

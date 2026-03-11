@@ -1,10 +1,12 @@
-import { Injectable, ExecutionContext } from '@nestjs/common';
+import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
   constructor(private reflector: Reflector) {
     super();
   }
@@ -14,9 +16,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
+      this.logger.debug('Public route, skipping JWT validation');
       return true;
     }
+
+    const request = context.switchToHttp().getRequest();
+    const authHeader = request.headers.authorization;
+    this.logger.debug(`JWT Guard - Auth header: ${authHeader ? 'present' : 'missing'}`);
+
     return super.canActivate(context);
   }
 }

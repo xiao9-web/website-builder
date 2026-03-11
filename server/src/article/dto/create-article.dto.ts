@@ -1,9 +1,5 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-
-export enum ArticleStatus {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-}
+import { ArticleStatus } from '../article.entity';
 
 export class CreateArticleDto {
   @IsString()

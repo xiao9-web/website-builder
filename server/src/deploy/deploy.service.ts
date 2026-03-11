@@ -10,7 +10,9 @@ import { DeployVersion, DeployStatus } from './deploy.entity';
 import { SiteConfigService } from '../site-config/site-config.service';
 import { MenuService } from '../menu/menu.service';
 import { ArticleService } from '../article/article.service';
+import { ArticleStatus } from '../article/article.entity';
 import { PageService } from '../page/page.service';
+import { PageStatus } from '../page/page.entity';
 
 const execAsync = promisify(exec);
 
@@ -58,8 +60,8 @@ export class DeployService {
   private async exportSiteData() {
     const [menus, articles, pages, siteConfig] = await Promise.all([
       this.menuService.findTree(),
-      this.articleService.findAll({ status: 1, pageSize: 1000 }),
-      this.pageService.findAll({ status: 1, pageSize: 1000 }),
+      this.articleService.findAll({ status: ArticleStatus.PUBLISHED, pageSize: 1000 }),
+      this.pageService.findAll({ status: PageStatus.PUBLISHED, pageSize: 1000 }),
       this.siteConfigService.findPublic(),
     ]);
 
@@ -146,7 +148,9 @@ export class DeployService {
     // 上传版本文件
     await client.put('version.txt', Buffer.from(version));
 
-    return ossDomain || `https://${client.options.bucket}.${client.options.region}.aliyuncs.com`;
+    const bucket = process.env.ALIYUN_OSS_BUCKET;
+    const region = process.env.ALIYUN_OSS_REGION;
+    return ossDomain || `https://${bucket}.${region}.aliyuncs.com`;
   }
 
   // 刷新CDN缓存

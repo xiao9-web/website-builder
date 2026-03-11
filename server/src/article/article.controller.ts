@@ -25,7 +25,7 @@ export class ArticleController {
     return this.articleService.findAll({
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 10,
-      status: status !== undefined ? parseInt(status) as ArticleStatus : undefined,
+      status: status as ArticleStatus,
       category_id: category_id ? parseInt(category_id) : undefined,
       keyword,
     });

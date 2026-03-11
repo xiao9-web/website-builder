@@ -1,9 +1,5 @@
 import { IsString, IsOptional, IsEnum, IsObject } from 'class-validator';
-
-export enum PageStatus {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-}
+import { PageStatus } from '../page.entity';
 
 export class CreatePageDto {
   @IsString()
