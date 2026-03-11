@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MySQL
+  mysql:
+    image: mysql:8.0.33
+    container_name: website-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ../website-admin/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - website-network
+
+  # Redis
+  redis:
+    image: redis:6.2.12
+    container_name: website-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - website-network
+
+  # 后端服务
+  backend:
+    build:
+      context: ../website-admin
+      dockerfile: Dockerfile
+    container_name: website-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/website?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    volumes:
+      - ./upload:/data/upload
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - website-network
+
+  # 前端门户
+  frontend:
+    build:
+      context: ../website-frontend
+      dockerfile: Dockerfile
+    container_name: website-frontend
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      TZ: Asia/Shanghai
+    depends_on:
+      - backend
+    networks:
+      - website-network
+
+  # 管理后台
+  manage:
+    build:
+      context: ../website-manage
+      dockerfile: Dockerfile
+    container_name: website-manage
+    restart: always
+    ports:
+      - "8082:80"
+    environment:
+      TZ: Asia/Shanghai
+    depends_on:
+      - backend
+    networks:
+      - website-network
+
+networks:
+  website-network:
+    driver: bridge
