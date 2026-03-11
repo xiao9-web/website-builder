@@ -34,6 +34,11 @@ public class CmsArticleServiceImpl extends ServiceImpl<CmsArticleMapper, CmsArti
      * 文章缓存前缀
      */
     private static final String ARTICLE_CACHE_PREFIX = "article:detail:";
+    
+    /**
+     * 网站发布缓存key
+     */
+    private static final String WEBSITE_PUBLISH_KEY = "website:publish:time";
 
     /**
      * 缓存过期时间，单位小时
@@ -143,8 +148,10 @@ public class CmsArticleServiceImpl extends ServiceImpl<CmsArticleMapper, CmsArti
         boolean success = baseMapper.updateById(article) > 0;
         
         if (success) {
-            // 清理缓存
-            redissonClient.getBucket(ARTICLE_CACHE_PREFIX + id).delete();
+            // 刷新缓存
+            refreshArticleCache(id);
+            // 触发网站更新
+            publishWebsite();
         }
         
         return success;
@@ -159,8 +166,10 @@ public class CmsArticleServiceImpl extends ServiceImpl<CmsArticleMapper, CmsArti
         boolean success = baseMapper.updateById(article) > 0;
         
         if (success) {
-            // 清理缓存
-            redissonClient.getBucket(ARTICLE_CACHE_PREFIX + id).delete();
+            // 删除缓存
+            deleteArticleCache(id);
+            // 触发网站更新
+            publishWebsite();
         }
         
         return success;
@@ -175,8 +184,10 @@ public class CmsArticleServiceImpl extends ServiceImpl<CmsArticleMapper, CmsArti
         boolean success = baseMapper.updateById(article) > 0;
         
         if (success) {
-            // 清理缓存
-            redissonClient.getBucket(ARTICLE_CACHE_PREFIX + id).delete();
+            // 刷新缓存
+            refreshArticleCache(id);
+            // 触发网站更新
+            publishWebsite();
         }
         
         return success;
@@ -191,10 +202,46 @@ public class CmsArticleServiceImpl extends ServiceImpl<CmsArticleMapper, CmsArti
         boolean success = baseMapper.updateById(article) > 0;
         
         if (success) {
-            // 清理缓存
-            redissonClient.getBucket(ARTICLE_CACHE_PREFIX + id).delete();
+            // 刷新缓存
+            refreshArticleCache(id);
+            // 触发网站更新
+            publishWebsite();
         }
         
         return success;
+    }
+
+    @Override
+    public void refreshArticleCache(Long id) {
+        // 删除旧缓存
+        deleteArticleCache(id);
+        // 重新查询并存入缓存
+        CmsArticle article = baseMapper.selectById(id);
+        if (article != null && article.getStatus() == 1) {
+            String cacheKey = ARTICLE_CACHE_PREFIX + id;
+            RBucket<CmsArticle> bucket = redissonClient.getBucket(cacheKey);
+            bucket.set(article, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
+        }
+    }
+
+    @Override
+    public void deleteArticleCache(Long id) {
+        String cacheKey = ARTICLE_CACHE_PREFIX + id;
+        redissonClient.getBucket(cacheKey).delete();
+    }
+
+    @Override
+    public void publishWebsite() {
+        // 更新网站发布时间戳，前端可以通过这个时间戳判断是否需要刷新页面
+        RBucket<Long> publishBucket = redissonClient.getBucket(WEBSITE_PUBLISH_KEY);
+        publishBucket.set(System.currentTimeMillis(), 24, TimeUnit.HOURS);
+        
+        // 这里可以实现静态页面生成逻辑
+        // 1. 清除首页、列表页等缓存
+        // 2. 如果是静态化部署，调用静态页面生成器重新生成页面
+        // 3. 通知CDN刷新缓存
+        // 4. 可以通过WebSocket通知在线用户页面已更新
+        
+        System.out.println("网站已发布更新，时间戳：" + System.currentTimeMillis());
     }
 }

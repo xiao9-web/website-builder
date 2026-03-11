@@ -44,4 +44,19 @@ public interface CmsArticleService extends IService<CmsArticle> {
      * 推荐/取消推荐
      */
     boolean setRecommend(Long id, Integer isRecommend);
+
+    /**
+     * 刷新文章缓存
+     */
+    void refreshArticleCache(Long id);
+
+    /**
+     * 删除文章缓存
+     */
+    void deleteArticleCache(Long id);
+
+    /**
+     * 发布网站更新（清除所有缓存，触发页面刷新）
+     */
+    void publishWebsite();
 }
