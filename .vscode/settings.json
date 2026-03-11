@@ -1,0 +1,97 @@
+{
+  // Java配置
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.project.importOnStartup": "all",
+  "java.maven.downloadSources": true,
+  "java.maven.downloadJavadoc": true,
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.trace.server": "off",
+  "java.errors.incompleteClasspath.severity": "warning",
+  
+  // Maven配置
+  "maven.executable.path": "/usr/bin/mvn",
+  "maven.settingsFile": "/root/.m2/settings.xml",
+  "maven.terminal.useJavaHome": true,
+  "maven.view": "flat",
+  
+  // Spring Boot配置
+  "spring-boot.ls.java.home": "/usr/lib/jvm/java-8-openjdk-amd64",
+  "spring-boot.dashboard.showOnStartup": false,
+  
+  // 自动保存
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  
+  // 自动格式化
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  
+  // Java格式化配置（Alibaba规范）
+  "java.format.settings.url": "https://raw.githubusercontent.com/alibaba/p3c/master/p3c-formatter/eclipse-codestyle.xml",
+  "java.format.enabled": true,
+  "java.saveActions.organizeImports": true,
+  
+  // 代码检查
+  "java.completion.filteredTypes": [
+    "com.sun.*",
+    "sun.*"
+  ],
+  "java.completion.importOrder": [
+    "java",
+    "javax",
+    "org",
+    "com",
+    ""
+  ],
+  
+  // 终端配置
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.env.linux": {
+    "JAVA_HOME": "/usr/lib/jvm/java-8-openjdk-amd64",
+    "PATH": "${env:JAVA_HOME}/bin:${env:PATH}"
+  },
+  
+  // 文件排除
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  
+  // 搜索排除
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.git": true
+  },
+  
+  // 插件配置
+  "extensions.ignoreRecommendations": false,
+  "extensions.showRecommendationsOnlyOnDemand": true,
+  
+  // 安全配置
+  "security.workspace.trust.enabled": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  
+  // 弹窗配置
+  "window.dialogStyle": "custom",
+  "window.titleBarStyle": "custom",
+  "window.enableMenuBarMnemonics": false,
+  "workbench.enableExperiments": false,
+  "workbench.startupEditor": "none",
+  "workbench.tips.enabled": false,
+  "update.mode": "manual",
+  "update.showReleaseNotes": false,
+  "telemetry.enableTelemetry": false,
+  "telemetry.enableCrashReporter": false
+}

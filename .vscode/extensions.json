@@ -1,0 +1,31 @@
+{
+  "recommendations": [
+    // Java开发必备
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-spring-boot-dashboard",
+    "Pivotal.vscode-spring-boot",
+    "vscjava.vscode-maven",
+    
+    // 代码质量
+    "SonarSource.sonarlint-vscode",
+    "alibabacloud-java.alibaba-java-coding-guidelines",
+    
+    // 前端开发
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    
+    // 数据库
+    "cweijan.vscode-mysql-client2",
+    "cweijan.vscode-redis-client",
+    
+    // 工具
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker",
+    "DotJoshJohnson.xml",
+    "redhat.vscode-yaml",
+    "humao.rest-client"
+  ],
+  "unwantedRecommendations": []
+}

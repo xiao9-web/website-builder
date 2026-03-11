@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Maven Clean Install",
+      "type": "shell",
+      "command": "mvn clean install -DskipTests",
+      "group": "build",
+      "problemMatcher": ["$maven"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run Spring Boot",
+      "type": "shell",
+      "command": "cd website-admin && mvn spring-boot:run",
+      "group": "test",
+      "problemMatcher": ["$spring-boot"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Build Docker Image",
+      "type": "shell",
+      "command": "docker build -t website-admin:latest ./website-admin",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start with Docker Compose",
+      "type": "shell",
+      "command": "cd deploy && docker-compose up -d",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

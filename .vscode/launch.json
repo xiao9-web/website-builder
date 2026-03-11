@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch Website Admin",
+      "request": "launch",
+      "mainClass": "com.website.WebsiteAdminApplication",
+      "projectName": "website-admin",
+      "args": "",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      },
+      "vmArgs": "-Xmx512m -Xms256m -Dfile.encoding=UTF-8",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "java",
+      "name": "Attach to Running App",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005
+    }
+  ]
+}
