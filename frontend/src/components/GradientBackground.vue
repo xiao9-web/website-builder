@@ -16,12 +16,12 @@
   z-index: -1;
   background: linear-gradient(
     135deg,
-    #f5f0e8 0%,
-    #e8f4f8 20%,
-    #f0e8f5 40%,
-    #e8f5f0 60%,
-    #f5e8f0 80%,
-    #f8f0e8 100%
+    #ffd6e8 0%,
+    #c9e4ff 20%,
+    #e8d6ff 40%,
+    #d6ffe8 60%,
+    #ffd6e8 80%,
+    #ffe8d6 100%
   );
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
