@@ -172,8 +172,10 @@ const handleSave = async (status: number) => {
           ElMessage.success('创建成功')
         }
         router.push('/article')
-      } catch (error) {
-        ElMessage.error(articleId.value ? '更新失败' : '创建失败')
+      } catch (error: any) {
+        console.error('保存文章失败:', error)
+        const errorMsg = error?.response?.data?.message || error?.message || '操作失败'
+        ElMessage.error(articleId.value ? `更新失败: ${errorMsg}` : `创建失败: ${errorMsg}`)
       } finally {
         loading.value = false
       }
