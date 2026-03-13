@@ -16,15 +16,14 @@
           </div>
         </div>
         <nav class="nav">
-          <a
+          <router-link
             v-for="menu in menus"
             :key="menu.id"
-            :href="menu.path"
-            :target="menu.target"
+            :to="menu.path"
             class="nav-link"
           >
             {{ menu.name }}
-          </a>
+          </router-link>
           <div class="nav-actions">
             <button class="icon-btn" title="语言切换">🌐</button>
             <button class="icon-btn" title="主题切换">☀️</button>
@@ -39,7 +38,7 @@
     </header>
 
     <main class="main">
-      <Home />
+      <router-view />
     </main>
 
     <footer class="footer">
@@ -54,7 +53,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import GradientBackground from './components/GradientBackground.vue'
-import Home from './views/Home.vue'
 import type { Menu, SiteConfig } from './types'
 
 // 模拟数据，实际部署时会替换为真实数据
@@ -210,6 +208,12 @@ onMounted(async () => {
 .nav-link:hover {
   color: #333;
   background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-link.router-link-active {
+  color: #333;
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: 600;
 }
 
 .nav-actions {
