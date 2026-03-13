@@ -27,8 +27,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="分类">
-              <el-input v-model="form.category_id" placeholder="请输入分类ID" type="number" />
+            <el-form-item label="所属菜单">
+              <el-select v-model="form.category_id" placeholder="请选择菜单" clearable>
+                <el-option
+                  v-for="menu in menus"
+                  :key="menu.id"
+                  :label="menu.name"
+                  :value="menu.id"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -87,12 +94,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, shallowRef } from 'vue'
+import { ref, reactive, onMounted, shallowRef, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance } from 'element-plus'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import type { IDomEditor } from '@wangeditor/editor'
 import { getArticleApi, createArticleApi, updateArticleApi } from '@/api/article'
+import { getMenuListApi } from '@/api/menu'
 import type { Article } from '@/types'
 import '@wangeditor/editor/dist/css/style.css'
 
@@ -107,6 +115,7 @@ const editorRef = shallowRef<IDomEditor | null>(null)
 const activeNames = ref<string[]>([])
 const tagList = ref<string[]>([])
 const tags = ref<string[]>(['技术', '生活', '工作', '学习', '分享', '前端', '后端', '移动端', '数据库', '云原生'])
+const menus = ref<any[]>([])
 
 const form = reactive<Partial<Article>>({
   title: '',
@@ -172,6 +181,16 @@ const handleSave = async (status: number) => {
   })
 }
 
+// 获取菜单列表
+const fetchMenus = async () => {
+  try {
+    const res = await getMenuListApi()
+    menus.value = res || []
+  } catch (error) {
+    ElMessage.error('获取菜单列表失败')
+  }
+}
+
 // 获取详情
 const fetchDetail = async () => {
   if (!articleId.value) return
@@ -190,6 +209,7 @@ const fetchDetail = async () => {
 }
 
 onMounted(() => {
+  fetchMenus()
   fetchDetail()
 })
 

@@ -35,7 +35,11 @@
       <el-table :data="list" border v-loading="loading">
         <el-table-column prop="title" label="文章标题" min-width="200" />
         <el-table-column prop="slug" label="访问路径" width="150" />
-        <el-table-column prop="category_id" label="分类" width="100" />
+        <el-table-column prop="category_id" label="所属菜单" width="120">
+          <template #default="scope">
+            {{ getMenuName(scope.row.category_id) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="tags" label="标签" width="150" show-overflow-tooltip />
         <el-table-column prop="view_count" label="浏览量" width="80" align="center" />
         <el-table-column prop="status" label="状态" width="100">
@@ -89,6 +93,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { getArticleListApi, deleteArticleApi } from '@/api/article'
+import { getMenuListApi } from '@/api/menu'
 import dayjs from 'dayjs'
 import type { Article } from '@/types'
 
@@ -96,6 +101,7 @@ const router = useRouter()
 const loading = ref(false)
 const list = ref<Article[]>([])
 const total = ref(0)
+const menus = ref<any[]>([])
 
 const query = reactive({
   page: 1,
@@ -106,6 +112,21 @@ const query = reactive({
 
 const formatTime = (time: string) => {
   return dayjs(time).format('YYYY-MM-DD HH:mm')
+}
+
+const getMenuName = (categoryId: number | null) => {
+  if (!categoryId) return '-'
+  const menu = menus.value.find(m => m.id === categoryId)
+  return menu ? menu.name : '-'
+}
+
+const fetchMenus = async () => {
+  try {
+    const res = await getMenuListApi()
+    menus.value = res || []
+  } catch (error) {
+    console.error('获取菜单列表失败', error)
+  }
 }
 
 const fetchList = async () => {
@@ -149,6 +170,7 @@ const handleDelete = async (row: Article) => {
 }
 
 onMounted(() => {
+  fetchMenus()
   fetchList()
 })
 </script>

@@ -78,12 +78,15 @@ onMounted(async () => {
       menus.value = await menuResponse.json()
     }
 
+    // 等待菜单加载后再获取文章数据
+    const currentCategoryId = categoryId.value
+
     // 获取文章数据
     let url = 'http://localhost:3000/api/v1/articles/published?page=1&pageSize=50'
 
     // 如果有分类ID，添加到查询参数
-    if (categoryId.value) {
-      url += `&category_id=${categoryId.value}`
+    if (currentCategoryId) {
+      url += `&category_id=${currentCategoryId}`
     }
 
     const response = await fetch(url)
