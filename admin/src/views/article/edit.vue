@@ -163,7 +163,21 @@ const handleSave = async (status: number) => {
     if (valid) {
       loading.value = true
       try {
-        const data = { ...form, status }
+        // 只提取需要的字段，排除只读字段
+        const data = {
+          title: form.title,
+          slug: form.slug,
+          content: form.content,
+          summary: form.summary,
+          cover_image: form.cover_image,
+          category_id: form.category_id,
+          tags: form.tags,
+          seo_title: form.seo_title,
+          seo_description: form.seo_description,
+          seo_keywords: form.seo_keywords,
+          status: status.toString(), // 转换为字符串类型
+        }
+
         if (articleId.value) {
           await updateArticleApi(articleId.value, data)
           ElMessage.success('更新成功')
