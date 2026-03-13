@@ -1,7 +1,13 @@
 <template>
   <div class="trash-container">
     <div class="toolbar">
-      <h2>文章回收站</h2>
+      <div>
+        <el-button @click="goBack">
+          <el-icon><ArrowLeft /></el-icon>
+          返回文章列表
+        </el-button>
+        <h2 style="margin: 0 0 0 20px;">文章回收站</h2>
+      </div>
       <div class="toolbar-right">
         <el-button type="warning" @click="handleBatchRestore" :disabled="selectedIds.length === 0">
           批量恢复
@@ -53,10 +59,14 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowLeft } from '@element-plus/icons-vue'
 import { getMenuListApi } from '@/api/menu'
 import dayjs from 'dayjs'
 import request from '@/utils/request'
+
+const router = useRouter()
 
 const loading = ref(false)
 const list = ref<any[]>([])
@@ -99,6 +109,10 @@ const fetchList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const goBack = () => {
+  router.push('/article')
 }
 
 const handleSelectionChange = (selection: any[]) => {
@@ -191,8 +205,13 @@ onMounted(() => {
   align-items: center;
 }
 
+.toolbar > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .toolbar h2 {
-  margin: 0;
   font-size: 20px;
   color: #333;
 }

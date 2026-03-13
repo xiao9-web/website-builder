@@ -76,13 +76,22 @@
         <el-table-column prop="created_at" label="创建时间" width="160">
           <template #default="scope">{{ formatTime(scope.row.created_at) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="scope">
             <el-button type="primary" size="small" link @click="handleEdit(scope.row)">
               编辑
             </el-button>
             <el-button type="success" size="small" link @click="handleView(scope.row)">
               预览
+            </el-button>
+            <el-button
+              v-if="scope.row.status === '1'"
+              type="warning"
+              size="small"
+              link
+              @click="handleUnpublish(scope.row)"
+            >
+              下架
             </el-button>
             <el-button type="danger" size="small" link @click="handleDelete(scope.row)">
               删除
@@ -114,6 +123,7 @@ import { Plus, Search, Delete } from '@element-plus/icons-vue'
 import { getArticleListApi, deleteArticleApi } from '@/api/article'
 import { getMenuListApi } from '@/api/menu'
 import dayjs from 'dayjs'
+import request from '@/utils/request'
 import type { Article } from '@/types'
 
 const router = useRouter()
@@ -175,7 +185,23 @@ const handleEdit = (row: Article) => {
 }
 
 const handleView = (row: Article) => {
-  window.open(`/article/${row.slug}`, '_blank')
+  // 在新标签页打开前端文章详情页
+  window.open(`http://localhost:5174/articles/${row.slug}`, '_blank')
+}
+
+const handleUnpublish = async (row: Article) => {
+  await ElMessageBox.confirm(`确定要下架文章 "${row.title}" 吗？下架后前端将不再显示该文章。`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+  try {
+    await request.patch(`/articles/${row.id}`, { status: '0' })
+    ElMessage.success('下架成功')
+    fetchList()
+  } catch (error) {
+    ElMessage.error('下架失败')
+  }
 }
 
 const handleDelete = async (row: Article) => {
