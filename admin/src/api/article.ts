@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import type { Article, PageResult, PageParams } from '@/types'
 
 // 获取文章列表
-export function getArticleListApi(params: PageParams & { status?: number; category_id?: number }): Promise<PageResult<Article>> {
+export function getArticleListApi(params: PageParams & { status?: string; category_id?: number; sortBy?: string }): Promise<PageResult<Article>> {
   return request.get('/articles', { params })
 }
 

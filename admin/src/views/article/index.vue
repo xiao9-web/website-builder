@@ -1,10 +1,16 @@
 <template>
   <div class="article-container">
     <div class="toolbar">
-      <el-button type="primary" @click="handleAdd">
-        <el-icon><Plus /></el-icon>
-        新增文章
-      </el-button>
+      <div>
+        <el-button type="primary" @click="handleAdd">
+          <el-icon><Plus /></el-icon>
+          新增文章
+        </el-button>
+        <el-button type="warning" @click="goToTrash">
+          <el-icon><Delete /></el-icon>
+          回收站
+        </el-button>
+      </div>
       <div class="toolbar-right">
         <el-input
           v-model="query.keyword"
@@ -104,7 +110,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search } from '@element-plus/icons-vue'
+import { Plus, Search, Delete } from '@element-plus/icons-vue'
 import { getArticleListApi, deleteArticleApi } from '@/api/article'
 import { getMenuListApi } from '@/api/menu'
 import dayjs from 'dayjs'
@@ -160,6 +166,10 @@ const handleAdd = () => {
   router.push('/article/edit')
 }
 
+const goToTrash = () => {
+  router.push('/article/trash')
+}
+
 const handleEdit = (row: Article) => {
   router.push(`/article/edit/${row.id}`)
 }
@@ -199,6 +209,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.toolbar > div {
+  display: flex;
+  gap: 10px;
 }
 
 .toolbar-right {

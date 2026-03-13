@@ -53,6 +53,15 @@ const routes = [
         },
       },
       {
+        path: 'article/trash',
+        name: 'ArticleTrash',
+        component: () => import('@/views/article/trash.vue'),
+        meta: {
+          title: '文章回收站',
+          hideMenu: true,
+        },
+      },
+      {
         path: 'page',
         name: 'Page',
         component: () => import('@/views/page/index.vue'),
