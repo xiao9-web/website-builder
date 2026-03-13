@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsInt } from 'class-validator';
 import { ArticleStatus } from '../article.entity';
 
 export class CreateArticleDto {
@@ -23,6 +23,10 @@ export class CreateArticleDto {
   @IsString()
   @IsOptional()
   cover_image?: string;
+
+  @IsInt()
+  @IsOptional()
+  category_id?: number;
 
   @IsEnum(ArticleStatus)
   @IsOptional()

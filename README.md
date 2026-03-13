@@ -86,10 +86,19 @@ npm run dev:frontend
 
 ## 📖 使用文档
 
-1. [部署指南](./docs/deploy.md)
-2. [API文档](./docs/api.md)
-3. [模板开发指南](./docs/template.md)
-4. [组件开发指南](./docs/component.md)
+### 🎯 项目管理文档（AI协作）
+1. **[项目管理中心](./docs/README.md)** - 📊 项目总览和快速入口
+2. **[快速启动指南](./docs/QUICK_START.md)** - 🚀 5分钟快速上手
+3. **[AI协作指南](./docs/AI_COLLABORATION.md)** - 🤖 如何与AI高效协作
+4. **[项目计划](./docs/PROJECT_PLAN.md)** - 📋 详细任务清单和进度
+5. **[开发规范](./docs/DEV_STANDARDS.md)** - 📐 代码规范和最佳实践
+
+### 🏗️ 技术文档
+1. [架构设计](./docs/architecture.md)
+2. [部署指南](./docs/deploy.md)
+3. [API文档](./docs/api.md)
+4. [模板开发指南](./docs/template.md)
+5. [组件开发指南](./docs/component.md)
 
 ## 🤝 贡献
 
