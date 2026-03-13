@@ -60,8 +60,9 @@ export class ArticleService {
     status?: ArticleStatus;
     category_id?: number;
     keyword?: string;
+    sortBy?: string;
   }): Promise<{ list: Article[]; total: number }> {
-    const { page = 1, pageSize = 10, status, category_id, keyword } = params;
+    const { page = 1, pageSize = 10, status, category_id, keyword, sortBy = 'created_at_desc' } = params;
     
     const queryBuilder = this.articleRepository
       .createQueryBuilder('article')
@@ -84,8 +85,18 @@ export class ArticleService {
         'author.username',
         'author.nickname',
         'author.avatar',
-      ])
-      .orderBy('article.created_at', 'DESC');
+      ]);
+
+    // 动态排序
+    const [sortField, sortOrder] = sortBy.split('_');
+    const validSortFields = ['created_at', 'published_at', 'view_count'];
+    const validSortOrders = ['asc', 'desc'];
+
+    if (validSortFields.includes(sortField) && validSortOrders.includes(sortOrder)) {
+      queryBuilder.orderBy(`article.${sortField}`, sortOrder.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      queryBuilder.orderBy('article.created_at', 'DESC');
+    }
 
     if (status !== undefined) {
       queryBuilder.andWhere('article.status = :status', { status });

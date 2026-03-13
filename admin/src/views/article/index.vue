@@ -20,9 +20,22 @@
           clearable
           @change="fetchList"
         >
-          <el-option label="草稿" :value="0" />
-          <el-option label="已发布" :value="1" />
-          <el-option label="已归档" :value="2" />
+          <el-option label="草稿" :value="'0'" />
+          <el-option label="已发布" :value="'1'" />
+          <el-option label="已归档" :value="'2'" />
+        </el-select>
+        <el-select
+          v-model="query.sortBy"
+          placeholder="排序方式"
+          style="width: 150px; margin-right: 10px"
+          clearable
+          @change="fetchList"
+        >
+          <el-option label="最新发布" value="published_at_desc" />
+          <el-option label="最早发布" value="published_at_asc" />
+          <el-option label="最新创建" value="created_at_desc" />
+          <el-option label="最早创建" value="created_at_asc" />
+          <el-option label="浏览最多" value="view_count_desc" />
         </el-select>
         <el-button type="info" @click="fetchList">
           <el-icon><Search /></el-icon>
@@ -44,8 +57,8 @@
         <el-table-column prop="view_count" label="浏览量" width="80" align="center" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'warning'">
-              {{ scope.row.status === 1 ? '已发布' : '草稿' }}
+            <el-tag :type="scope.row.status === '1' ? 'success' : scope.row.status === '2' ? 'info' : 'warning'">
+              {{ scope.row.status === '1' ? '已发布' : scope.row.status === '2' ? '已归档' : '草稿' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -107,7 +120,8 @@ const query = reactive({
   page: 1,
   pageSize: 10,
   keyword: '',
-  status: undefined as number | undefined,
+  status: undefined as string | undefined,
+  sortBy: 'created_at_desc' as string | undefined,
 })
 
 const formatTime = (time: string) => {

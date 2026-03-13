@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -70,7 +70,8 @@ const goToArticle = (slug: string) => {
   router.push(`/articles/${slug}`)
 }
 
-onMounted(async () => {
+const fetchArticles = async () => {
+  loading.value = true
   try {
     // 先获取菜单数据
     const menuResponse = await fetch('http://localhost:3000/api/v1/menus/published')
@@ -99,6 +100,15 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+onMounted(() => {
+  fetchArticles()
+})
+
+// 监听路由变化，重新加载文章
+watch(() => route.path, () => {
+  fetchArticles()
 })
 </script>
 
