@@ -73,24 +73,32 @@ const goToArticle = (slug: string) => {
 const fetchArticles = async () => {
   loading.value = true
   try {
-    // 先获取菜单数据
-    const menuResponse = await fetch('http://localhost:3000/api/v1/menus/published')
-    if (menuResponse.ok) {
-      menus.value = await menuResponse.json()
+    // 先获取菜单数据（如果还没有加载）
+    if (menus.value.length === 0) {
+      const menuResponse = await fetch('http://localhost:3000/api/v1/menus/published')
+      if (menuResponse.ok) {
+        menus.value = await menuResponse.json()
+      }
     }
 
     // 等待菜单加载后再获取文章数据
     const currentCategoryId = categoryId.value
 
-    // 获取文章数据
-    let url = 'http://localhost:3000/api/v1/articles/published?page=1&pageSize=50'
+    // 获取文章数据，添加时间戳避免缓存
+    let url = `http://localhost:3000/api/v1/articles/published?page=1&pageSize=50&t=${Date.now()}`
 
     // 如果有分类ID，添加到查询参数
     if (currentCategoryId) {
       url += `&category_id=${currentCategoryId}`
     }
 
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      cache: 'no-cache', // 禁用缓存
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    })
     if (response.ok) {
       const data = await response.json()
       articles.value = data.list || []
