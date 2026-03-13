@@ -21,6 +21,7 @@ export class ArticleController {
     @Query('status') status: string,
     @Query('category_id') category_id: string,
     @Query('keyword') keyword: string,
+    @Query('sortBy') sortBy: string,
   ) {
     return this.articleService.findAll({
       page: page ? parseInt(page) : 1,
@@ -28,6 +29,7 @@ export class ArticleController {
       status: status as ArticleStatus,
       category_id: category_id ? parseInt(category_id) : undefined,
       keyword,
+      sortBy,
     });
   }
 
@@ -78,5 +80,41 @@ export class ArticleController {
   @Delete('batch')
   batchRemove(@Body() body: { ids: number[] }) {
     return this.articleService.batchRemove(body.ids);
+  }
+
+  // 获取已删除的文章
+  @Get('deleted/list')
+  findDeleted(
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
+  ) {
+    return this.articleService.findDeleted({
+      page: page ? parseInt(page) : 1,
+      pageSize: pageSize ? parseInt(pageSize) : 10,
+    });
+  }
+
+  // 恢复文章
+  @Put(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.articleService.restore(+id);
+  }
+
+  // 批量恢复
+  @Put('batch/restore')
+  batchRestore(@Body() body: { ids: number[] }) {
+    return this.articleService.batchRestore(body.ids);
+  }
+
+  // 永久删除
+  @Delete(':id/permanent')
+  permanentRemove(@Param('id') id: string) {
+    return this.articleService.permanentRemove(+id);
+  }
+
+  // 批量永久删除
+  @Delete('batch/permanent')
+  batchPermanentRemove(@Body() body: { ids: number[] }) {
+    return this.articleService.batchPermanentRemove(body.ids);
   }
 }

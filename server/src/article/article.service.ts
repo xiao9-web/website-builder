@@ -112,6 +112,9 @@ export class ArticleService {
       });
     }
 
+    // 排除已软删除的文章
+    queryBuilder.andWhere('article.deleted_at IS NULL');
+
     const [list, total] = await queryBuilder
       .skip((page - 1) * pageSize)
       .take(pageSize)
@@ -129,7 +132,7 @@ export class ArticleService {
 
   async findBySlug(slug: string): Promise<Article | undefined> {
     return this.articleRepository.findOne({
-      where: { slug, status: ArticleStatus.PUBLISHED },
+      where: { slug, status: ArticleStatus.PUBLISHED, deleted_at: null },
       relations: ['author'],
     });
   }
@@ -155,11 +158,52 @@ export class ArticleService {
     await this.articleRepository.increment({ id }, 'view_count', 1);
   }
 
+  // 软删除
   async remove(id: number): Promise<void> {
+    await this.articleRepository.update(id, { deleted_at: new Date() });
+  }
+
+  // 批量软删除
+  async batchRemove(ids: number[]): Promise<void> {
+    await this.articleRepository.update(ids, { deleted_at: new Date() });
+  }
+
+  // 恢复已删除的文章
+  async restore(id: number): Promise<void> {
+    await this.articleRepository.update(id, { deleted_at: null });
+  }
+
+  // 批量恢复
+  async batchRestore(ids: number[]): Promise<void> {
+    await this.articleRepository.update(ids, { deleted_at: null });
+  }
+
+  // 永久删除
+  async permanentRemove(id: number): Promise<void> {
     await this.articleRepository.delete(id);
   }
 
-  async batchRemove(ids: number[]): Promise<void> {
+  // 批量永久删除
+  async batchPermanentRemove(ids: number[]): Promise<void> {
     await this.articleRepository.delete(ids);
+  }
+
+  // 获取已删除的文章列表
+  async findDeleted(params: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<{ list: Article[]; total: number }> {
+    const { page = 1, pageSize = 10 } = params;
+
+    const [list, total] = await this.articleRepository
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .where('article.deleted_at IS NOT NULL')
+      .orderBy('article.deleted_at', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return { list, total };
   }
 }

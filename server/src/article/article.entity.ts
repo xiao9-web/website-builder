@@ -70,4 +70,7 @@ export class Article {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ nullable: true })
+  deleted_at: Date;
 }

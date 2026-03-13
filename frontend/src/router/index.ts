@@ -25,7 +25,6 @@ const router = createRouter({
       name: 'about',
       component: () => import('../views/About.vue')
     },
-    // 动态路由，匹配所有菜单路径
     {
       path: '/thoughts',
       name: 'thoughts',
@@ -34,6 +33,12 @@ const router = createRouter({
     {
       path: '/wujidasheng',
       name: 'wujidasheng',
+      component: Category
+    },
+    // 动态路由，匹配所有其他路径到 Category 组件
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'dynamic-category',
       component: Category
     }
   ]
