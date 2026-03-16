@@ -45,15 +45,27 @@ const articles = ref<Article[]>([])
 const loading = ref(true)
 const menus = ref<any[]>([])
 
+const findMenuByPath = (path: string) => {
+  // 尝试直接匹配路径
+  let menu = menus.value.find(m => m.path === path)
+  // 如果没找到，尝试去掉前导斜杠匹配（处理 "/12" 匹配 "12" 的情况）
+  if (!menu && path.startsWith('/')) {
+    menu = menus.value.find(m => m.path === path.substring(1))
+  }
+  // 如果还没找到，尝试添加前导斜杠匹配（处理 "12" 匹配 "/12" 的情况）
+  if (!menu && !path.startsWith('/')) {
+    menu = menus.value.find(m => m.path === '/' + path)
+  }
+  return menu
+}
+
 const categoryName = computed(() => {
-  const path = route.path
-  const menu = menus.value.find(m => m.path === path)
+  const menu = findMenuByPath(route.path)
   return menu?.name || '文章列表'
 })
 
 const categoryId = computed(() => {
-  const path = route.path
-  const menu = menus.value.find(m => m.path === path)
+  const menu = findMenuByPath(route.path)
   return menu?.id
 })
 
@@ -84,6 +96,10 @@ const fetchArticles = async () => {
     // 等待菜单加载后再获取文章数据
     const currentCategoryId = categoryId.value
 
+    console.log('Debug - route.path:', route.path)
+    console.log('Debug - menus:', menus.value)
+    console.log('Debug - currentCategoryId:', currentCategoryId)
+
     // 获取文章数据，添加时间戳避免缓存
     let url = `http://localhost:3000/api/v1/articles/published?page=1&pageSize=50&t=${Date.now()}`
 
@@ -91,6 +107,8 @@ const fetchArticles = async () => {
     if (currentCategoryId) {
       url += `&category_id=${currentCategoryId}`
     }
+
+    console.log('Debug - API URL:', url)
 
     const response = await fetch(url, {
       cache: 'no-cache', // 禁用缓存
@@ -101,6 +119,7 @@ const fetchArticles = async () => {
     })
     if (response.ok) {
       const data = await response.json()
+      console.log('Debug - API response:', data)
       articles.value = data.list || []
     }
   } catch (error) {

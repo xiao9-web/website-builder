@@ -5,6 +5,9 @@
 echo "🚀 启动网站构建系统开发环境..."
 echo ""
 
+# 获取脚本所在目录的绝对路径
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # 检查 Docker 是否运行
 if ! docker info > /dev/null 2>&1; then
     echo "❌ Docker 未运行，请先启动 Docker"
@@ -15,7 +18,7 @@ fi
 echo "📦 检查 MySQL 数据库..."
 if ! docker ps | grep -q website-builder-mysql; then
     echo "启动 MySQL 容器..."
-    docker-compose up -d
+    cd "$SCRIPT_DIR" && docker compose up -d
     echo "等待 MySQL 启动..."
     sleep 10
 else
@@ -25,7 +28,7 @@ fi
 # 启动后端服务
 echo ""
 echo "🔧 启动后端服务 (端口 3000)..."
-cd server && npm run start:dev > /tmp/server.log 2>&1 &
+cd "$SCRIPT_DIR/server" && npm run start:dev > /tmp/server.log 2>&1 &
 SERVER_PID=$!
 echo "后端服务 PID: $SERVER_PID"
 
@@ -35,14 +38,14 @@ sleep 5
 # 启动管理后台
 echo ""
 echo "💼 启动管理后台 (端口 5173/5174)..."
-cd ../admin && npm run dev > /tmp/admin.log 2>&1 &
+cd "$SCRIPT_DIR/admin" && npm run dev > /tmp/admin.log 2>&1 &
 ADMIN_PID=$!
 echo "管理后台 PID: $ADMIN_PID"
 
 # 启动前端官网
 echo ""
 echo "🌐 启动前端官网 (端口 5174/5175)..."
-cd ../frontend && npm run dev > /tmp/frontend.log 2>&1 &
+cd "$SCRIPT_DIR/frontend" && npm run dev > /tmp/frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "前端官网 PID: $FRONTEND_PID"
 
