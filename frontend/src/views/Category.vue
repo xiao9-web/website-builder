@@ -66,7 +66,7 @@ const categoryName = computed(() => {
 
 const categoryId = computed(() => {
   const menu = findMenuByPath(route.path)
-  return menu?.id
+  return menu?.category_id
 })
 
 const formatDate = (dateStr: string) => {

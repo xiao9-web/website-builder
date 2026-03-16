@@ -10,6 +10,10 @@ export class CreateMenuDto {
 
   @IsNumber()
   @IsOptional()
+  category_id?: number;
+
+  @IsNumber()
+  @IsOptional()
   parent_id?: number;
 
   @IsNumber()

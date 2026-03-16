@@ -12,6 +12,9 @@ export class Menu {
   path: string;
 
   @Column({ nullable: true })
+  category_id: number;
+
+  @Column({ nullable: true })
   parent_id: number;
 
   @Column({ default: 0 })
