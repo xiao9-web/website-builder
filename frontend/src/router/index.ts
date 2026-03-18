@@ -13,12 +13,27 @@ const router = createRouter({
     {
       path: '/articles',
       name: 'articles',
-      component: Category
+      component: () => import('../views/ArticleList.vue')
     },
     {
       path: '/articles/:slug',
       name: 'article-detail',
       component: () => import('../views/ArticleDetail.vue')
+    },
+    {
+      path: '/category/:id',
+      name: 'category',
+      component: () => import('../views/CategoryPage.vue')
+    },
+    {
+      path: '/tag/:name',
+      name: 'tag',
+      component: () => import('../views/TagPage.vue')
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: () => import('../views/SearchPage.vue')
     },
     {
       path: '/preview/:id',
@@ -29,22 +44,6 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: () => import('../views/About.vue')
-    },
-    {
-      path: '/thoughts',
-      name: 'thoughts',
-      component: Category
-    },
-    {
-      path: '/wujidasheng',
-      name: 'wujidasheng',
-      component: Category
-    },
-    // 动态路由，匹配所有其他路径到 Category 组件
-    {
-      path: '/:pathMatch(.*)*',
-      name: 'dynamic-category',
-      component: Category
     }
   ]
 })
