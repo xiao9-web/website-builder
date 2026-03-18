@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { searchArticlesApi } from '../api/article'
+import { searchArticles } from '../api/article'
 
 const router = useRouter()
 const route = useRoute()
@@ -162,7 +162,7 @@ const loadArticles = async () => {
   loading.value = true
   searched.value = true
   try {
-    const res = await searchArticlesApi({
+    const res = await searchArticles({
       keyword: keyword.value,
       page: currentPage.value,
       limit: pageSize.value

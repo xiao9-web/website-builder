@@ -23,7 +23,7 @@ const router = createRouter({
     {
       path: '/category/:id',
       name: 'category',
-      component: () => import('../views/CategoryPage.vue')
+      component: () => import('../views/Category.vue')
     },
     {
       path: '/tag/:slug',

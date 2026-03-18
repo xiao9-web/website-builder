@@ -34,7 +34,13 @@ export const getPublishedArticles = async (params?: {
   keyword?: string
 }): Promise<ArticleListResponse> => {
   const response = await axios.get(`${API_BASE_URL}/articles/published`, { params })
-  return response.data
+  // 后端返回 {list, total},转换为 {data, total}
+  return {
+    data: response.data.list,
+    total: response.data.total,
+    page: params?.page || 1,
+    pageSize: params?.pageSize || 10
+  }
 }
 
 // 获取文章详情（通过slug）
@@ -61,31 +67,31 @@ export const getArticleListApi = async (params?: {
   status?: string
   category_id?: number
 }) => {
-  const response = await axios.get(`${API_BASE_URL}/article`, { params })
+  const response = await axios.get(`${API_BASE_URL}/articles`, { params })
   return response.data
 }
 
 // 根据 slug 获取文章详情
 export const getArticleBySlugApi = async (slug: string) => {
-  const response = await axios.get(`${API_BASE_URL}/article/slug/${slug}`)
+  const response = await axios.get(`${API_BASE_URL}/articles/slug/${slug}`)
   return response.data
 }
 
 // 根据标签获取文章列表
-export const getArticlesByTagApi = async (tagSlug: string, params?: {
+export const getArticlesByTag = async (tagSlug: string, params?: {
   page?: number
   limit?: number
-}) => {
-  const response = await axios.get(`${API_BASE_URL}/article/tag/${tagSlug}`, { params })
+}): Promise<ArticleListResponse> => {
+  const response = await axios.get(`${API_BASE_URL}/articles/tag/${tagSlug}`, { params })
   return response.data
 }
 
 // 搜索文章
-export const searchArticlesApi = async (params: {
+export const searchArticles = async (params: {
   keyword: string
   page?: number
   limit?: number
-}) => {
-  const response = await axios.get(`${API_BASE_URL}/article/search`, { params })
+}): Promise<ArticleListResponse> => {
+  const response = await axios.get(`${API_BASE_URL}/articles/search`, { params })
   return response.data
 }

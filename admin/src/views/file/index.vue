@@ -5,7 +5,7 @@
         <div class="header">
           <span>文件管理</span>
           <el-upload
-            :action="`${baseURL}/upload`"
+            :action="`${baseURL}/uploads`"
             :headers="{ Authorization: `Bearer ${token}` }"
             :on-success="handleUploadSuccess"
             :before-upload="beforeUpload"

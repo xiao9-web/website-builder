@@ -3,7 +3,7 @@ import { SettingService } from './setting.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Public } from '../auth/decorators/public.decorator';
 
-@Controller('setting')
+@Controller('settings')
 @UseGuards(JwtAuthGuard)
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}

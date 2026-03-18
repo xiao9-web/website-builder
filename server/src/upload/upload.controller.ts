@@ -15,7 +15,7 @@ import { extname } from 'path';
 import { UploadService } from './upload.service';
 import * as fs from 'fs';
 
-@Controller('upload')
+@Controller('uploads')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 

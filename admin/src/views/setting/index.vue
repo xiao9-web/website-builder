@@ -25,7 +25,7 @@
             <div style="display: flex; gap: 10px; align-items: center;">
               <el-input v-model="basicSettings.site_logo" placeholder="请输入 Logo URL" />
               <el-upload
-                :action="`${baseURL}/upload`"
+                :action="`${baseURL}/uploads`"
                 :headers="{ Authorization: `Bearer ${token}` }"
                 :on-success="(res) => handleUploadSuccess(res, 'site_logo')"
                 :show-file-list="false"
@@ -39,7 +39,7 @@
             <div style="display: flex; gap: 10px; align-items: center;">
               <el-input v-model="basicSettings.site_favicon" placeholder="请输入图标 URL" />
               <el-upload
-                :action="`${baseURL}/upload`"
+                :action="`${baseURL}/uploads`"
                 :headers="{ Authorization: `Bearer ${token}` }"
                 :on-success="(res) => handleUploadSuccess(res, 'site_favicon')"
                 :show-file-list="false"

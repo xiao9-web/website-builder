@@ -24,19 +24,19 @@ export const getTags = async (params?: {
   limit?: number
   search?: string
 }): Promise<TagListResponse> => {
-  const response = await axios.get(`${API_BASE_URL}/tag`, { params })
+  const response = await axios.get(`${API_BASE_URL}/tags`, { params })
   return response.data
 }
 
 // 获取热门标签
 export const getHotTags = async (limit?: number): Promise<Tag[]> => {
-  const response = await axios.get(`${API_BASE_URL}/tag/hot`, { params: { limit } })
+  const response = await axios.get(`${API_BASE_URL}/tags/hot`, { params: { limit } })
   return response.data
 }
 
 // 根据名称获取标签
 export const getTagByName = async (name: string): Promise<Tag> => {
-  const response = await axios.get(`${API_BASE_URL}/tag`)
+  const response = await axios.get(`${API_BASE_URL}/tags`)
   const tags = response.data.data || response.data
   const tag = tags.find((t: Tag) => t.name === name || t.slug === name)
   if (!tag) {
@@ -46,7 +46,7 @@ export const getTagByName = async (name: string): Promise<Tag> => {
 }
 
 // 根据 slug 获取标签详情
-export const getTagBySlugApi = async (slug: string) => {
-  const response = await axios.get(`${API_BASE_URL}/tag/slug/${slug}`)
+export const getTagBySlug = async (slug: string) => {
+  const response = await axios.get(`${API_BASE_URL}/tags/slug/${slug}`)
   return response.data
 }

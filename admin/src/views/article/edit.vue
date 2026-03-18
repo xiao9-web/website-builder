@@ -5,6 +5,7 @@
         <div class="card-header">
           <span>{{ articleId ? '编辑文章' : '新增文章' }}</span>
           <div class="header-actions">
+            <span v-if="autoSaveStatus" class="auto-save-status">{{ autoSaveStatus }}</span>
             <el-button v-if="articleId" @click="handlePreview" :icon="View">
               预览
             </el-button>
@@ -51,7 +52,7 @@
           <div style="display: flex; gap: 10px; align-items: center;">
             <el-input v-model="form.cover_image" placeholder="请输入封面图片URL" />
             <el-upload
-              :action="`${baseURL}/upload`"
+              :action="`${baseURL}/uploads`"
               :headers="{ Authorization: `Bearer ${token}` }"
               :on-success="handleCoverUploadSuccess"
               :before-upload="beforeUpload"
@@ -148,6 +149,9 @@ const activeNames = ref<string[]>([])
 const tagList = ref<string[]>([])
 const availableTags = ref<Tag[]>([])
 const categories = ref<Category[]>([])
+const autoSaveStatus = ref<string>('')
+const autoSaveTimer = ref<number | null>(null)
+const hasUnsavedChanges = ref(false)
 
 const form = reactive<Partial<Article>>({
   title: '',
@@ -178,7 +182,7 @@ const editorConfig = {
   placeholder: '请输入文章内容...',
   MENU_CONF: {
     uploadImage: {
-      server: '/api/v1/upload',
+      server: '/api/v1/uploads',
       fieldName: 'file',
       maxFileSize: 5 * 1024 * 1024,
       allowedFileTypes: ['image/*'],
@@ -226,6 +230,62 @@ watch(tagList, (newVal) => {
   form.tags = newVal.join(',')
 })
 
+// 监听表单变化,触发自动保存
+watch(
+  () => [form.title, form.content, form.summary],
+  () => {
+    hasUnsavedChanges.value = true
+    // 清除之前的定时器
+    if (autoSaveTimer.value) {
+      clearTimeout(autoSaveTimer.value)
+    }
+    // 30秒后自动保存
+    autoSaveTimer.value = window.setTimeout(() => {
+      if (hasUnsavedChanges.value && articleId.value) {
+        autoSave()
+      }
+    }, 30000)
+  },
+  { deep: true }
+)
+
+// 自动保存
+const autoSave = async () => {
+  if (!articleId.value || !hasUnsavedChanges.value) return
+
+  try {
+    autoSaveStatus.value = '正在自动保存...'
+    const data = {
+      title: form.title,
+      slug: form.slug,
+      content: form.content,
+      summary: form.summary,
+      cover_image: form.cover_image,
+      category_id: form.category_id,
+      tags: form.tags,
+      seo_title: form.seo_title,
+      seo_description: form.seo_description,
+      seo_keywords: form.seo_keywords,
+      status: '0', // 自动保存为草稿
+    }
+
+    await updateArticleApi(articleId.value, data)
+    hasUnsavedChanges.value = false
+    autoSaveStatus.value = '已自动保存'
+
+    // 3秒后清除状态提示
+    setTimeout(() => {
+      autoSaveStatus.value = ''
+    }, 3000)
+  } catch (error) {
+    console.error('自动保存失败:', error)
+    autoSaveStatus.value = '自动保存失败'
+    setTimeout(() => {
+      autoSaveStatus.value = ''
+    }, 3000)
+  }
+}
+
 // 保存
 const handleSave = async (status: number) => {
   if (!formRef.value) return
@@ -251,9 +311,14 @@ const handleSave = async (status: number) => {
         if (articleId.value) {
           await updateArticleApi(articleId.value, data)
           ElMessage.success('更新成功')
+          hasUnsavedChanges.value = false
         } else {
-          await createArticleApi(data)
+          const res = await createArticleApi(data)
           ElMessage.success('创建成功')
+          // 创建成功后设置articleId,以便后续自动保存
+          if (res.id) {
+            articleId.value = res.id
+          }
         }
         router.push('/article')
       } catch (error: any) {
@@ -319,11 +384,16 @@ onMounted(() => {
   fetchDetail()
 })
 
-// 组件销毁时销毁编辑器
+// 组件销毁时销毁编辑器和清除定时器
 onBeforeUnmount(() => {
   const editor = editorRef.value
   if (editor == null) return
   editor.destroy()
+
+  // 清除自动保存定时器
+  if (autoSaveTimer.value) {
+    clearTimeout(autoSaveTimer.value)
+  }
 })
 </script>
 
@@ -346,6 +416,13 @@ onBeforeUnmount(() => {
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
+}
+
+.auto-save-status {
+  font-size: 14px;
+  color: #67c23a;
+  margin-right: 10px;
 }
 
 .editor-wrapper {

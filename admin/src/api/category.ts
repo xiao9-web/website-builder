@@ -28,30 +28,30 @@ export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {}
 
 // 获取所有分类（树形结构）
 export const getCategoryListApi = () => {
-  return request.get<Category[]>('/category')
+  return request.get<Category[]>('/categories')
 }
 
 // 获取单个分类
 export const getCategoryDetailApi = (id: number) => {
-  return request.get<Category>(`/category/${id}`)
+  return request.get<Category>(`/categories/${id}`)
 }
 
 // 创建分类
 export const createCategoryApi = (data: CreateCategoryDto) => {
-  return request.post<Category>('/category', data)
+  return request.post<Category>('/categories', data)
 }
 
 // 更新分类
 export const updateCategoryApi = (id: number, data: UpdateCategoryDto) => {
-  return request.patch<Category>(`/category/${id}`, data)
+  return request.patch<Category>(`/categories/${id}`, data)
 }
 
 // 删除分类
 export const deleteCategoryApi = (id: number) => {
-  return request.delete(`/category/${id}`)
+  return request.delete(`/categories/${id}`)
 }
 
 // 更新排序
 export const updateCategorySortApi = (sortData: { id: number; sort_order: number }[]) => {
-  return request.post('/category/sort', sortData)
+  return request.post('/categories/sort', sortData)
 }

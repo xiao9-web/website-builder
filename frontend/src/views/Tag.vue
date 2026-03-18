@@ -67,8 +67,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { getArticlesByTagApi } from '../api/article'
-import { getTagBySlugApi } from '../api/tag'
+import { getArticlesByTag } from '../api/article'
+import { getTagBySlug } from '../api/tag'
 
 const router = useRouter()
 const route = useRoute()
@@ -111,11 +111,11 @@ const loadData = async () => {
     const slug = route.params.slug as string
 
     // 获取标签信息
-    const tagRes = await getTagBySlugApi(slug)
+    const tagRes = await getTagBySlug(slug)
     tagName.value = tagRes.data.name
 
     // 获取标签下的文章
-    const articlesRes = await getArticlesByTagApi(slug, {
+    const articlesRes = await getArticlesByTag(slug, {
       page: currentPage.value,
       limit: pageSize.value
     })
