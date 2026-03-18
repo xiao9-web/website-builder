@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Put, Body, Param, Query, UseGuards, Post } from '@nestjs/common';
 import { SettingService } from './setting.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Public } from '../auth/decorators/public.decorator';
@@ -7,6 +7,11 @@ import { Public } from '../auth/decorators/public.decorator';
 @UseGuards(JwtAuthGuard)
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
+
+  @Post('init/defaults')
+  initDefaults() {
+    return this.settingService.initDefaultSettings();
+  }
 
   @Get()
   findAll(@Query('group') group?: string) {
@@ -44,10 +49,5 @@ export class SettingController {
   @Put()
   batchUpdate(@Body() settings: { key: string; value: any }[]) {
     return this.settingService.batchUpdate(settings);
-  }
-
-  @Get('init/defaults')
-  initDefaults() {
-    return this.settingService.initDefaultSettings();
   }
 }
