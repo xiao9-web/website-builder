@@ -48,7 +48,19 @@
         </el-form-item>
 
         <el-form-item label="封面图片">
-          <el-input v-model="form.cover_image" placeholder="请输入封面图片URL" />
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <el-input v-model="form.cover_image" placeholder="请输入封面图片URL" />
+            <el-upload
+              :action="`${baseURL}/upload`"
+              :headers="{ Authorization: `Bearer ${token}` }"
+              :on-success="handleCoverUploadSuccess"
+              :before-upload="beforeUpload"
+              :show-file-list="false"
+            >
+              <el-button>上传</el-button>
+            </el-upload>
+          </div>
+          <img v-if="form.cover_image" :src="form.cover_image" style="max-width: 200px; margin-top: 10px;" />
         </el-form-item>
 
         <el-form-item label="标签">
@@ -114,6 +126,9 @@ const formRef = ref<FormInstance>()
 const loading = ref(false)
 const articleId = ref<number | null>(route.params.id ? parseInt(route.params.id as string) : null)
 
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
+const token = localStorage.getItem('token')
+
 const mode = ref<'default' | 'simple'>('default')
 const editorRef = shallowRef<IDomEditor | null>(null)
 const activeNames = ref<string[]>([])
@@ -148,11 +163,49 @@ const toolbarConfig = {
 
 const editorConfig = {
   placeholder: '请输入文章内容...',
-  MENU_CONF: {},
+  MENU_CONF: {
+    uploadImage: {
+      server: '/api/v1/upload',
+      fieldName: 'file',
+      maxFileSize: 5 * 1024 * 1024,
+      allowedFileTypes: ['image/*'],
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      onSuccess(file: File, res: any) {
+        return res.data.url
+      },
+      onFailed(file: File, res: any) {
+        ElMessage.error(res.message || '图片上传失败')
+      },
+      onError(file: File, err: any) {
+        ElMessage.error('图片上传出错')
+      },
+    },
+  },
 }
 
 const handleEditorCreated = (editor: IDomEditor) => {
   editorRef.value = editor
+}
+
+const handleCoverUploadSuccess = (res: any) => {
+  form.cover_image = `${baseURL}${res.data.url}`
+  ElMessage.success('封面上传成功')
+}
+
+const beforeUpload = (file: File) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件')
+    return false
+  }
+  if (!isLt5M) {
+    ElMessage.error('图片大小不能超过 5MB')
+    return false
+  }
+  return true
 }
 
 // 标签处理
