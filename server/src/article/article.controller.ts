@@ -50,8 +50,10 @@ export class ArticleController {
     });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  // 预览文章（支持草稿状态）
+  @Public()
+  @Get('preview/:id')
+  preview(@Param('id') id: string) {
     return this.articleService.findOne(+id);
   }
 
@@ -59,6 +61,11 @@ export class ArticleController {
   @Get('slug/:slug')
   findBySlug(@Param('slug') slug: string) {
     return this.articleService.findBySlug(slug);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.articleService.findOne(+id);
   }
 
   @Patch(':id')

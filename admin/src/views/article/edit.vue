@@ -5,6 +5,9 @@
         <div class="card-header">
           <span>{{ articleId ? '编辑文章' : '新增文章' }}</span>
           <div class="header-actions">
+            <el-button v-if="articleId" @click="handlePreview" :icon="View">
+              预览
+            </el-button>
             <el-button @click="handleSave(0)" :loading="loading">
               保存草稿
             </el-button>
@@ -97,6 +100,7 @@
 import { ref, reactive, onMounted, shallowRef, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance } from 'element-plus'
+import { View } from '@element-plus/icons-vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import type { IDomEditor } from '@wangeditor/editor'
 import { getArticleApi, createArticleApi, updateArticleApi } from '@/api/article'
@@ -195,6 +199,15 @@ const handleSave = async (status: number) => {
       }
     }
   })
+}
+
+// 预览
+const handlePreview = () => {
+  if (articleId.value) {
+    // 在新窗口打开预览页面
+    const previewUrl = `http://localhost:5175/preview/${articleId.value}`
+    window.open(previewUrl, '_blank')
+  }
 }
 
 // 获取菜单列表

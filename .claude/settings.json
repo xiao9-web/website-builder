@@ -22,13 +22,13 @@
       "Bash(git reset)",
       "Bash(git add docker-compose.yml docker/mysql/init.sql start-dev.sh stop-dev.sh admin/package.json .gitignore)",
       "Bash(git add .gitignore admin/package.json)",
-      "Bash(git commit -m \"feat: 添加 Docker 本地开发环境配置:*)",
+      "Bash(git commit -m \"feat: 添加 Docker 本地开发环境配置:*\")",
       "Bash(git add admin/src/views/)",
-      "Bash(git commit -m \"feat: 实现管理后台缺失的页面组件:*)",
+      "Bash(git commit -m \"feat: 实现管理后台缺失的页面组件:*\")",
       "Bash(git push origin main)",
       "Bash(npm install @nestjs/config @nestjs/mapped-types class-validator class-transformer)",
       "Bash(git add server/src/)",
-      "Bash(git commit -m \"feat: 实现后端缺失的模块和文件:*)",
+      "Bash(git commit -m \"feat: 实现后端缺失的模块和文件:*\")",
       "Bash(git add .)",
       "Bash(ls -la server/src/auth/*.ts)",
       "Bash(curl -s http://localhost:3000/api/v1/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"\"username\"\":\"\"admin\"\",\"\"password\"\":\"\"admin123\"\"}')",
@@ -61,9 +61,27 @@
       "Bash(curl -X POST http://localhost:3000/api/v1/articles -H \"Content-Type: application/json\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzMyMTY3NDksImV4cCI6MTc3MzgyMTU0OX0.HBp-oFjaZ2rNTS4jTKYohFqdbCQcsYsyO2woXwRfJMU\" -d '{\"\"title\"\":\"\"测试文章\"\",\"\"content\"\":\"\"测试内容\"\",\"\"status\"\":\"\"draft\"\",\"\"author\"\":\"\"测试作者\"\"}')",
       "Bash(curl -X POST http://localhost:3000/api/v1/articles -H \"Content-Type: application/json\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzMyMTY3NDksImV4cCI6MTc3MzgyMTU0OX0.HBp-oFjaZ2rNTS4jTKYohFqdbCQcsYsyO2woXwRfJMU\" -d '{\"\"title\"\":\"\"测试文章\"\",\"\"content\"\":\"\"测试内容\"\",\"\"status\"\":\"\"0\"\"}')",
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzMyMTc1NDMsImV4cCI6MTc3MzgyMjM0M30.ZHoDymK-q7_XBpeYjyVl3LqoWKP3nlZNcJvqLASERgI\")",
-      "Bash(curl -X POST http://localhost:3000/api/v1/articles -H \"Content-Type: application/json\" -H \"Authorization: Bearer $TOKEN\" -d '{:*)",
+      "Bash(curl -X POST http://localhost:3000/api/v1/articles -H \"Content-Type: application/json\" -H \"Authorization: Bearer $TOKEN\" -d '{:*}")",
       "Bash(git add:*)",
-      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzMzNzE4MjYsImV4cCI6MTc3Mzk3NjYyNn0.g8BAjER4pNGxDcTUbNnL71xuUrNM3dV2Fk_NSgvbe9A\")"
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzMzNzE4MjYsImV4cDI6MTc3Mzk3NjYyNn0.g8BAjER4pNGxDcTUbNnL71xuUrNM3dV2Fk_NSgvbe9A\")",
+      "Write(//Users/xiao9/workSpace/website-builder/**)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(nest:*)",
+      "Bash(docker:*)",
+      "Bash(git:*)",
+      "Bash(curl:*)",
+      "Edit(*.vue)",
+      "Edit(*.ts)",
+      "Edit(*.js)",
+      "Edit(*.css)",
+      "Edit(*.scss)",
+      "Edit(*.html)",
+      "Edit(*.json)",
+      "Edit(*.md)"
     ]
+  },
+  "terminal.integrated.env.osx": {
+    "CLAUDE_SKIP_PERMISSIONS": "1"
   }
 }
