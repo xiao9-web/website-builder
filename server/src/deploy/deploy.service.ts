@@ -216,6 +216,55 @@ export class DeployService {
     }
   }
 
+  // 发布快照（简化版，不上传OSS）
+  async publishSnapshot(userId: number, description?: string): Promise<DeployVersion> {
+    const version = this.generateVersion();
+    const startTime = Date.now();
+
+    try {
+      // 1. 导出所有数据作为快照
+      const siteData = await this.exportSiteData();
+
+      // 2. 将之前的活跃版本设为非活跃
+      await this.deployVersionRepository.update(
+        { is_active: true },
+        { is_active: false }
+      );
+
+      // 3. 创建新版本并设为活跃
+      const deployVersion = this.deployVersionRepository.create({
+        version,
+        description: description || '内容发布',
+        status: DeployStatus.SUCCESS,
+        is_active: true,
+        snapshot_data: JSON.stringify(siteData),
+        duration: Math.round((Date.now() - startTime) / 1000),
+        deploy_log: `✅ 发布成功！\n版本: ${version}\n包含: ${siteData.articles.length} 篇文章, ${siteData.menus.length} 个菜单, ${siteData.pages.length} 个页面`,
+        created_by: userId,
+      });
+
+      await this.deployVersionRepository.save(deployVersion);
+      return deployVersion;
+    } catch (error) {
+      throw new Error(`发布失败: ${error.message}`);
+    }
+  }
+
+  // 获取当前活跃的版本快照
+  async getActiveSnapshot(): Promise<any> {
+    const activeVersion = await this.deployVersionRepository.findOne({
+      where: { is_active: true },
+      order: { created_at: 'DESC' },
+    });
+
+    if (!activeVersion || !activeVersion.snapshot_data) {
+      // 如果没有活跃版本，返回当前数据
+      return this.exportSiteData();
+    }
+
+    return JSON.parse(activeVersion.snapshot_data);
+  }
+
   async findAll(params: { page?: number; pageSize?: number }): Promise<{ list: DeployVersion[]; total: number }> {
     const { page = 1, pageSize = 10 } = params;
     const [list, total] = await this.deployVersionRepository.findAndCount({

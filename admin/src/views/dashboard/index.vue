@@ -1,5 +1,20 @@
 <template>
   <div class="dashboard-container">
+    <div class="publish-section mb-20">
+      <el-card>
+        <div class="publish-content">
+          <div class="publish-info">
+            <h3>内容发布</h3>
+            <p>将当前所有内容发布到前台网站</p>
+          </div>
+          <el-button type="primary" size="large" @click="handlePublish" :loading="publishing">
+            <el-icon><Upload /></el-icon>
+            <span>立即发布</span>
+          </el-button>
+        </div>
+      </el-card>
+    </div>
+
     <el-row :gutter="20" class="mb-20">
       <el-col :span="6">
         <el-card class="card-item">
@@ -146,8 +161,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Document, Files, UploadFilled, Clock, Edit, Plus, Setting } from '@element-plus/icons-vue'
+import { Document, Files, UploadFilled, Clock, Edit, Plus, Setting, Upload } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
+import request from '@/utils/request'
 
 const router = useRouter()
 
@@ -160,9 +177,40 @@ const articleList = ref<any[]>([])
 const nodeVersion = ref('')
 const env = ref('开发环境')
 const deployUrl = ref('')
+const publishing = ref(false)
 
 const formatTime = (time: string) => {
   return dayjs(time).format('YYYY-MM-DD HH:mm')
+}
+
+const handlePublish = async () => {
+  try {
+    await ElMessageBox.confirm(
+      '确定要发布当前所有内容到前台网站吗？',
+      '发布确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+
+    publishing.value = true
+    const response = await request.post('/deploy/publish', {
+      description: '内容发布'
+    })
+
+    ElMessage.success('发布成功！')
+    // 刷新数据
+    fetchData()
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('发布失败:', error)
+      ElMessage.error(error?.response?.data?.message || '发布失败')
+    }
+  } finally {
+    publishing.value = false
+  }
 }
 
 const goToDeploy = () => {
@@ -210,6 +258,28 @@ onMounted(() => {
 </script>
 
 <style scoped lang="css">
+.publish-section {
+  margin-bottom: 20px;
+}
+
+.publish-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.publish-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.publish-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
 .dashboard-container {
   padding: 0;
 }

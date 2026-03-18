@@ -17,8 +17,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useSnapshot } from '../composables/useSnapshot'
 
 const route = useRoute()
+const { fetchSnapshot, getArticleBySlug } = useSnapshot()
 
 interface Article {
   id: number
@@ -41,11 +43,9 @@ const formatDate = (dateStr: string) => {
 
 onMounted(async () => {
   try {
-    const slug = route.params.slug
-    const response = await fetch(`http://localhost:3000/api/v1/articles/slug/${slug}`)
-    if (response.ok) {
-      article.value = await response.json()
-    }
+    const slug = route.params.slug as string
+    await fetchSnapshot()
+    article.value = getArticleBySlug(slug)
   } catch (error) {
     console.error('Failed to load article:', error)
   } finally {

@@ -28,9 +28,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useSnapshot } from '../composables/useSnapshot'
 
 const router = useRouter()
 const route = useRoute()
+const { fetchSnapshot, getMenus, getArticles } = useSnapshot()
 
 interface Article {
   id: number
@@ -82,60 +84,34 @@ const goToArticle = (slug: string) => {
   router.push(`/articles/${slug}`)
 }
 
-const fetchArticles = async () => {
+const loadData = async () => {
   loading.value = true
   try {
-    // 先获取菜单数据（如果还没有加载）
-    if (menus.value.length === 0) {
-      const menuResponse = await fetch('http://localhost:3000/api/v1/menus/published')
-      if (menuResponse.ok) {
-        menus.value = await menuResponse.json()
-      }
-    }
+    // 从快照加载数据
+    await fetchSnapshot()
+    menus.value = getMenus()
 
-    // 等待菜单加载后再获取文章数据
+    // 根据分类ID筛选文章
     const currentCategoryId = categoryId.value
-
-    console.log('Debug - route.path:', route.path)
-    console.log('Debug - menus:', menus.value)
-    console.log('Debug - currentCategoryId:', currentCategoryId)
-
-    // 获取文章数据，添加时间戳避免缓存
-    let url = `http://localhost:3000/api/v1/articles/published?page=1&pageSize=50&t=${Date.now()}`
-
-    // 如果有分类ID，添加到查询参数
     if (currentCategoryId) {
-      url += `&category_id=${currentCategoryId}`
-    }
-
-    console.log('Debug - API URL:', url)
-
-    const response = await fetch(url, {
-      cache: 'no-cache', // 禁用缓存
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
-      console.log('Debug - API response:', data)
-      articles.value = data.list || []
+      articles.value = getArticles(currentCategoryId)
+    } else {
+      articles.value = getArticles()
     }
   } catch (error) {
-    console.error('Failed to load articles:', error)
+    console.error('Failed to load data:', error)
   } finally {
     loading.value = false
   }
 }
 
 onMounted(() => {
-  fetchArticles()
+  loadData()
 })
 
 // 监听路由变化，重新加载文章
 watch(() => route.path, () => {
-  fetchArticles()
+  loadData()
 })
 </script>
 

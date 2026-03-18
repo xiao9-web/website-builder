@@ -26,11 +26,17 @@ export class DeployVersion {
   })
   status: DeployStatus;
 
+  @Column({ type: 'boolean', default: false })
+  is_active: boolean; // 是否为当前生效的版本
+
   @Column({ type: 'text', nullable: true })
   deploy_log: string; // 部署日志
 
   @Column({ type: 'json', nullable: true })
   build_config: Record<string, any>; // 构建配置
+
+  @Column({ type: 'longtext', nullable: true })
+  snapshot_data: string; // 快照数据（JSON字符串）
 
   @Column({ length: 255, nullable: true })
   preview_url: string; // 预览地址
