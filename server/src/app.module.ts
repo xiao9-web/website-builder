@@ -13,6 +13,7 @@ import { CommonModule } from './common/common.module';
 import { UploadModule } from './upload/upload.module';
 import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
+import { SettingModule } from './setting/setting.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -52,6 +53,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     UploadModule,
     CategoryModule,
     TagModule,
+    SettingModule,
   ],
   providers: [
     {

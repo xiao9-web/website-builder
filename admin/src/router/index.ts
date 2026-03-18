@@ -116,6 +116,15 @@ const routes = [
         },
       },
       {
+        path: 'setting',
+        name: 'Setting',
+        component: () => import('@/views/setting/index.vue'),
+        meta: {
+          title: '系统设置',
+          icon: 'Tools',
+        },
+      },
+      {
         path: 'deploy',
         name: 'Deploy',
         component: () => import('@/views/deploy/index.vue'),
