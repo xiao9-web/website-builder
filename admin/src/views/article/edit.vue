@@ -30,15 +30,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="所属菜单">
-              <el-select v-model="form.category_id" placeholder="请选择菜单" clearable>
-                <el-option
-                  v-for="menu in menus"
-                  :key="menu.id"
-                  :label="menu.name"
-                  :value="menu.id"
-                />
-              </el-select>
+            <el-form-item label="文章分类">
+              <el-tree-select
+                v-model="form.category_id"
+                :data="categories"
+                :props="{ label: 'name', value: 'id' }"
+                placeholder="请选择分类"
+                clearable
+                check-strictly
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -64,8 +64,20 @@
         </el-form-item>
 
         <el-form-item label="标签">
-          <el-select v-model="tagList" multiple placeholder="请选择或输入标签" allow-create filterable>
-            <el-option v-for="tag in tags" :key="tag" :label="tag" :value="tag" />
+          <el-select
+            v-model="tagList"
+            multiple
+            placeholder="请选择或输入标签"
+            allow-create
+            filterable
+            default-first-option
+          >
+            <el-option
+              v-for="tag in availableTags"
+              :key="tag.id"
+              :label="tag.name"
+              :value="tag.name"
+            />
           </el-select>
         </el-form-item>
 
@@ -116,7 +128,8 @@ import { View } from '@element-plus/icons-vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import type { IDomEditor } from '@wangeditor/editor'
 import { getArticleApi, createArticleApi, updateArticleApi } from '@/api/article'
-import { getMenuListApi } from '@/api/menu'
+import { getCategoryListApi, type Category } from '@/api/category'
+import { getTagListApi, type Tag } from '@/api/tag'
 import type { Article } from '@/types'
 import '@wangeditor/editor/dist/css/style.css'
 
@@ -133,8 +146,8 @@ const mode = ref<'default' | 'simple'>('default')
 const editorRef = shallowRef<IDomEditor | null>(null)
 const activeNames = ref<string[]>([])
 const tagList = ref<string[]>([])
-const tags = ref<string[]>(['技术', '生活', '工作', '学习', '分享', '前端', '后端', '移动端', '数据库', '云原生'])
-const menus = ref<any[]>([])
+const availableTags = ref<Tag[]>([])
+const categories = ref<Category[]>([])
 
 const form = reactive<Partial<Article>>({
   title: '',
@@ -263,13 +276,23 @@ const handlePreview = () => {
   }
 }
 
-// 获取菜单列表
-const fetchMenus = async () => {
+// 获取分类列表
+const fetchCategories = async () => {
   try {
-    const res = await getMenuListApi()
-    menus.value = res || []
+    const res = await getCategoryListApi()
+    categories.value = res.data
   } catch (error) {
-    ElMessage.error('获取菜单列表失败')
+    ElMessage.error('获取分类列表失败')
+  }
+}
+
+// 获取标签列表
+const fetchTags = async () => {
+  try {
+    const res = await getTagListApi()
+    availableTags.value = res.data.data
+  } catch (error) {
+    ElMessage.error('获取标签列表失败')
   }
 }
 
@@ -291,7 +314,8 @@ const fetchDetail = async () => {
 }
 
 onMounted(() => {
-  fetchMenus()
+  fetchCategories()
+  fetchTags()
   fetchDetail()
 })
 

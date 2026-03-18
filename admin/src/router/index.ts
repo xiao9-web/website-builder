@@ -71,6 +71,24 @@ const routes = [
         },
       },
       {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/category/index.vue'),
+        meta: {
+          title: '分类管理',
+          icon: 'FolderOpened',
+        },
+      },
+      {
+        path: 'tag',
+        name: 'Tag',
+        component: () => import('@/views/tag/index.vue'),
+        meta: {
+          title: '标签管理',
+          icon: 'CollectionTag',
+        },
+      },
+      {
         path: 'page',
         name: 'Page',
         component: () => import('@/views/page/index.vue'),

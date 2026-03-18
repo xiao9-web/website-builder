@@ -10,6 +10,9 @@ import { PageModule } from './page/page.module';
 import { SiteConfigModule } from './site-config/site-config.module';
 import { DeployModule } from './deploy/deploy.module';
 import { CommonModule } from './common/common.module';
+import { UploadModule } from './upload/upload.module';
+import { CategoryModule } from './category/category.module';
+import { TagModule } from './tag/tag.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -46,6 +49,9 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     SiteConfigModule,
     DeployModule,
     CommonModule,
+    UploadModule,
+    CategoryModule,
+    TagModule,
   ],
   providers: [
     {
