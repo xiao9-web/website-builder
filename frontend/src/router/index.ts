@@ -26,14 +26,14 @@ const router = createRouter({
       component: () => import('../views/CategoryPage.vue')
     },
     {
-      path: '/tag/:name',
+      path: '/tag/:slug',
       name: 'tag',
-      component: () => import('../views/TagPage.vue')
+      component: () => import('../views/Tag.vue')
     },
     {
       path: '/search',
       name: 'search',
-      component: () => import('../views/SearchPage.vue')
+      component: () => import('../views/Search.vue')
     },
     {
       path: '/preview/:id',

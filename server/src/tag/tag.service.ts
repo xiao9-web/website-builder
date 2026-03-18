@@ -82,6 +82,19 @@ export class TagService {
     return tag;
   }
 
+  // 根据 slug 查找标签
+  async findBySlug(slug: string): Promise<Tag> {
+    const tag = await this.tagRepository.findOne({
+      where: { slug },
+    });
+
+    if (!tag) {
+      throw new NotFoundException('标签不存在');
+    }
+
+    return tag;
+  }
+
   // 根据名称查找或创建标签
   async findOrCreate(name: string): Promise<Tag> {
     let tag = await this.tagRepository.findOne({

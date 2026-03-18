@@ -3,6 +3,7 @@ import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('tag')
 @UseGuards(JwtAuthGuard)
@@ -14,6 +15,7 @@ export class TagController {
     return this.tagService.create(createTagDto);
   }
 
+  @Public()
   @Get()
   findAll(
     @Query('page') page?: number,
@@ -23,9 +25,17 @@ export class TagController {
     return this.tagService.findAll(page, limit, search);
   }
 
+  @Public()
   @Get('hot')
   getHotTags(@Query('limit') limit?: number) {
     return this.tagService.getHotTags(limit);
+  }
+
+  @Public()
+  @Get('slug/:slug')
+  async findBySlug(@Param('slug') slug: string) {
+    const tag = await this.tagService.findBySlug(slug);
+    return { data: tag };
   }
 
   @Get(':id')

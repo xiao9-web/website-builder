@@ -1,0 +1,317 @@
+<template>
+  <div class="article-list-page">
+    <div class="page-header">
+      <h1 class="page-title">文章列表</h1>
+      <p class="page-description">探索所有精彩内容</p>
+    </div>
+
+    <div class="container">
+      <div class="content-wrapper">
+        <!-- 主内容区 -->
+        <div class="main-content">
+          <div v-if="loading" class="loading">加载中...</div>
+
+          <div v-else-if="articles.length === 0" class="empty">
+            <p>暂无文章</p>
+          </div>
+
+          <div v-else class="articles-grid">
+            <article
+              v-for="article in articles"
+              :key="article.id"
+              class="article-card"
+              @click="goToArticle(article.slug)"
+            >
+              <div v-if="article.cover_image" class="article-cover">
+                <img :src="article.cover_image" :alt="article.title" />
+              </div>
+              <div class="article-content">
+                <h3 class="article-title">{{ article.title }}</h3>
+                <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
+                <div class="article-meta">
+                  <span class="article-author">作者 ID: {{ article.author_id }}</span>
+                  <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
+                </div>
+                <div class="article-footer">
+                  <span class="article-category" v-if="article.category_id">
+                    分类 ID: {{ article.category_id }}
+                  </span>
+                  <span class="article-views">{{ article.view_count }} 次阅读</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- 分页 -->
+          <div v-if="total > pageSize" class="pagination">
+            <button
+              class="pagination-btn"
+              :disabled="currentPage === 1"
+              @click="changePage(currentPage - 1)"
+            >
+              上一页
+            </button>
+            <span class="pagination-info">
+              第 {{ currentPage }} / {{ totalPages }} 页
+            </span>
+            <button
+              class="pagination-btn"
+              :disabled="currentPage === totalPages"
+              @click="changePage(currentPage + 1)"
+            >
+              下一页
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { getArticleListApi } from '../api/article'
+
+const router = useRouter()
+
+interface Article {
+  id: number
+  title: string
+  slug: string
+  summary: string
+  cover_image: string
+  author_id: number
+  category_id: number | null
+  view_count: number
+  published_at: string
+  created_at: string
+}
+
+const articles = ref<Article[]>([])
+const loading = ref(false)
+const currentPage = ref(1)
+const pageSize = ref(12)
+const total = ref(0)
+
+const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const goToArticle = (slug: string) => {
+  router.push(`/articles/${slug}`)
+}
+
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    const res = await getArticleListApi({
+      page: currentPage.value,
+      limit: pageSize.value,
+      status: 'published'
+    })
+    articles.value = res.data.items
+    total.value = res.data.total
+  } catch (error) {
+    console.error('Failed to load articles:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const changePage = (page: number) => {
+  currentPage.value = page
+  loadArticles()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+onMounted(() => {
+  loadArticles()
+})
+</script>
+
+<style scoped>
+.article-list-page {
+  min-height: calc(100vh - 60px);
+  padding: 80px 20px 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 60px;
+  color: white;
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.page-description {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content-wrapper {
+  display: grid;
+  gap: 32px;
+}
+
+.main-content {
+  min-height: 400px;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: white;
+  font-size: 18px;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.article-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.article-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.article-cover {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-cover img {
+  transform: scale(1.1);
+}
+
+.article-content {
+  padding: 24px;
+}
+
+.article-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-summary {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.article-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #999;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 0;
+}
+
+.pagination-btn {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 36px;
+  }
+}
+</style>

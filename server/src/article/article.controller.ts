@@ -63,6 +63,32 @@ export class ArticleController {
     return this.articleService.findBySlug(slug);
   }
 
+  @Public()
+  @Get('tag/:tagSlug')
+  async findByTag(
+    @Param('tagSlug') tagSlug: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.articleService.findByTag(tagSlug, {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10,
+    });
+  }
+
+  @Public()
+  @Get('search')
+  async search(
+    @Query('keyword') keyword: string,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    return this.articleService.search(keyword, {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.articleService.findOne(+id);

@@ -137,6 +137,49 @@ export class ArticleService {
     });
   }
 
+  async findByTag(
+    tagSlug: string,
+    options: { page: number; limit: number },
+  ): Promise<{ items: Article[]; total: number }> {
+    const query = this.articleRepository
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .leftJoin('article.tags', 'tag')
+      .where('tag.slug = :tagSlug', { tagSlug })
+      .andWhere('article.status = :status', { status: ArticleStatus.PUBLISHED })
+      .andWhere('article.deleted_at IS NULL')
+      .orderBy('article.published_at', 'DESC')
+      .skip((options.page - 1) * options.limit)
+      .take(options.limit);
+
+    const [items, total] = await query.getManyAndCount();
+
+    return { items, total };
+  }
+
+  async search(
+    keyword: string,
+    options: { page: number; limit: number },
+  ): Promise<{ items: Article[]; total: number }> {
+    const query = this.articleRepository
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .leftJoinAndSelect('article.category', 'category')
+      .where('article.status = :status', { status: ArticleStatus.PUBLISHED })
+      .andWhere('article.deleted_at IS NULL')
+      .andWhere(
+        '(article.title LIKE :keyword OR article.content LIKE :keyword OR article.summary LIKE :keyword)',
+        { keyword: `%${keyword}%` },
+      )
+      .orderBy('article.published_at', 'DESC')
+      .skip((options.page - 1) * options.limit)
+      .take(options.limit);
+
+    const [items, total] = await query.getManyAndCount();
+
+    return { items, total };
+  }
+
   async update(id: number, updateArticleDto: UpdateArticleDto): Promise<Article> {
     const article = await this.findOne(id);
     if (!article) return null;
