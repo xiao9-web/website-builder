@@ -1,11 +1,8 @@
 @echo off
-echo 正在启动网站构建系统后端服务...
-
+echo 正在启动后端服务...
 cd server
-echo 安装后端依赖...
-npm install
-
-echo 启动后端开发服务器...
-npm run start:dev
-
-pause
+start "Backend Service" cmd /k "npm run start:dev"
+timeout /t 10 /nobreak >/dev/null
+echo 后端服务正在启动中，请等待...
+echo 后端服务地址: http://localhost:3000
+echo.

@@ -1,0 +1,14 @@
+{
+    "env": {
+        // Previous configuration - keeping for reference
+        // "ANTHROPIC_AUTH_TOKEN": "7475cee5-2d21-48fc-b26c-c9efb62c8e07",
+        // "ANTHROPIC_MODEL": "doubao-seed-2.0-code",
+        
+        // Updated configuration following Claude Code environment variable specification
+        "ANTHROPIC_AUTH_TOKEN": "your_actual_api_key_here", // Required: Replace with your actual API key
+        "ANTHROPIC_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding",
+        "API_TIMEOUT_MS": "3000000",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
+        "ANTHROPIC_MODEL": "doubao-seed-code-preview-latest"
+    }
+}
