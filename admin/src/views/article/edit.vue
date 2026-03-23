@@ -3,7 +3,12 @@
     <el-card class="form-card">
       <template #header>
         <div class="card-header">
-          <span>{{ articleId ? '编辑文章' : '新增文章' }}</span>
+          <div class="header-left">
+            <el-button @click="handleBack" :icon="ArrowLeft" link>
+              返回
+            </el-button>
+            <span class="page-title">{{ articleId ? '编辑文章' : '新增文章' }}</span>
+          </div>
           <div class="header-actions">
             <span v-if="autoSaveStatus" class="auto-save-status">{{ autoSaveStatus }}</span>
             <el-button v-if="articleId" @click="handlePreview" :icon="View">
@@ -40,6 +45,28 @@
                 clearable
                 check-strictly
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="所属菜单">
+              <el-select
+                v-model="linkedMenuIds"
+                multiple
+                filterable
+                clearable
+                placeholder="请选择菜单（可多选）"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="menu in menus"
+                  :key="menu.id"
+                  :label="menu.name"
+                  :value="menu.id"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -125,18 +152,24 @@
 import { ref, reactive, onMounted, shallowRef, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance } from 'element-plus'
-import { View } from '@element-plus/icons-vue'
+import { View, ArrowLeft } from '@element-plus/icons-vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import type { IDomEditor } from '@wangeditor/editor'
 import { getArticleApi, createArticleApi, updateArticleApi } from '@/api/article'
 import { getCategoryListApi, type Category } from '@/api/category'
 import { getTagListApi, type Tag } from '@/api/tag'
-import type { Article } from '@/types'
+import { getMenuListApi } from '@/api/menu'
+import { updateArticleMenusApi, getArticleMenusApi } from '@/api/article-menu'
+import type { Article, Menu } from '@/types'
 import '@wangeditor/editor/dist/css/style.css'
 
 const route = useRoute()
 const router = useRouter()
 const formRef = ref<FormInstance>()
+
+const handleBack = () => {
+  router.push('/article')
+}
 const loading = ref(false)
 const articleId = ref<number | null>(route.params.id ? parseInt(route.params.id as string) : null)
 
@@ -149,6 +182,8 @@ const activeNames = ref<string[]>([])
 const tagList = ref<string[]>([])
 const availableTags = ref<Tag[]>([])
 const categories = ref<Category[]>([])
+const menus = ref<Menu[]>([])
+const linkedMenuIds = ref<number[]>([])
 const autoSaveStatus = ref<string>('')
 const autoSaveTimer = ref<number | null>(null)
 const hasUnsavedChanges = ref(false)
@@ -320,6 +355,10 @@ const handleSave = async (status: number) => {
             articleId.value = res.id
           }
         }
+
+        // 保存菜单关联
+        await saveMenuLinks()
+
         router.push('/article')
       } catch (error: any) {
         console.error('保存文章失败:', error)
@@ -361,6 +400,16 @@ const fetchTags = async () => {
   }
 }
 
+// 获取菜单列表
+const fetchMenus = async () => {
+  try {
+    const res = await getMenuListApi()
+    menus.value = res || []
+  } catch (error) {
+    console.error('获取菜单列表失败', error)
+  }
+}
+
 // 获取详情
 const fetchDetail = async () => {
   if (!articleId.value) return
@@ -371,6 +420,8 @@ const fetchDetail = async () => {
     if (res.tags) {
       tagList.value = res.tags.split(',').filter(Boolean)
     }
+    // 使用新的 API 获取文章关联的菜单
+    linkedMenuIds.value = await getArticleMenusApi(articleId.value)
   } catch (error) {
     ElMessage.error('获取文章详情失败')
   } finally {
@@ -378,10 +429,22 @@ const fetchDetail = async () => {
   }
 }
 
+// 保存菜单关联
+const saveMenuLinks = async () => {
+  if (!articleId.value) return
+  try {
+    // 使用新的 API 保存文章-菜单的多对多关系
+    await updateArticleMenusApi(articleId.value, linkedMenuIds.value)
+  } catch (error) {
+    console.error('保存菜单关联失败', error)
+    ElMessage.error('保存菜单关联失败')
+  }
+}
+
 onMounted(() => {
   fetchCategories()
   fetchTags()
-  fetchDetail()
+  fetchMenus().then(fetchDetail)
 })
 
 // 组件销毁时销毁编辑器和清除定时器
@@ -411,6 +474,18 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 
 .header-actions {

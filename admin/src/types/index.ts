@@ -46,6 +46,8 @@ export interface Menu {
   name: string
   path: string
   parent_id: number
+  category_id?: number
+  article_id?: number
   sort: number
   icon: string
   target: string
@@ -54,6 +56,17 @@ export interface Menu {
   children?: Menu[]
   created_at: string
   updated_at: string
+  category?: {
+    id: number
+    name: string
+    slug: string
+    description?: string
+  }
+  article?: {
+    id: number
+    title: string
+    slug: string
+  }
 }
 
 // 文章

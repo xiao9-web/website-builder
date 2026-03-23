@@ -13,20 +13,20 @@ export function getUserInfoApi(): Promise<UserInfo> {
 
 // 获取用户列表
 export function getUserListApi(params?: any): Promise<any> {
-  return request.get('/user', { params })
+  return request.get('/users', { params })
 }
 
 // 创建用户
 export function createUserApi(data: any): Promise<any> {
-  return request.post('/user', data)
+  return request.post('/users', data)
 }
 
 // 更新用户
 export function updateUserApi(id: number, data: any): Promise<any> {
-  return request.put(`/user/${id}`, data)
+  return request.patch(`/users/${id}`, data)
 }
 
 // 删除用户
 export function deleteUserApi(id: number): Promise<any> {
-  return request.delete(`/user/${id}`)
+  return request.delete(`/users/${id}`)
 }

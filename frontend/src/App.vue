@@ -9,21 +9,50 @@
             <span class="logo-icon">🏙️</span>
             <span class="logo-text">{{ siteConfig.site_name || '我的博客' }}</span>
           </div>
+        </div>
+        <nav class="nav">
+          <template v-for="menu in menus" :key="menu.id">
+            <!-- 一级菜单 -->
+            <div v-if="!menu.parent_id" class="nav-item">
+              <router-link
+                :to="getMenuPath(menu)"
+                class="nav-link"
+              >
+                {{ menu.name }}
+              </router-link>
+              <!-- 二级菜单 -->
+              <div v-if="menu.children && menu.children.length > 0" class="submenu">
+                <template v-for="child in menu.children" :key="child.id">
+                  <div class="submenu-item">
+                    <router-link
+                      :to="getMenuPath(child)"
+                      class="nav-link"
+                    >
+                      {{ child.name }}
+                    </router-link>
+                    <!-- 三级菜单 -->
+                    <div v-if="child.children && child.children.length > 0" class="subsubmenu">
+                      <router-link
+                        v-for="grandchild in child.children"
+                        :key="grandchild.id"
+                        :to="getMenuPath(grandchild)"
+                        class="nav-link"
+                      >
+                        {{ grandchild.name }}
+                      </router-link>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </nav>
+        <div class="header-right">
           <div class="search-box">
             <span class="search-icon">🔍</span>
             <input type="text" placeholder="搜索文档" class="search-input" />
             <span class="search-shortcut">⌘K</span>
           </div>
-        </div>
-        <nav class="nav">
-          <router-link
-            v-for="menu in menus"
-            :key="menu.id"
-            :to="menu.path"
-            class="nav-link"
-          >
-            {{ menu.name }}
-          </router-link>
           <div class="nav-actions">
             <button class="icon-btn" title="语言切换">🌐</button>
             <button class="icon-btn" title="主题切换">☀️</button>
@@ -33,7 +62,7 @@
               </svg>
             </a>
           </div>
-        </nav>
+        </div>
       </div>
     </header>
 
@@ -53,6 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import GradientBackground from './components/GradientBackground.vue'
+import { getPublishedMenus } from './api/menu'
 import type { Menu, SiteConfig } from './types'
 
 // 模拟数据，实际部署时会替换为真实数据
@@ -74,20 +104,29 @@ const siteConfig = ref<SiteConfig>({
 
 const menus = ref<Menu[]>([])
 
+const getMenuPath = (menu: Menu) => {
+  // 优先使用关联的分类（显示文章列表）
+  if (menu.category_id && menu.category) {
+    return `/category/${menu.category_id}`
+  }
+  // 其次使用关联的文章（显示单篇文章详情）
+  if (menu.article_id && menu.article?.slug) {
+    return `/articles/${menu.article.slug}`
+  }
+  // 最后使用自定义路径
+  return menu.path || '/'
+}
+
 onMounted(async () => {
   try {
-    // 从API获取菜单数据
-    const response = await fetch('http://localhost:3000/api/v1/menus/published')
-    if (response.ok) {
-      const data = await response.json()
-      menus.value = data.filter((menu: any) => menu.is_visible).sort((a: any, b: any) => a.sort - b.sort)
-    }
+    const data = await getPublishedMenus()
+    menus.value = data
   } catch (error) {
     console.error('Failed to load menus:', error)
     // 使用默认菜单作为后备
     menus.value = [
-      { id: 1, name: '首页', path: '/', target: '_self' },
-      { id: 2, name: '关于', path: '/about', target: '_self' },
+      { id: 1, name: '首页', path: '/', target: '_self', is_visible: true, sort: 0 },
+      { id: 2, name: '关于', path: '/about', target: '_self', is_visible: true, sort: 1 },
     ]
   }
 })
@@ -101,18 +140,17 @@ onMounted(async () => {
 }
 
 .header {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .header .container {
@@ -121,13 +159,146 @@ onMounted(async () => {
   align-items: center;
   height: 60px;
   gap: 32px;
+  padding: 0 40px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
   gap: 24px;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
   flex: 1;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-item > .nav-link {
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover > .nav-link {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.submenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+  min-width: 200px;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.nav-item:hover > .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.submenu-item {
+  position: relative;
+}
+
+.submenu-item > .nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.submenu-item > .nav-link::after {
+  content: '›';
+  font-size: 18px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.2s ease;
+}
+
+.submenu-item:has(.subsubmenu) > .nav-link::after {
+  opacity: 0.4;
+  transform: translateX(0);
+}
+
+.submenu-item:hover > .nav-link {
+  background: rgba(102, 126, 234, 0.08);
+  color: #667eea;
+}
+
+.submenu-item:hover > .nav-link::after {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.subsubmenu {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 8px);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+  min-width: 200px;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-8px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.submenu-item:hover > .subsubmenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.submenu .nav-link,
+.subsubmenu .nav-link {
+  display: block;
+  padding: 10px 14px;
+  border-bottom: none;
+  white-space: nowrap;
+  color: #555;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.submenu .nav-link:hover,
+.subsubmenu .nav-link:hover {
+  background: rgba(102, 126, 234, 0.08);
+  color: #667eea;
+  border-bottom: none;
 }
 
 .logo {
@@ -155,8 +326,12 @@ onMounted(async () => {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 6px 12px;
-  min-width: 200px;
+  width: 180px;
   transition: all 0.2s;
+}
+
+.search-box:focus-within {
+  width: 220px;
 }
 
 .search-box:focus-within {
@@ -188,31 +363,25 @@ onMounted(async () => {
   font-family: monospace;
 }
 
-.nav {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
 .nav-link {
   color: #555;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
   transition: color 0.2s;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 4px 8px;
   white-space: nowrap;
+  border-bottom: 2px solid transparent;
 }
 
 .nav-link:hover {
   color: #333;
-  background: rgba(0, 0, 0, 0.05);
+  border-bottom-color: #667eea;
 }
 
 .nav-link.router-link-active {
-  color: #333;
-  background: rgba(0, 0, 0, 0.08);
+  color: #667eea;
+  border-bottom-color: #667eea;
   font-weight: 600;
 }
 
@@ -220,9 +389,6 @@ onMounted(async () => {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-left: 16px;
-  padding-left: 16px;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .icon-btn {

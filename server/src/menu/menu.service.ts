@@ -20,6 +20,7 @@ export class MenuService {
   async findAll(): Promise<Menu[]> {
     return this.menuRepository.find({
       order: { sort: 'ASC', id: 'ASC' },
+      relations: ['category', 'article'],
     });
   }
 
@@ -31,15 +32,17 @@ export class MenuService {
 
   // 获取已发布的菜单（用于前端官网）
   async findPublished(): Promise<Menu[]> {
-    return this.menuRepository.find({
+    const menus = await this.menuRepository.find({
       where: { is_visible: true },
       order: { sort: 'ASC', id: 'ASC' },
+      relations: ['category', 'article'],
     });
+    return this.buildTree(menus, null);
   }
 
   private buildTree(menus: Menu[], parentId: number | null): Menu[] {
     const tree: Menu[] = [];
-    
+
     for (const menu of menus) {
       if (menu.parent_id === parentId) {
         const children = this.buildTree(menus, menu.id);
@@ -49,12 +52,15 @@ export class MenuService {
         tree.push(menu);
       }
     }
-    
+
     return tree;
   }
 
   async findOne(id: number): Promise<Menu | undefined> {
-    return this.menuRepository.findOne({ where: { id } });
+    return this.menuRepository.findOne({
+      where: { id },
+      relations: ['category', 'article']
+    });
   }
 
   async update(id: number, updateMenuDto: UpdateMenuDto): Promise<Menu> {

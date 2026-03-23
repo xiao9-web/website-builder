@@ -18,12 +18,12 @@ export interface Category {
 
 // 获取所有分类（树形结构）
 export const getCategories = async (): Promise<Category[]> => {
-  const response = await axios.get(`${API_BASE_URL}/category`)
+  const response = await axios.get(`${API_BASE_URL}/categories`)
   return response.data
 }
 
 // 获取单个分类
 export const getCategoryById = async (id: number): Promise<Category> => {
-  const response = await axios.get(`${API_BASE_URL}/category/${id}`)
+  const response = await axios.get(`${API_BASE_URL}/categories/${id}`)
   return response.data
 }

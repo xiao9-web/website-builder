@@ -1,18 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Article } from './article.entity';
 import { User } from '../user/user.entity';
-import { Menu } from '../menu/menu.entity';
 
-export enum ArticleStatus {
-  DRAFT = '0',
-  PUBLISHED = '1',
-  ARCHIVED = '2',
-  SCHEDULED = '3', // 定时发布状态
-}
-
-@Entity('articles')
-export class Article {
+@Entity('article_versions')
+export class ArticleVersion {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ name: 'article_id' })
+  articleId: number;
+
+  @ManyToOne(() => Article)
+  @JoinColumn({ name: 'article_id' })
+  article: Article;
 
   @Column({ length: 255 })
   title: string;
@@ -44,41 +44,19 @@ export class Article {
   @Column({ length: 255, nullable: true })
   seo_keywords: string;
 
-  @Column({
-    type: 'enum',
-    enum: ArticleStatus,
-    default: ArticleStatus.DRAFT,
-  })
-  status: ArticleStatus;
-
-  @Column({ default: 0 })
-  view_count: number;
-
-  @Column({ default: true })
-  is_public: boolean;
-
   @Column({ nullable: true })
-  published_at: Date;
+  version: number; // 版本号
 
-  @Column({ nullable: true })
-  scheduled_at: Date; // 定时发布时间
-
-  @Column()
-  author_id: number;
+  @Column({ name: 'author_id' })
+  authorId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'author_id' })
   author: User;
 
-  @OneToMany(() => Menu, menu => menu.article)
-  menus: Menu[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
   @Column({ nullable: true })
-  deleted_at: Date;
+  description: string; // 版本描述
 }

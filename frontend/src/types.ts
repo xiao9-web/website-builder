@@ -5,6 +5,21 @@ export interface Menu {
   target: string
   sort?: number
   is_visible?: boolean
+  category_id?: number
+  article_id?: number
+  parent_id?: number | null
+  children?: Menu[]
+  category?: {
+    id: number
+    name: string
+    slug: string
+    description?: string
+  }
+  article?: {
+    id: number
+    title: string
+    slug: string
+  }
 }
 
 export interface SiteConfig {

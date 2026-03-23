@@ -33,13 +33,20 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { getPageListApi, deletePageApi } from '@/api/page'
+import type { Page } from '@/api/page'
 
 const router = useRouter()
-const pageList = ref([])
+const pageList = ref<Page[]>([])
 
 const loadPages = async () => {
-  // TODO: 调用 API 加载页面列表
-  pageList.value = []
+  try {
+    const res = await getPageListApi({ page: 1, pageSize: 100 })
+    pageList.value = res.list
+  } catch (error) {
+    console.error('加载页面列表失败:', error)
+    ElMessage.error('加载页面列表失败')
+  }
 }
 
 const handleAdd = () => {
@@ -51,9 +58,14 @@ const handleEdit = (row: any) => {
 }
 
 const handleDelete = async (row: any) => {
-  // TODO: 调用 API 删除页面
-  ElMessage.success('删除成功')
-  loadPages()
+  try {
+    await deletePageApi(row.id)
+    ElMessage.success('删除成功')
+    loadPages()
+  } catch (error) {
+    console.error('删除页面失败:', error)
+    ElMessage.error('删除页面失败')
+  }
 }
 
 onMounted(() => {

@@ -4,12 +4,17 @@ import { Repository } from 'typeorm';
 import { Article, ArticleStatus } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { ArticleVersionService } from './article-version.service';
+import { ArticleMenu } from './article-menu.entity';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(Article)
     private articleRepository: Repository<Article>,
+    @InjectRepository(ArticleMenu)
+    private articleMenuRepository: Repository<ArticleMenu>,
+    private articleVersionService: ArticleVersionService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: number): Promise<Article> {
@@ -27,6 +32,15 @@ export class ArticleService {
       slug = uniqueSlug;
     }
 
+    // 处理定时发布
+    if (createArticleDto.status === ArticleStatus.SCHEDULED && createArticleDto.scheduled_at) {
+      const scheduledDate = new Date(createArticleDto.scheduled_at);
+      const now = new Date();
+      if (scheduledDate <= now) {
+        throw new Error('定时发布时间必须大于当前时间');
+      }
+    }
+
     const article = this.articleRepository.create({
       ...createArticleDto,
       slug,
@@ -38,7 +52,12 @@ export class ArticleService {
       article.published_at = new Date();
     }
 
-    return this.articleRepository.save(article);
+    const savedArticle = await this.articleRepository.save(article);
+
+    // 创建初始版本
+    await this.articleVersionService.createVersion(savedArticle, userId, '初始版本');
+
+    return savedArticle;
   }
 
   private generateSlug(title: string): string {
@@ -63,7 +82,7 @@ export class ArticleService {
     sortBy?: string;
   }): Promise<{ list: Article[]; total: number }> {
     const { page = 1, pageSize = 10, status, category_id, keyword, sortBy = 'created_at_desc' } = params;
-    
+
     const queryBuilder = this.articleRepository
       .createQueryBuilder('article')
       .leftJoinAndSelect('article.author', 'author')
@@ -120,13 +139,25 @@ export class ArticleService {
       .take(pageSize)
       .getManyAndCount();
 
+    // 为每篇文章加载关联的菜单（从中间表）
+    for (const article of list) {
+      const articleMenus = await this.articleMenuRepository.find({
+        where: { article_id: article.id },
+        relations: ['menu'],
+      });
+      (article as any).menus = articleMenus.map(am => ({
+        id: am.menu.id,
+        name: am.menu.name,
+      }));
+    }
+
     return { list, total };
   }
 
   async findOne(id: number): Promise<Article | undefined> {
     return this.articleRepository.findOne({
       where: { id },
-      relations: ['author'],
+      relations: ['author', 'menus'],
     });
   }
 
@@ -135,6 +166,26 @@ export class ArticleService {
       where: { slug, status: ArticleStatus.PUBLISHED, deleted_at: null },
       relations: ['author'],
     });
+  }
+
+  async findByMenuId(
+    menuId: number,
+    options: { page: number; limit: number },
+  ): Promise<{ list: Article[]; total: number }> {
+    const query = this.articleRepository
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .leftJoin('article.menus', 'menus')
+      .where('menus.id = :menuId', { menuId })
+      .andWhere('article.status = :status', { status: ArticleStatus.PUBLISHED })
+      .andWhere('article.deleted_at IS NULL')
+      .orderBy('article.published_at', 'DESC')
+      .skip((options.page - 1) * options.limit)
+      .take(options.limit);
+
+    const [items, total] = await query.getManyAndCount();
+
+    return { list: items, total };
   }
 
   async findByTag(
@@ -180,9 +231,18 @@ export class ArticleService {
     return { items, total };
   }
 
-  async update(id: number, updateArticleDto: UpdateArticleDto): Promise<Article> {
+  async update(id: number, updateArticleDto: UpdateArticleDto, userId?: number, versionDescription?: string): Promise<Article> {
     const article = await this.findOne(id);
     if (!article) return null;
+
+    // 处理定时发布
+    if (updateArticleDto.status === ArticleStatus.SCHEDULED && updateArticleDto.scheduled_at) {
+      const scheduledDate = new Date(updateArticleDto.scheduled_at);
+      const now = new Date();
+      if (scheduledDate <= now) {
+        throw new Error('定时发布时间必须大于当前时间');
+      }
+    }
 
     // 如果状态变为发布，设置发布时间
     if (
@@ -193,8 +253,26 @@ export class ArticleService {
       updateArticleDto.published_at = new Date();
     }
 
-    await this.articleRepository.update(id, updateArticleDto);
+    // 检查是否有重要变化，需要创建版本
+    const hasSignificantChanges = this.hasSignificantChanges(article, updateArticleDto);
+    const updatedArticle = await this.articleRepository.save({
+      ...article,
+      ...updateArticleDto,
+    });
+
+    // 如果有重要变化且提供了用户ID，创建新版本
+    if (hasSignificantChanges && userId) {
+      await this.articleVersionService.createVersion(updatedArticle, userId, versionDescription);
+    }
+
     return this.findOne(id);
+  }
+
+  private hasSignificantChanges(article: Article, updateArticleDto: UpdateArticleDto): boolean {
+    const significantFields = ['title', 'content', 'summary', 'cover_image', 'seo_title', 'seo_description'];
+    return significantFields.some(field => {
+      return updateArticleDto[field] !== undefined && updateArticleDto[field] !== article[field];
+    });
   }
 
   async incrementViewCount(id: number): Promise<void> {
@@ -248,5 +326,38 @@ export class ArticleService {
       .getManyAndCount();
 
     return { list, total };
+  }
+
+  // 文章-菜单多对多关系管理
+  async updateArticleMenus(articleId: number, menuIds: number[]): Promise<void> {
+    // 删除该文章的所有现有菜单关联
+    await this.articleMenuRepository.delete({ article_id: articleId });
+
+    // 创建新的关联
+    if (menuIds && menuIds.length > 0) {
+      const articleMenus = menuIds.map(menuId =>
+        this.articleMenuRepository.create({
+          article_id: articleId,
+          menu_id: menuId,
+        })
+      );
+      await this.articleMenuRepository.save(articleMenus);
+    }
+  }
+
+  // 获取文章关联的所有菜单
+  async getArticleMenus(articleId: number): Promise<number[]> {
+    const articleMenus = await this.articleMenuRepository.find({
+      where: { article_id: articleId },
+    });
+    return articleMenus.map(am => am.menu_id);
+  }
+
+  // 获取菜单关联的所有文章
+  async getMenuArticles(menuId: number): Promise<number[]> {
+    const articleMenus = await this.articleMenuRepository.find({
+      where: { menu_id: menuId },
+    });
+    return articleMenus.map(am => am.article_id);
   }
 }

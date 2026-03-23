@@ -75,6 +75,17 @@ export class UserService implements OnModuleInit {
     return this.findOne(id);
   }
 
+  async create(createData: Partial<User>): Promise<User> {
+    // 密码加密
+    if (createData.password) {
+      createData.password = await bcrypt.hash(createData.password, 10);
+    }
+
+    const user = this.userRepository.create(createData);
+    const savedUser = await this.userRepository.save(user);
+    return this.findOne(savedUser.id);
+  }
+
   async remove(id: number): Promise<void> {
     await this.userRepository.delete(id);
   }

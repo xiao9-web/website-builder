@@ -23,40 +23,40 @@ export interface TagListResponse {
 
 // 获取所有标签
 export const getTagListApi = (params?: { page?: number; limit?: number; search?: string }) => {
-  return request.get<TagListResponse>('/tag', { params })
+  return request.get<TagListResponse>('/tags', { params })
 }
 
 // 获取热门标签
 export const getHotTagsApi = (limit?: number) => {
-  return request.get<Tag[]>('/tag/hot', { params: { limit } })
+  return request.get<Tag[]>('/tags/hot', { params: { limit } })
 }
 
 // 获取单个标签
 export const getTagDetailApi = (id: number) => {
-  return request.get<Tag>(`/tag/${id}`)
+  return request.get<Tag>(`/tags/${id}`)
 }
 
 // 创建标签
 export const createTagApi = (data: CreateTagDto) => {
-  return request.post<Tag>('/tag', data)
+  return request.post<Tag>('/tags', data)
 }
 
 // 更新标签
 export const updateTagApi = (id: number, data: UpdateTagDto) => {
-  return request.patch<Tag>(`/tag/${id}`, data)
+  return request.patch<Tag>(`/tags/${id}`, data)
 }
 
 // 删除标签
 export const deleteTagApi = (id: number) => {
-  return request.delete(`/tag/${id}`)
+  return request.delete(`/tags/${id}`)
 }
 
 // 批量删除标签
 export const batchDeleteTagsApi = (ids: number[]) => {
-  return request.post('/tag/batch-delete', { ids })
+  return request.post('/tags/batch-delete', { ids })
 }
 
 // 合并标签
 export const mergeTagsApi = (sourceIds: number[], targetId: number) => {
-  return request.post('/tag/merge', { sourceIds, targetId })
+  return request.post('/tags/merge', { sourceIds, targetId })
 }

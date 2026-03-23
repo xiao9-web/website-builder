@@ -54,4 +54,7 @@ export class CreateArticleDto {
 
   @IsOptional()
   published_at?: Date;
+
+  @IsOptional()
+  scheduled_at?: Date;
 }

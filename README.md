@@ -73,6 +73,8 @@ cp admin/.env.example admin/.env
 ```
 
 ### 启动开发环境
+
+#### macOS / Linux
 ```bash
 # 启动后端服务 (端口: 3000)
 npm run dev:server
@@ -82,6 +84,17 @@ npm run dev:admin
 
 # 启动官网模板预览 (端口: 5174)
 npm run dev:frontend
+```
+
+#### Windows
+```batch
+# 一键启动所有服务
+start_all.bat
+
+# 或者分别启动
+start_backend.bat
+start_admin.bat
+start_frontend.bat
 ```
 
 ## 📖 使用文档

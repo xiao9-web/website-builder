@@ -4,6 +4,8 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleStatus } from './article.entity';
 import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../user/user.entity';
 
 @Controller('articles')
 export class ArticleController {
@@ -105,11 +107,13 @@ export class ArticleController {
     return this.articleService.incrementViewCount(+id);
   }
 
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.articleService.remove(+id);
   }
 
+  @Roles(UserRole.ADMIN)
   @Delete('batch')
   batchRemove(@Body() body: { ids: number[] }) {
     return this.articleService.batchRemove(body.ids);
@@ -140,14 +144,28 @@ export class ArticleController {
   }
 
   // 永久删除
+  @Roles(UserRole.ADMIN)
   @Delete(':id/permanent')
   permanentRemove(@Param('id') id: string) {
     return this.articleService.permanentRemove(+id);
   }
 
   // 批量永久删除
+  @Roles(UserRole.ADMIN)
   @Delete('batch/permanent')
   batchPermanentRemove(@Body() body: { ids: number[] }) {
     return this.articleService.batchPermanentRemove(body.ids);
+  }
+
+  // 更新文章的菜单关联
+  @Put(':id/menus')
+  updateArticleMenus(@Param('id') id: string, @Body() body: { menuIds: number[] }) {
+    return this.articleService.updateArticleMenus(+id, body.menuIds);
+  }
+
+  // 获取文章关联的菜单
+  @Get(':id/menus')
+  getArticleMenus(@Param('id') id: string) {
+    return this.articleService.getArticleMenus(+id);
   }
 }

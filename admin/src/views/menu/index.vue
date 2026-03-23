@@ -66,8 +66,24 @@
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入菜单名称" />
         </el-form-item>
+        <el-form-item label="关联文章">
+          <el-select
+            v-model="form.article_id"
+            clearable
+            filterable
+            placeholder="选择文章后，菜单将跳转到该文章"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="article in articleOptions"
+              :key="article.id"
+              :label="article.title"
+              :value="article.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="跳转路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入跳转路径" />
+          <el-input v-model="form.path" :disabled="!!form.article_id" placeholder="请输入跳转路径" />
         </el-form-item>
         <el-form-item label="图标">
           <el-input v-model="form.icon" placeholder="请输入图标名称" />
@@ -100,7 +116,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type TreeInstance } from 'element-plus'
 import { Plus, Check } from '@element-plus/icons-vue'
 import { getMenuTreeApi, createMenuApi, updateMenuApi, deleteMenuApi, updateMenuSortApi } from '@/api/menu'
-import type { Menu } from '@/types'
+import { getArticleListApi } from '@/api/article'
+import type { Menu, Article } from '@/types'
 
 const treeRef = ref<TreeInstance>()
 const formRef = ref<FormInstance>()
@@ -123,20 +140,38 @@ const form = reactive<Partial<Menu>>({
   is_visible: true,
   sort: 0,
   parent_id: null,
+  article_id: null,
 })
 
 const rules = {
   name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
 }
 
-// 获取菜单树
-const fetchMenuTree = async () => {
+const articleOptions = ref<Article[]>([])
+
+const fetchArticleOptions = async () => {
   try {
-    const res = await getMenuTreeApi()
-    menuTree.value = res
+    const res = await getArticleListApi({ page: 1, pageSize: 200, status: '1', sortBy: 'published_at_desc' })
+    articleOptions.value = res.list
   } catch (error) {
-    ElMessage.error('获取菜单列表失败')
+    // 忽略，不影响菜单编辑
   }
+}
+
+// 计算菜单深度
+const getMenuDepth = (menuTree: Menu[], targetId: number | null, currentDepth = 1): number => {
+  for (const menu of menuTree) {
+    if (menu.id === targetId) {
+      return currentDepth
+    }
+    if (menu.children && menu.children.length > 0) {
+      const depth = getMenuDepth(menu.children, targetId, currentDepth + 1)
+      if (depth > 0) {
+        return depth
+      }
+    }
+  }
+  return 0
 }
 
 // 新增
@@ -150,12 +185,21 @@ const handleAdd = () => {
     is_visible: true,
     sort: 0,
     parent_id: null,
+    article_id: null,
   })
   dialogVisible.value = true
 }
 
 // 新增子菜单
 const handleAddChild = (data: Menu) => {
+  // 计算父菜单的深度
+  const parentDepth = getMenuDepth(menuTree.value, data.id, 1)
+  // 限制最多三级菜单
+  if (parentDepth >= 3) {
+    ElMessage.warning('最多只允许三级菜单')
+    return
+  }
+
   isEdit.value = false
   Object.assign(form, {
     name: '',
@@ -165,6 +209,7 @@ const handleAddChild = (data: Menu) => {
     is_visible: true,
     sort: 0,
     parent_id: data.id,
+    article_id: null,
   })
   dialogVisible.value = true
 }
@@ -172,7 +217,18 @@ const handleAddChild = (data: Menu) => {
 // 编辑
 const handleEdit = (data: Menu) => {
   isEdit.value = true
-  Object.assign(form, data)
+  // 只复制需要的字段，排除 children 等不需要的属性
+  Object.assign(form, {
+    id: data.id,
+    name: data.name,
+    path: data.path || '',
+    icon: data.icon || '',
+    target: data.target || '_self',
+    is_visible: data.is_visible,
+    sort: data.sort,
+    parent_id: data.parent_id ?? null,
+    article_id: data.article_id ?? null,
+  })
   dialogVisible.value = true
 }
 
@@ -199,16 +255,42 @@ const handleSubmit = async () => {
     if (valid) {
       loading.value = true
       try {
+        // 准备提交的数据
+        const submitData: any = {
+          name: form.name,
+          path: form.path,
+          icon: form.icon,
+          target: form.target,
+          is_visible: form.is_visible,
+          sort: form.sort,
+        }
+
+        // 处理 parent_id
+        if (form.parent_id) {
+          submitData.parent_id = form.parent_id
+        } else {
+          submitData.parent_id = null
+        }
+
+        // 处理 article_id
+        if (form.article_id) {
+          submitData.article_id = form.article_id
+          submitData.path = '' // 若选择了文章，则优先使用文章路由；避免误配自定义 path
+        } else {
+          submitData.article_id = null
+        }
+
         if (isEdit.value) {
-          await updateMenuApi(form.id!, form)
+          await updateMenuApi(form.id!, submitData)
           ElMessage.success('编辑成功')
         } else {
-          await createMenuApi(form)
+          await createMenuApi(submitData)
           ElMessage.success('新增成功')
         }
         dialogVisible.value = false
         fetchMenuTree()
       } catch (error) {
+        console.error('菜单操作失败:', error)
         ElMessage.error(isEdit.value ? '编辑失败' : '新增失败')
       } finally {
         loading.value = false
@@ -235,7 +317,7 @@ const handleSaveSort = async () => {
     })
     return ids
   }
-  
+
   const ids = getNodeIds(menuTree.value)
   saving.value = true
   try {
@@ -249,8 +331,20 @@ const handleSaveSort = async () => {
   }
 }
 
+// 获取菜单树
+const fetchMenuTree = async () => {
+  try {
+    const data = await getMenuTreeApi()
+    menuTree.value = data
+  } catch (error) {
+    console.error('获取菜单树失败:', error)
+    ElMessage.error('获取菜单树失败')
+  }
+}
+
 onMounted(() => {
   fetchMenuTree()
+  fetchArticleOptions()
 })
 </script>
 

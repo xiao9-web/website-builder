@@ -32,15 +32,9 @@ export const getPublishedArticles = async (params?: {
   pageSize?: number
   category_id?: number
   keyword?: string
-}): Promise<ArticleListResponse> => {
+}): Promise<{ list: Article[]; total: number }> => {
   const response = await axios.get(`${API_BASE_URL}/articles/published`, { params })
-  // 后端返回 {list, total},转换为 {data, total}
-  return {
-    data: response.data.list,
-    total: response.data.total,
-    page: params?.page || 1,
-    pageSize: params?.pageSize || 10
-  }
+  return response.data
 }
 
 // 获取文章详情（通过slug）

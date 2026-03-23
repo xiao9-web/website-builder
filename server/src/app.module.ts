@@ -15,6 +15,7 @@ import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
 import { SettingModule } from './setting/setting.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
+
     // 数据库配置
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -41,7 +42,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
         charset: 'utf8mb4_unicode_ci',
       },
     }),
-    
+
     AuthModule,
     UserModule,
     MenuModule,
@@ -59,6 +60,10 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

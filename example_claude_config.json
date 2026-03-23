@@ -1,9 +1,28 @@
-{
+
+###{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://v2-as.pincc.ai",
+    "ANTHROPIC_AUTH_TOKEN": "sk-83b7b800c2dfd30dec1c48dfa63f2869da10161f0a8e613e5d4952e85d9ca65f",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0"
+  }
+}
+{   
     "env": {
         "ANTHROPIC_AUTH_TOKEN": "7475cee5-2d21-48fc-b26c-c9efb62c8e07",
         "ANTHROPIC_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding",
         "API_TIMEOUT_MS": "3000000",
         "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
         "ANTHROPIC_MODEL": "doubao-seed-code-preview-latest"
+    }
+}
+
+
+{
+    "env": {
+        "ANTHROPIC_AUTH_TOKEN": "7475cee5-2d21-48fc-b26c-c9efb62c8e07",
+        "ANTHROPIC_BASE_URL": "https://ark.cn-beijing.volces.com/api/coding",
+        "API_TIMEOUT_MS": "3000000",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
+        "ANTHROPIC_MODEL": "doubao-seed-2.0-code"
     }
 }

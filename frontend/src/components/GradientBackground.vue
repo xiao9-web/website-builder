@@ -1,9 +1,51 @@
 <template>
-  <div class="gradient-background"></div>
+  <div ref="backgroundRef" class="gradient-background"></div>
 </template>
 
 <script setup lang="ts">
-// 纯渐变背景，无需任何逻辑
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const backgroundRef = ref<HTMLElement | null>(null)
+let animationInterval: number | null = null
+
+// 随机生成背景位置
+const randomPosition = () => {
+  return `${Math.random() * 100}% ${Math.random() * 100}%`
+}
+
+// 动画函数
+const animateBackground = () => {
+  if (!backgroundRef.value) return
+
+  // 随机设置下一个位置
+  const nextPosition = randomPosition()
+  backgroundRef.value.style.backgroundPosition = nextPosition
+}
+
+onMounted(() => {
+  // 初始化位置
+  if (backgroundRef.value) {
+    backgroundRef.value.style.backgroundPosition = randomPosition()
+  }
+
+  // 随机间隔执行动画
+  const randomInterval = () => {
+    // 随机间隔 3-8 秒
+    const interval = 3000 + Math.random() * 5000
+    animationInterval = window.setTimeout(() => {
+      animateBackground()
+      randomInterval()
+    }, interval)
+  }
+
+  randomInterval()
+})
+
+onUnmounted(() => {
+  if (animationInterval) {
+    clearTimeout(animationInterval)
+  }
+})
 </script>
 
 <style scoped lang="css">
@@ -24,18 +66,6 @@
     #ffe8d6 100%
   );
   background-size: 400% 400%;
-  animation: gradientFlow 15s ease infinite;
-}
-
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  transition: background-position 3s ease-in-out;
 }
 </style>

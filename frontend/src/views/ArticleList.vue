@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getArticleListApi } from '../api/article'
+import { getPublishedArticles } from '../api/article'
 
 const router = useRouter()
 
@@ -112,13 +112,12 @@ const goToArticle = (slug: string) => {
 const loadArticles = async () => {
   loading.value = true
   try {
-    const res = await getArticleListApi({
+    const res = await getPublishedArticles({
       page: currentPage.value,
-      limit: pageSize.value,
-      status: 'published'
+      pageSize: pageSize.value
     })
-    articles.value = res.data.items
-    total.value = res.data.total
+    articles.value = res.list
+    total.value = res.total
   } catch (error) {
     console.error('Failed to load articles:', error)
   } finally {
@@ -141,37 +140,43 @@ onMounted(() => {
 .article-list-page {
   min-height: calc(100vh - 60px);
   padding: 80px 20px 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: transparent;
 }
 
 .page-header {
   text-align: center;
   margin-bottom: 60px;
-  color: white;
+  color: #333;
 }
 
 .page-title {
   font-size: 48px;
   font-weight: 700;
   margin-bottom: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .page-description {
   font-size: 18px;
-  opacity: 0.9;
+  color: #666;
 }
 
 .container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 0 40px;
 }
 
 .content-wrapper {
-  display: grid;
-  gap: 32px;
+  width: 100%;
 }
 
 .main-content {
+  width: 100%;
   min-height: 400px;
 }
 
@@ -179,7 +184,7 @@ onMounted(() => {
 .empty {
   text-align: center;
   padding: 60px 20px;
-  color: white;
+  color: #666;
   font-size: 18px;
 }
 
@@ -191,18 +196,38 @@ onMounted(() => {
 }
 
 .article-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  position: relative;
+}
+
+.article-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .article-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.article-card:hover::before {
+  opacity: 1;
 }
 
 .article-cover {
@@ -278,9 +303,10 @@ onMounted(() => {
 
 .pagination-btn {
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 9999px;
   font-size: 14px;
   font-weight: 500;
   color: #667eea;
@@ -289,9 +315,9 @@ onMounted(() => {
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .pagination-btn:disabled {
@@ -300,7 +326,7 @@ onMounted(() => {
 }
 
 .pagination-info {
-  color: white;
+  color: #666;
   font-size: 14px;
   font-weight: 500;
 }

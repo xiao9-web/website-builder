@@ -54,9 +54,14 @@
       <el-table :data="list" border v-loading="loading">
         <el-table-column prop="title" label="文章标题" min-width="200" />
         <el-table-column prop="slug" label="访问路径" width="150" />
-        <el-table-column prop="category_id" label="所属菜单" width="120">
+        <el-table-column prop="category_id" label="所属分类" width="120">
           <template #default="scope">
-            {{ getMenuName(scope.row.category_id) }}
+            {{ getCategoryName(scope.row.category_id) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="menus" label="关联菜单" width="150">
+          <template #default="scope">
+            {{ getLinkedMenuNames(scope.row.id) }}
           </template>
         </el-table-column>
         <el-table-column prop="tags" label="标签" width="150" show-overflow-tooltip />
@@ -116,12 +121,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Delete } from '@element-plus/icons-vue'
 import { getArticleListApi, deleteArticleApi } from '@/api/article'
 import { getMenuListApi } from '@/api/menu'
+import { getCategoryListApi } from '@/api/category'
 import dayjs from 'dayjs'
 import request from '@/utils/request'
 import type { Article } from '@/types'
@@ -131,6 +137,7 @@ const loading = ref(false)
 const list = ref<Article[]>([])
 const total = ref(0)
 const menus = ref<any[]>([])
+const categories = ref<any[]>([])
 
 const query = reactive({
   page: 1,
@@ -144,10 +151,18 @@ const formatTime = (time: string) => {
   return dayjs(time).format('YYYY-MM-DD HH:mm')
 }
 
-const getMenuName = (categoryId: number | null) => {
+const getCategoryName = (categoryId: number | null) => {
   if (!categoryId) return '-'
-  const menu = menus.value.find(m => m.id === categoryId)
-  return menu ? menu.name : '-'
+  const category = categories.value.find(c => c.id === categoryId)
+  return category ? category.name : '-'
+}
+
+const getLinkedMenuNames = (articleId: number | null) => {
+  if (!articleId) return '-'
+  // 从后端 API 返回的文章数据中获取关联的菜单
+  const article = list.value.find(a => a.id === articleId)
+  if (!article || !article.menus || article.menus.length === 0) return '-'
+  return article.menus.map((m: any) => m.name).join(', ')
 }
 
 const fetchMenus = async () => {
@@ -156,6 +171,15 @@ const fetchMenus = async () => {
     menus.value = res || []
   } catch (error) {
     console.error('获取菜单列表失败', error)
+  }
+}
+
+const fetchCategories = async () => {
+  try {
+    const res = await getCategoryListApi()
+    categories.value = res.data || []
+  } catch (error) {
+    console.error('获取分类列表失败', error)
   }
 }
 
@@ -221,6 +245,7 @@ const handleDelete = async (row: Article) => {
 
 onMounted(() => {
   fetchMenus()
+  fetchCategories()
   fetchList()
 })
 </script>

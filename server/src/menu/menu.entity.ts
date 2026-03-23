@@ -1,4 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Category } from '../category/category.entity';
+import { Article } from '../article/article.entity';
 
 @Entity('menus')
 export class Menu {
@@ -13,6 +15,9 @@ export class Menu {
 
   @Column({ nullable: true })
   category_id: number;
+
+  @Column({ nullable: true })
+  article_id: number;
 
   @Column({ nullable: true })
   parent_id: number;
@@ -38,6 +43,14 @@ export class Menu {
 
   @OneToMany(() => Menu, menu => menu.parent)
   children: Menu[];
+
+  @ManyToOne(() => Category, { nullable: true, createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
+
+  @ManyToOne(() => Article, { nullable: true, createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'article_id' })
+  article: Article;
 
   @CreateDateColumn()
   created_at: Date;

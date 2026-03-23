@@ -7,6 +7,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post()
+  create(@Body() createData: any) {
+    return this.userService.create(createData);
+  }
+
   @Get()
   findAll() {
     return this.userService.findAll();
