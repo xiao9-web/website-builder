@@ -140,10 +140,14 @@ onMounted(async () => {
 }
 
 .header {
-  background: transparent;
-  position: sticky;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .container {
@@ -174,6 +178,7 @@ onMounted(async () => {
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+  min-width: 280px;
 }
 
 .nav {
@@ -326,12 +331,8 @@ onMounted(async () => {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 6px 12px;
-  width: 180px;
-  transition: all 0.2s;
-}
-
-.search-box:focus-within {
   width: 220px;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .search-box:focus-within {
@@ -414,6 +415,7 @@ onMounted(async () => {
 .main {
   flex: 1;
   width: 100%;
+  margin-top: 60px;
 }
 
 .footer {
