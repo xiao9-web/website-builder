@@ -5,10 +5,10 @@
     <header class="header">
       <div class="container">
         <div class="header-left">
-          <div class="logo">
+          <router-link to="/" class="logo">
             <span class="logo-icon">🏙️</span>
             <span class="logo-text">{{ siteConfig.site_name || '我的博客' }}</span>
-          </div>
+          </router-link>
         </div>
         <nav class="nav">
           <template v-for="menu in menus" :key="menu.id">
@@ -109,12 +109,16 @@ const getMenuPath = (menu: Menu) => {
   if (menu.category_id && menu.category) {
     return `/category/${menu.category_id}`
   }
-  // 其次使用关联的文章（显示单篇文章详情）
-  if (menu.article_id && menu.article?.slug) {
-    return `/articles/${menu.article.slug}`
+  // 如果有自定义路径，使用自定义路径
+  if (menu.path && menu.path !== '/') {
+    return menu.path
   }
-  // 最后使用自定义路径
-  return menu.path || '/'
+  // 如果关联了文章，跳转到菜单文章列表页
+  if (menu.article_id) {
+    return `/menu/${menu.id}`
+  }
+  // 默认返回首页
+  return '/'
 }
 
 onMounted(async () => {
@@ -311,6 +315,13 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 .logo-icon {
