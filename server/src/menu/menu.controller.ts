@@ -29,6 +29,12 @@ export class MenuController {
     return this.menuService.findPublished();
   }
 
+  @Public()
+  @Get(':id/articles')
+  async getMenuArticles(@Param('id') id: string) {
+    return this.menuService.getMenuArticles(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.menuService.findOne(+id);

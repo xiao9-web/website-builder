@@ -83,4 +83,25 @@ export class MenuService {
     }
     await this.menuRepository.delete(id);
   }
+
+  async getMenuArticles(menuId: number) {
+    const menu = await this.findOne(menuId);
+    if (!menu) {
+      return { menuName: '未知菜单', articles: [] };
+    }
+
+    // 从中间表获取该菜单关联的所有文章
+    const articleMenus = await this.menuRepository.query(
+      `SELECT a.* FROM articles a
+       INNER JOIN article_menu am ON a.id = am.article_id
+       WHERE am.menu_id = ? AND a.status = '1' AND a.deleted_at IS NULL
+       ORDER BY a.published_at DESC`,
+      [menuId]
+    );
+
+    return {
+      menuName: menu.name,
+      articles: articleMenus
+    };
+  }
 }
