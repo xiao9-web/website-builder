@@ -109,13 +109,13 @@ const getMenuPath = (menu: Menu) => {
   if (menu.category_id && menu.category) {
     return `/category/${menu.category_id}`
   }
-  // 如果有自定义路径，使用自定义路径
-  if (menu.path && menu.path !== '/') {
-    return menu.path
-  }
   // 如果关联了文章，跳转到菜单文章列表页
   if (menu.article_id) {
     return `/menu/${menu.id}`
+  }
+  // 如果有自定义路径，使用自定义路径
+  if (menu.path && menu.path !== '/') {
+    return menu.path
   }
   // 默认返回首页
   return '/'
