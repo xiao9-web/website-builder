@@ -5,36 +5,70 @@
         <h1 class="page-title">{{ menuName }}</h1>
       </div>
 
-      <div v-if="articles.length === 0" class="empty-state">
-        <p>该菜单下暂无文章</p>
-      </div>
-
-      <div v-else class="articles-list">
-        <article
-          v-for="article in articles"
-          :key="article.id"
-          class="article-item"
-          @click="goToArticle(article.slug)"
-        >
-          <div v-if="article.cover_image" class="article-cover">
-            <img :src="article.cover_image" :alt="article.title" />
+      <div class="content-wrapper">
+        <!-- 左侧文章列表 -->
+        <div class="main-content">
+          <div v-if="articles.length === 0" class="empty-state">
+            <p>该菜单下暂无文章</p>
           </div>
-          <div class="article-content">
-            <h2 class="article-title">{{ article.title }}</h2>
-            <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
-            <div class="article-meta">
-              <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
-              <span class="article-views">{{ article.view_count }} 次阅读</span>
+
+          <div v-else class="articles-list">
+            <article
+              v-for="article in articles"
+              :key="article.id"
+              class="article-item"
+              @click="goToArticle(article.slug)"
+            >
+              <div v-if="article.cover_image" class="article-cover">
+                <img :src="article.cover_image" :alt="article.title" />
+              </div>
+              <div class="article-content">
+                <h2 class="article-title">{{ article.title }}</h2>
+                <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
+                <div class="article-meta">
+                  <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
+                  <span class="article-views">{{ article.view_count }} 次阅读</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- 右侧信息卡片 -->
+        <aside class="sidebar">
+          <div class="info-card">
+            <div class="card-header">
+              <div class="avatar">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+              </div>
+              <h3 class="site-title">{{ menuName }}</h3>
+            </div>
+
+            <div class="card-stats">
+              <div class="stat-item">
+                <span class="stat-label">文章</span>
+                <span class="stat-value">{{ articles.length }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">分类</span>
+                <span class="stat-value">{{ categoryCount }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">标签</span>
+                <span class="stat-value">{{ tagCount }}</span>
+              </div>
             </div>
           </div>
-        </article>
+        </aside>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -53,6 +87,8 @@ interface Article {
 
 const menuName = ref('')
 const articles = ref<Article[]>([])
+const categoryCount = ref(1)
+const tagCount = ref(0)
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -87,7 +123,7 @@ onMounted(() => {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -104,6 +140,85 @@ onMounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.avatar svg {
+  width: 40px;
+  height: 40px;
+}
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #999;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #667eea;
 }
 
 .empty-state {
@@ -179,6 +294,17 @@ onMounted(() => {
   gap: 24px;
   font-size: 0.875rem;
   color: #999;
+}
+
+@media (max-width: 1024px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
 }
 
 @media (max-width: 768px) {
