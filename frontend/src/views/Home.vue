@@ -157,7 +157,7 @@ onMounted(() => {
 
 /* Hero Section */
 .hero {
-  padding: 80px 0;
+  padding: 40px 0 30px;
   text-align: center;
 }
 
@@ -188,25 +188,25 @@ onMounted(() => {
 
 /* Latest Articles Section */
 .latest-articles {
-  padding: 60px 0;
+  padding: 40px 0;
 }
 
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   color: #333;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 40px;
 }
 
 .articles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
