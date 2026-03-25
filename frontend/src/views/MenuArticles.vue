@@ -207,30 +207,35 @@ onMounted(() => {
 .articles-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
 }
 
 .article-item {
   display: flex;
+  align-items: center;
   gap: 0;
   background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
   cursor: pointer;
-  transition: all 0.25s ease;
-  border: 1px solid #f0f0f0;
+  transition: background 0.18s ease;
+  border-bottom: 1px solid #f0f0f0;
+  min-height: 72px;
+}
+
+.article-item:last-child {
+  border-bottom: none;
 }
 
 .article-item:hover {
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.2);
-  transform: translateY(-2px);
+  background: #f7f8ff;
 }
 
 .article-cover {
-  width: 200px;
-  height: 130px;
+  width: 120px;
+  height: 72px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -243,19 +248,24 @@ onMounted(() => {
 
 .article-content {
   flex: 1;
-  padding: 16px 20px;
+  padding: 0 20px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
+  gap: 16px;
   min-width: 0;
 }
 
 .article-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 500;
   color: #222;
-  margin-bottom: 8px;
   line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .article-item:hover .article-title {
@@ -263,23 +273,17 @@ onMounted(() => {
 }
 
 .article-summary {
-  font-size: 0.875rem;
-  color: #666;
-  line-height: 1.6;
-  flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: none;
 }
 
 .article-meta {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 0.8rem;
-  color: #aaa;
-  margin-top: 10px;
+  gap: 16px;
+  font-size: 0.78rem;
+  color: #bbb;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .article-date {
