@@ -207,30 +207,25 @@ onMounted(() => {
 .articles-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border: 1px solid #e8e8e8;
-  border-radius: 10px;
-  overflow: hidden;
-  background: white;
+  gap: 12px;
 }
 
 .article-item {
   display: flex;
+  flex-direction: row;
   align-items: stretch;
-  gap: 0;
   background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
   cursor: pointer;
   transition: background 0.18s ease;
-  border-bottom: 1px solid #f0f0f0;
   min-height: 90px;
-}
-
-.article-item:last-child {
-  border-bottom: none;
 }
 
 .article-item:hover {
   background: #f7f8ff;
+  border-color: rgba(102, 126, 234, 0.3);
 }
 
 .article-cover {

@@ -219,29 +219,27 @@ watch(() => route.params.id, () => {
 .articles-grid {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border: 1px solid #e8e8e8;
-  border-radius: 10px;
-  overflow: hidden;
-  background: white;
+  gap: 12px;
   margin-bottom: 48px;
 }
 
 .article-card {
   display: flex;
+  flex-direction: row;
   align-items: stretch;
   background: white;
   cursor: pointer;
   transition: background 0.18s ease;
-  border-bottom: 1px solid #f0f0f0;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
   min-height: 90px;
-  border-radius: 0;
   box-shadow: none;
   position: relative;
 }
 
 .article-card:last-child {
-  border-bottom: none;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .article-card::before {
@@ -250,6 +248,7 @@ watch(() => route.params.id, () => {
 
 .article-card:hover {
   background: #f7f8ff;
+  border-color: rgba(102, 126, 234, 0.3);
   transform: none;
   box-shadow: none;
 }
