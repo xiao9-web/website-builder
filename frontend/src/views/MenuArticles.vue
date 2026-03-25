@@ -222,7 +222,7 @@ onMounted(() => {
   cursor: pointer;
   transition: background 0.18s ease;
   border-bottom: 1px solid #f0f0f0;
-  min-height: 80px;
+  min-height: 90px;
 }
 
 .article-item:last-child {
@@ -234,8 +234,8 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 140px;
-  height: 80px;
+  width: 150px;
+  height: 90px;
   flex-shrink: 0;
   overflow: hidden;
 }
