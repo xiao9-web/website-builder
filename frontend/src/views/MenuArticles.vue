@@ -33,8 +33,9 @@
             class="article-item"
             @click="goToArticle(article.slug)"
           >
-            <div v-if="article.cover_image" class="article-cover">
-              <img :src="article.cover_image" :alt="article.title" />
+            <div class="article-cover">
+              <img v-if="article.cover_image" :src="article.cover_image" :alt="article.title" />
+              <div v-else class="cover-placeholder"></div>
             </div>
             <div class="article-content">
               <h2 class="article-title">{{ article.title }}</h2>
@@ -240,6 +241,12 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e8eaf0 0%, #d0d4e8 100%);
 }
 
 .article-content {

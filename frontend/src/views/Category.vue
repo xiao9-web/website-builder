@@ -22,20 +22,15 @@
               class="article-card"
               @click="goToArticle(article.slug)"
             >
-              <div v-if="article.cover_image" class="article-cover">
-                <img :src="article.cover_image" :alt="article.title" />
+              <div class="article-cover">
+                <img v-if="article.cover_image" :src="article.cover_image" :alt="article.title" />
+                <div v-else class="cover-placeholder"></div>
               </div>
               <div class="article-content">
                 <h3 class="article-title">{{ article.title }}</h3>
                 <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
                 <div class="article-meta">
-                  <span class="article-author">作者 ID: {{ article.author_id }}</span>
                   <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
-                </div>
-                <div class="article-footer">
-                  <span class="article-category" v-if="article.category_id">
-                    分类 ID: {{ article.category_id }}
-                  </span>
                   <span class="article-views">{{ article.view_count }} 次阅读</span>
                 </div>
               </div>
@@ -264,11 +259,12 @@ watch(() => route.params.id, () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: none;
 }
 
-.article-card:hover .article-cover img {
-  transform: none;
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e8eaf0 0%, #d0d4e8 100%);
 }
 
 .article-content {
