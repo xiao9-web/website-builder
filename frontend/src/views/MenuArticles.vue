@@ -216,13 +216,13 @@ onMounted(() => {
 
 .article-item {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 0;
   background: white;
   cursor: pointer;
   transition: background 0.18s ease;
   border-bottom: 1px solid #f0f0f0;
-  min-height: 72px;
+  min-height: 100px;
 }
 
 .article-item:last-child {
@@ -234,8 +234,7 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 120px;
-  height: 72px;
+  width: 180px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -244,25 +243,24 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .article-content {
   flex: 1;
-  padding: 0 20px;
+  padding: 16px 24px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
   min-width: 0;
 }
 
 .article-title {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: #222;
   line-height: 1.4;
-  flex: 1;
-  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -273,7 +271,13 @@ onMounted(() => {
 }
 
 .article-summary {
-  display: none;
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .article-meta {
