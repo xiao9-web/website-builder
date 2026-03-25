@@ -137,10 +137,10 @@ onMounted(() => {
 
 .page-layout {
   max-width: 100%;
-  padding: 0 24px;
+  padding: 0 16px;
   display: grid;
-  grid-template-columns: 220px 1fr 260px;
-  gap: 24px;
+  grid-template-columns: 200px 1fr 240px;
+  gap: 20px;
   align-items: flex-start;
 }
 
@@ -222,7 +222,7 @@ onMounted(() => {
   cursor: pointer;
   transition: background 0.18s ease;
   border-bottom: 1px solid #f0f0f0;
-  min-height: 100px;
+  min-height: 80px;
 }
 
 .article-item:last-child {
@@ -234,7 +234,8 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 180px;
+  width: 140px;
+  height: 80px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -248,11 +249,11 @@ onMounted(() => {
 
 .article-content {
   flex: 1;
-  padding: 16px 24px;
+  padding: 10px 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
   min-width: 0;
 }
 
