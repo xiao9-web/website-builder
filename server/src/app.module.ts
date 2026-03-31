@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MenuModule } from './menu/menu.module';
@@ -14,6 +16,8 @@ import { UploadModule } from './upload/upload.module';
 import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
 import { SettingModule } from './setting/setting.module';
+import { AiModule } from './ai/ai.module';
+import { AttachmentModule } from './attachment/attachment.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -23,6 +27,12 @@ import { RolesGuard } from './auth/guards/roles.guard';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+    }),
+
+    // 静态文件服务
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
 
     // 数据库配置
@@ -55,6 +65,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     CategoryModule,
     TagModule,
     SettingModule,
+    AiModule,
+    AttachmentModule,
   ],
   providers: [
     {

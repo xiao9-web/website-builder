@@ -282,3 +282,300 @@
 | H4.1 Sitemap生成 | 自动生成sitemap.xml | 每次发布文章自动更新 |
 | H4.2 Robots.txt | 配置robots.txt规则 | 可在线编辑 |
 | H4.3 统计代码 | 添加Google Analytics/百度统计代码 | 粘贴代码即可 |
+
+---
+
+### 模块I：模板系统（新增需求 - 2026-03-31）
+
+#### I1. 菜单管理规则约束
+
+| 细化点 | 详细描述 | 验收标准 |
+|--------|----------|----------|
+| I1.1 首页菜单固定 | 第一个菜单固定为"首页"，不可删除、不可移动 | 系统自动创建，显示锁定图标 |
+| I1.2 菜单数量限制 | 最大菜单数为10个（包括首页） | 达到上限时禁用"添加"按钮，显示提示 |
+| I1.3 菜单数量提示 | 实时显示当前菜单数/最大数（如：8/10） | 接近上限时黄色警告 |
+| I1.4 菜单来源管理 | 菜单关联到页面、分类或文章 | 删除关联内容时提示菜单影响 |
+| I1.5 菜单排序优化 | 支持拖拽排序（首页除外） | 保存后前台立即生效 |
+
+#### I2. 首页布局自定义组件
+
+| 细化点 | 详细描述 | 验收标准 |
+|--------|----------|----------|
+| I2.1 左侧导航栏组件 | 固定在页面左侧的垂直导航栏，显示菜单列表 | 支持展开/折叠，响应式隐藏 |
+| I2.2 小标题栏组件 | 分区标题组件，用于划分页面区域 | 支持自定义标题、副标题、对齐方式 |
+| I2.3 轮播图组件增强 | 首页大图轮播，支持多张图片自动切换 | 支持设置图片、标题、按钮、切换效果 |
+| I2.4 视频长标题栏组件 | 视频+标题的组合组件，横向布局 | 视频在左/右，标题在另一侧，支持配置 |
+| I2.5 组件拖拽排序 | 可视化编辑器中拖拽调整组件顺序 | 实时预览效果 |
+| I2.6 组件属性配置 | 每个组件有独立的属性面板 | 修改后实时更新预览 |
+| I2.7 首页模板预设 | 提供3-5个预设首页模板 | 一键应用模板，可继续编辑 |
+
+#### I3. 文章页面模板系统
+
+| 细化点 | 详细描述 | 验收标准 |
+|--------|----------|----------|
+| I3.1 菜单层级检测 | 自动检测文章所属菜单的层级结构 | 后端提供菜单层级信息 |
+| I3.2 多级菜单展示 | 多级菜单时，右侧显示树形菜单导航 | 高亮当前位置，支持展开/折叠 |
+| I3.3 单级菜单展示 | 单级菜单时，左侧显示标签列表 | 标签样式，点击切换文章 |
+| I3.4 自动适配逻辑 | 根据菜单结构自动选择展示方式 | 无需手动配置 |
+| I3.5 文章内容来源 | 文章内容从数据库动态获取 | 支持富文本和Markdown |
+| I3.6 文章模板预设 | 提供2-3个文章页面模板 | 标准模板、带侧边栏模板等 |
+
+#### I4. 媒体资源管理
+
+| 细化点 | 详细描述 | 验收标准 |
+|--------|----------|----------|
+| I4.1 媒体库界面 | 统一的媒体资源管理界面 | 网格视图，显示缩略图 |
+| I4.2 视频上传 | 支持上传视频文件（mp4/webm） | 限制100MB，显示上传进度 |
+| I4.3 图片上传增强 | 支持批量上传图片 | 自动生成缩略图 |
+| I4.4 媒体分类 | 按类型（图片/视频）自动分类 | 支持按分类筛选 |
+| I4.5 媒体选择器 | 在组件配置中选择已上传的媒体 | 弹窗选择，支持搜索 |
+| I4.6 媒体信息显示 | 显示文件名、大小、尺寸、上传时间 | 鼠标悬停显示详情 |
+| I4.7 媒体删除保护 | 删除前检查是否被页面/文章使用 | 被使用时提示并阻止删除 |
+| I4.8 存储方案 | 初期使用本地存储，预留云存储接口 | 文件存储在uploads目录 |
+
+---
+
+## 模板系统技术方案（2026-03-31）
+
+### 数据库设计
+
+#### 1. 菜单表扩展（menus表）
+
+```sql
+-- 已有字段保持不变，新增约束
+ALTER TABLE menus ADD COLUMN is_homepage BOOLEAN DEFAULT FALSE COMMENT '是否为首页菜单';
+ALTER TABLE menus ADD COLUMN is_locked BOOLEAN DEFAULT FALSE COMMENT '是否锁定（不可删除）';
+-- 业务层控制菜单总数不超过10个
+```
+
+#### 2. 媒体资源表（新建）
+
+```sql
+CREATE TABLE media (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  filename VARCHAR(255) NOT NULL COMMENT '文件名',
+  original_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
+  file_path VARCHAR(500) NOT NULL COMMENT '文件路径',
+  file_type ENUM('image', 'video') NOT NULL COMMENT '文件类型',
+  mime_type VARCHAR(100) NOT NULL COMMENT 'MIME类型',
+  file_size INT NOT NULL COMMENT '文件大小（字节）',
+  width INT COMMENT '图片/视频宽度',
+  height INT COMMENT '图片/视频高度',
+  duration INT COMMENT '视频时长（秒）',
+  thumbnail_path VARCHAR(500) COMMENT '缩略图路径',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_file_type (file_type),
+  INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='媒体资源表';
+```
+
+#### 3. 媒体使用关联表（新建）
+
+```sql
+CREATE TABLE media_usage (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  media_id INT NOT NULL COMMENT '媒体ID',
+  entity_type ENUM('page', 'article', 'component') NOT NULL COMMENT '使用实体类型',
+  entity_id INT NOT NULL COMMENT '使用实体ID',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE,
+  INDEX idx_media_id (media_id),
+  INDEX idx_entity (entity_type, entity_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='媒体使用关联表';
+```
+
+### API接口设计
+
+#### 菜单管理接口
+
+```typescript
+// 获取菜单列表（包含层级信息）
+GET /api/menus
+Response: {
+  list: Array<{
+    id: number;
+    name: string;
+    parent_id: number;
+    level: number; // 菜单层级（1/2/3）
+    is_homepage: boolean;
+    is_locked: boolean;
+    children?: Menu[];
+  }>;
+  total: number;
+  maxMenus: 10; // 最大菜单数
+}
+
+// 创建菜单（带数量校验）
+POST /api/menus
+Request: { name, parent_id, ... }
+Response: { id, message }
+Error: { code: 'MENU_LIMIT_EXCEEDED', message: '菜单数量已达上限' }
+
+// 删除菜单（首页菜单不可删除）
+DELETE /api/menus/:id
+Error: { code: 'HOMEPAGE_LOCKED', message: '首页菜单不可删除' }
+```
+
+#### 媒体资源接口
+```typescript
+// 上传媒体文件
+POST /api/media/upload
+Content-Type: multipart/form-data
+Request: { file: File, type: 'image' | 'video' }
+Response: {
+  id: number;
+  filename: string;
+  file_path: string;
+  file_type: string;
+  file_size: number;
+  thumbnail_path?: string;
+  url: string; // 访问URL
+}
+
+// 获取媒体列表
+GET /api/media?type=image&page=1&pageSize=20
+Response: {
+  list: Media[];
+  total: number;
+  totalSize: number; // 总存储大小
+}
+
+// 删除媒体（检查使用情况）
+DELETE /api/media/:id
+Error: { code: 'MEDIA_IN_USE', message: '该媒体正在被使用', usedBy: [...] }
+
+// 获取媒体使用情况
+GET /api/media/:id/usage
+Response: {
+  inUse: boolean;
+  usages: Array<{ entity_type, entity_id, entity_name }>;
+}
+```
+
+### 前端组件实现
+
+#### 1. 左侧导航栏组件
+```typescript
+// admin/src/components/Editor/components/SidebarNav.vue
+interface SidebarNavProps {
+  menuItems: Array<{ name: string; url: string; icon?: string }>;
+  position: 'left' | 'right';
+  width: string; // 如 '200px'
+  backgroundColor: string;
+  textColor: string;
+  collapsible: boolean;
+}
+```
+
+#### 2. 视频长标题栏组件
+
+```typescript
+// admin/src/components/Editor/components/VideoTitleBar.vue
+interface VideoTitleBarProps {
+  videoSrc: string;
+  videoType: 'local' | 'embed';
+  title: string;
+  subtitle?: string;
+  layout: 'video-left' | 'video-right';
+  videoWidth: string; // 如 '50%'
+  aspectRatio: '16:9' | '4:3';
+}
+```
+
+### 实施优先级
+
+#### 阶段1：基础功能（3-5天）
+
+- [ ] 菜单管理规则约束（T001, T002, T004）
+- [ ] 媒体资源上传功能（T001, T003, T006）
+- [ ] 数据库表创建和迁移
+
+#### 阶段2：布局组件（5-7天）
+
+- [ ] 左侧导航栏组件开发（T005）
+- [ ] 视频长标题栏组件开发（T005）
+- [ ] 组件库注册和属性配置
+
+#### 阶段3：模板系统（3-5天）
+
+- [ ] 文章页面动态布局逻辑（T007）
+- [ ] 首页模板预设（T008）
+- [ ] 模板选择和应用功能
+
+#### 阶段4：测试优化（2-3天）
+
+- [ ] 集成测试（T009）
+- [ ] 性能优化
+- [ ] Bug修复
+
+### 技术难点和解决方案
+
+#### 1. 菜单数量限制实现
+
+**方案**：三层防护
+
+- 前端：实时计算菜单数，达到10个时禁用添加按钮
+- 后端：接口层校验，返回错误码
+- 数据库：通过触发器或应用层事务控制
+
+#### 2. 文章页面动态布局
+
+**方案**：后端提供菜单层级信息
+
+```typescript
+// 后端返回文章时附带菜单信息
+GET /api/articles/:id
+Response: {
+  article: {...},
+  menuInfo: {
+    level: 1 | 2 | 3,
+    hasChildren: boolean,
+    siblings: Menu[], // 同级菜单
+    children: Menu[]  // 子菜单
+  }
+}
+
+// 前端根据 menuInfo.level 决定布局
+if (menuInfo.level === 1 && !menuInfo.hasChildren) {
+  // 单级菜单：左侧显示标签
+  layout = 'tags-left';
+} else if (menuInfo.level > 1 || menuInfo.hasChildren) {
+  // 多级菜单：右侧显示导航
+  layout = 'nav-right';
+}
+```
+
+#### 3. 大文件上传优化
+
+**方案**：分片上传
+
+```typescript
+// 前端分片上传
+const chunkSize = 2 * 1024 * 1024; // 2MB
+const chunks = Math.ceil(file.size / chunkSize);
+
+for (let i = 0; i < chunks; i++) {
+  const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
+  await uploadChunk(chunk, i, chunks);
+}
+
+// 后端合并分片
+POST /api/media/upload/chunk
+POST /api/media/upload/merge
+```
+
+### 风险控制
+
+| 风险 | 影响 | 概率 | 应对措施 |
+|------|------|------|----------|
+| 存储空间快速增长 | 高 | 高 | 1. 定期清理未使用媒体 2. 限制单个文件大小 3. 接入云存储 |
+| 菜单限制不满足需求 | 中 | 中 | 1. 提供配置项 2. 支持二级菜单扩展 |
+| 视频播放兼容性 | 中 | 低 | 1. 统一使用mp4格式 2. 提供格式转换工具 |
+
+### 成功指标
+
+- 菜单管理错误率 = 0
+- 媒体上传成功率 > 95%
+- 首页加载时间 < 2s
+- 用户满意度 > 4.0/5.0

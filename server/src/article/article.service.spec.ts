@@ -4,6 +4,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ArticleService } from './article.service';
 import { Article, ArticleStatus } from './article.entity';
 import { ArticleVersionService } from './article-version.service';
+import { ArticleMenu } from './article-menu.entity';
 
 // 模拟数据
 const mockArticles = [
@@ -73,6 +74,15 @@ describe('ArticleService', () => {
         {
           provide: getRepositoryToken(Article),
           useValue: mockArticleRepository,
+        },
+        {
+          provide: getRepositoryToken(ArticleMenu),
+          useValue: {
+            find: jest.fn().mockResolvedValue([]),
+            delete: jest.fn().mockResolvedValue(true),
+            create: jest.fn().mockImplementation((dto) => dto),
+            save: jest.fn().mockResolvedValue(true),
+          },
         },
         {
           provide: ArticleVersionService,

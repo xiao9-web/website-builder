@@ -33,20 +33,12 @@
             class="article-item"
             @click="goToArticle(article.slug)"
           >
-            <div class="article-cover">
-              <img v-if="article.cover_image" :src="article.cover_image" :alt="article.title" />
-              <div v-else class="cover-placeholder"></div>
+            <div v-if="article.cover_image" class="article-cover">
+              <img :src="article.cover_image" :alt="article.title" />
             </div>
             <div class="article-content">
               <h2 class="article-title">{{ article.title }}</h2>
               <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
-              <div class="article-meta">
-                <span class="article-date">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  {{ formatDate(article.published_at || article.created_at) }}
-                </span>
-                <span class="article-views">{{ article.view_count }} 次阅读</span>
-              </div>
             </div>
           </article>
         </div>
@@ -94,11 +86,6 @@ interface Article {
 const menuName = ref('')
 const articles = ref<Article[]>([])
 const activeId = ref<number | null>(null)
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-}
 
 const goToArticle = (slug: string) => {
   router.push(`/articles/${slug}`)
@@ -230,8 +217,8 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 150px;
-  height: 90px;
+  width: 600px;
+  height: 150px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -241,12 +228,6 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.cover-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #e8eaf0 0%, #d0d4e8 100%);
 }
 
 .article-content {
@@ -281,22 +262,6 @@ onMounted(() => {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.article-meta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 0.78rem;
-  color: #bbb;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.article-date {
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 /* 右侧信息卡片 */

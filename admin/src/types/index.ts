@@ -48,6 +48,7 @@ export interface Menu {
   parent_id: number
   category_id?: number
   article_id?: number
+  page_id?: number
   sort: number
   icon: string
   target: string
@@ -63,6 +64,11 @@ export interface Menu {
     description?: string
   }
   article?: {
+    id: number
+    title: string
+    slug: string
+  }
+  page?: {
     id: number
     title: string
     slug: string

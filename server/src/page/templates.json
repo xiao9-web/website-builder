@@ -1,0 +1,248 @@
+[
+  {
+    "title": "Reading Notes - 读书笔记",
+    "slug": "template-reading-notes",
+    "description": "适合展示读书笔记的模板，带渐变背景和卡片式文章列表",
+    "status": "1",
+    "layout_config": {
+      "version": "1.0",
+      "components": [
+        {
+          "id": "hero-1",
+          "type": "HERO_BANNER",
+          "slides": [
+            {
+              "id": "1",
+              "title": "我的读书笔记",
+              "subtitle": "记录阅读的点滴收获",
+              "titleColor": "#ffffff",
+              "subtitleColor": "rgba(255,255,255,0.9)",
+              "backgroundColor": "#1a1a2e",
+              "overlay": true,
+              "overlayOpacity": 0.3,
+              "buttons": []
+            }
+          ],
+          "height": "50vh",
+          "autoPlay": false,
+          "indicator": "dot",
+          "visible": true
+        },
+        {
+          "id": "section-1",
+          "type": "SECTION_TITLE",
+          "title": "最新笔记",
+          "subtitle": "分享我的阅读心得与思考",
+          "align": "center",
+          "divider": true,
+          "titleSize": "md",
+          "visible": true
+        },
+        {
+          "id": "articles-1",
+          "type": "ARTICLE_LIST",
+          "layout": "card",
+          "columns": 3,
+          "showCover": true,
+          "showAuthor": true,
+          "showDate": true,
+          "showSummary": true,
+          "showTags": true,
+          "pageSize": 9,
+          "sortBy": "newest",
+          "sectionTitle": "",
+          "visible": true
+        }
+      ],
+      "settings": {
+        "title": "Reading Notes",
+        "description": "我的读书笔记",
+        "backgroundGradient": {
+          "enabled": true,
+          "colors": ["#667eea", "#764ba2", "#f093fb"],
+          "direction": "135deg",
+          "animated": true
+        },
+        "maxWidth": "1200px"
+      }
+    }
+  },
+  {
+    "title": "企业官网 - 首页",
+    "slug": "template-corporate-home",
+    "description": "适合企业官网的首页模板，包含大图轮播、产品展示和文章列表",
+    "status": "1",
+    "layout_config": {
+      "version": "1.0",
+      "components": [
+        {
+          "id": "hero-1",
+          "type": "HERO_BANNER",
+          "slides": [
+            {
+              "id": "1",
+              "title": "欢迎来到我们的企业",
+              "subtitle": "专业 · 创新 · 值得信赖",
+              "titleColor": "#ffffff",
+              "subtitleColor": "rgba(255,255,255,0.85)",
+              "backgroundColor": "#1a1a2e",
+              "overlay": true,
+              "overlayOpacity": 0.4,
+              "buttons": [
+                {"id": "btn1", "text": "了解更多", "url": "/about", "style": "primary"},
+                {"id": "btn2", "text": "联系我们", "url": "/contact", "style": "outline"}
+              ]
+            }
+          ],
+          "height": "70vh",
+          "autoPlay": true,
+          "interval": 5000,
+          "visible": true
+        },
+        {
+          "id": "section-1",
+          "type": "SECTION_TITLE",
+          "title": "我们的服务",
+          "subtitle": "为您提供专业的解决方案",
+          "align": "center",
+          "divider": true,
+          "visible": true
+        },
+        {
+          "id": "row-1",
+          "type": "ROW",
+          "columns": [
+            {
+              "id": "col-1",
+              "type": "COLUMN",
+              "width": "33.33%",
+              "children": [
+                {
+                  "id": "card-1",
+                  "type": "CARD",
+                  "title": "服务一",
+                  "content": "提供优质的服务内容",
+                  "shadow": "hover",
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "id": "col-2",
+              "type": "COLUMN",
+              "width": "33.33%",
+              "children": [
+                {
+                  "id": "card-2",
+                  "type": "CARD",
+                  "title": "服务二",
+                  "content": "提供优质的服务内容",
+                  "shadow": "hover",
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "id": "col-3",
+              "type": "COLUMN",
+              "width": "33.33%",
+              "children": [
+                {
+                  "id": "card-3",
+                  "type": "CARD",
+                  "title": "服务三",
+                  "content": "提供优质的服务内容",
+                  "shadow": "hover",
+                  "visible": true
+                }
+              ]
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "section-2",
+          "type": "SECTION_TITLE",
+          "title": "最新动态",
+          "subtitle": "了解我们的最新资讯",
+          "align": "center",
+          "divider": true,
+          "visible": true
+        },
+        {
+          "id": "articles-1",
+          "type": "ARTICLE_LIST",
+          "layout": "card",
+          "columns": 3,
+          "showCover": true,
+          "showDate": true,
+          "showSummary": true,
+          "pageSize": 6,
+          "sortBy": "newest",
+          "visible": true
+        }
+      ],
+      "settings": {
+        "title": "企业官网",
+        "description": "专业的企业官网",
+        "backgroundColor": "#ffffff",
+        "maxWidth": "1200px"
+      }
+    }
+  },
+  {
+    "title": "博客首页",
+    "slug": "template-blog-home",
+    "description": "简洁的博客首页模板，突出文章内容",
+    "status": "1",
+    "layout_config": {
+      "version": "1.0",
+      "components": [
+        {
+          "id": "text-1",
+          "type": "TEXT",
+          "content": "我的博客",
+          "fontSize": "48px",
+          "fontWeight": "bold",
+          "textAlign": "center",
+          "color": "#1a1a2e",
+          "visible": true,
+          "style": {
+            "padding": "60px 20px 20px"
+          }
+        },
+        {
+          "id": "text-2",
+          "type": "TEXT",
+          "content": "分享技术、生活与思考",
+          "fontSize": "18px",
+          "textAlign": "center",
+          "color": "#666",
+          "visible": true,
+          "style": {
+            "padding": "0 20px 40px"
+          }
+        },
+        {
+          "id": "articles-1",
+          "type": "ARTICLE_LIST",
+          "layout": "list",
+          "showCover": true,
+          "showAuthor": false,
+          "showDate": true,
+          "showSummary": true,
+          "showTags": true,
+          "pageSize": 10,
+          "sortBy": "newest",
+          "visible": true
+        }
+      ],
+      "settings": {
+        "title": "博客",
+        "description": "我的个人博客",
+        "backgroundColor": "#f5f5f5",
+        "maxWidth": "900px"
+      }
+    }
+  }
+]

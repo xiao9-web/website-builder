@@ -105,6 +105,10 @@ const siteConfig = ref<SiteConfig>({
 const menus = ref<Menu[]>([])
 
 const getMenuPath = (menu: Menu) => {
+  // 优先使用关联的页面模板
+  if (menu.page_id) {
+    return `/page/${menu.page_id}`
+  }
   // 优先使用关联的分类（显示文章列表）
   if (menu.category_id && menu.category) {
     return `/category/${menu.category_id}`
@@ -209,27 +213,21 @@ onMounted(async () => {
 }
 
 .submenu {
+  display: none;
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 0;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  padding: 6px;
-  min-width: 200px;
-  z-index: 200;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 1000;
 }
 
 .nav-item:hover > .submenu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  display: block;
 }
 
 .submenu-item {
@@ -237,77 +235,39 @@ onMounted(async () => {
 }
 
 .submenu-item > .nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.submenu-item > .nav-link::after {
-  content: '›';
-  font-size: 18px;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: all 0.2s ease;
-}
-
-.submenu-item:has(.subsubmenu) > .nav-link::after {
-  opacity: 0.4;
-  transform: translateX(0);
+  display: block;
+  padding: 8px 16px;
 }
 
 .submenu-item:hover > .nav-link {
   background: rgba(102, 126, 234, 0.08);
-  color: #667eea;
-}
-
-.submenu-item:hover > .nav-link::after {
-  opacity: 1;
-  transform: translateX(2px);
 }
 
 .subsubmenu {
+  display: none;
   position: absolute;
   top: 0;
-  left: calc(100% + 8px);
+  left: 100%;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  padding: 6px;
-  min-width: 200px;
-  z-index: 200;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(-8px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 1001;
 }
 
 .submenu-item:hover > .subsubmenu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0);
-}
-
-.submenu .nav-link,
-.subsubmenu .nav-link {
   display: block;
-  padding: 10px 14px;
-  border-bottom: none;
-  white-space: nowrap;
-  color: #555;
-  border-radius: 6px;
-  transition: all 0.2s ease;
 }
 
-.submenu .nav-link:hover,
-.subsubmenu .nav-link:hover {
+.subsubmenu > .nav-link {
+  display: block;
+  padding: 8px 16px;
+}
+
+.subsubmenu > .nav-link:hover {
   background: rgba(102, 126, 234, 0.08);
-  color: #667eea;
-  border-bottom: none;
 }
 
 .logo {

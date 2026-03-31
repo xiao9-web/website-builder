@@ -22,17 +22,12 @@
               class="article-card"
               @click="goToArticle(article.slug)"
             >
-              <div class="article-cover">
-                <img v-if="article.cover_image" :src="article.cover_image" :alt="article.title" />
-                <div v-else class="cover-placeholder"></div>
+              <div v-if="article.cover_image" class="article-cover">
+                <img :src="article.cover_image" :alt="article.title" />
               </div>
               <div class="article-content">
                 <h3 class="article-title">{{ article.title }}</h3>
                 <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
-                <div class="article-meta">
-                  <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
-                  <span class="article-views">{{ article.view_count }} 次阅读</span>
-                </div>
               </div>
             </article>
           </div>
@@ -161,8 +156,8 @@ onMounted(() => {
 
 .container {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 0 40px;
 }
 
@@ -221,8 +216,8 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 150px;
-  height: 90px;
+  width: 600px;
+  height: 150px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -231,12 +226,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.cover-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #e8eaf0 0%, #d0d4e8 100%);
 }
 
 .article-content {

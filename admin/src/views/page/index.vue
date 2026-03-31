@@ -4,7 +4,10 @@
       <template #header>
         <div class="card-header">
           <span>页面管理</span>
-          <el-button type="primary" @click="handleAdd">新建页面</el-button>
+          <div class="header-actions">
+            <el-button type="primary" @click="showTemplateDialog = true">从模板创建</el-button>
+            <el-button @click="handleAdd">空白页面</el-button>
+          </div>
         </div>
       </template>
 
@@ -18,14 +21,31 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="250">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
+            <el-button link type="success" @click="handlePreview(row)">预览</el-button>
             <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 模板选择对话框 -->
+    <el-dialog v-model="showTemplateDialog" title="选择页面模板" width="800px">
+      <div class="template-grid">
+        <div
+          v-for="template in templates"
+          :key="template.id"
+          class="template-card"
+          @click="handleCreateFromTemplate(template)"
+        >
+          <div class="template-preview">{{ template.icon }}</div>
+          <h3>{{ template.name }}</h3>
+          <p>{{ template.description }}</p>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -33,11 +53,73 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { getPageListApi, deletePageApi } from '@/api/page'
+import { getPageListApi, deletePageApi, createPageApi } from '@/api/page'
 import type { Page } from '@/api/page'
+import {
+  homepageTemplate,
+  articleTemplate1,
+  articleTemplate2,
+  aboutTemplate,
+  productTemplate,
+  contactTemplate,
+  blogListTemplate,
+} from '@/templates'
 
 const router = useRouter()
 const pageList = ref<Page[]>([])
+const showTemplateDialog = ref(false)
+
+const templates = [
+  {
+    id: 'homepage',
+    name: '首页模板',
+    description: '网站首页，可添加轮播图、产品展示等',
+    icon: '🏠',
+    config: homepageTemplate,
+  },
+  {
+    id: 'blog-list',
+    name: '博客列表',
+    description: '文章列表展示页',
+    icon: '📚',
+    config: blogListTemplate,
+  },
+  {
+    id: 'article1',
+    name: '文章页（单栏）',
+    description: '适合长文阅读的单栏布局',
+    icon: '📄',
+    config: articleTemplate1,
+  },
+  {
+    id: 'article2',
+    name: '文章页（侧边栏）',
+    description: '带左侧导航的文章页',
+    icon: '📑',
+    config: articleTemplate2,
+  },
+  {
+    id: 'about',
+    name: '关于我们',
+    description: '公司介绍、团队展示',
+    icon: '🏢',
+    config: aboutTemplate,
+  },
+  {
+    id: 'product',
+    name: '产品展示',
+    description: '产品列表、服务介绍',
+    icon: '📦',
+    config: productTemplate,
+  },
+  {
+    id: 'contact',
+    name: '联系我们',
+    description: '联系方式、留言表单',
+    icon: '📞',
+    config: contactTemplate,
+  },
+]
 
 const loadPages = async () => {
   try {
@@ -53,8 +135,33 @@ const handleAdd = () => {
   router.push('/page/edit')
 }
 
+const handleCreateFromTemplate = async (template: any) => {
+  try {
+    console.log('Creating page from template:', template.config)
+    const res = await createPageApi({
+      title: template.config.settings.title,
+      slug: template.id + '-' + Date.now(),
+      layout_config: template.config,
+      status: '0', // PageStatus.DRAFT
+    })
+    ElMessage.success('页面创建成功')
+    showTemplateDialog.value = false
+    router.push(`/page/edit?id=${res.id}`)
+  } catch (error: any) {
+    console.error('创建页面失败:', error)
+    console.error('错误详情:', error.response?.data)
+    ElMessage.error(error.response?.data?.message || '创建页面失败')
+  }
+}
+
 const handleEdit = (row: any) => {
   router.push(`/page/edit?id=${row.id}`)
+}
+
+const handlePreview = (row: any) => {
+  // 在新窗口打开预览页面
+  const previewUrl = `http://localhost:5174/page/${row.id}`
+  window.open(previewUrl, '_blank')
 }
 
 const handleDelete = async (row: any) => {
@@ -78,5 +185,49 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.template-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.template-card:hover {
+  border-color: #409eff;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.template-preview {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.template-card h3 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.template-card p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
 }
 </style>

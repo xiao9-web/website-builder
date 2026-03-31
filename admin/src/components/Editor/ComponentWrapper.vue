@@ -95,6 +95,124 @@
           </div>
         </div>
 
+        <!-- Hero Banner 预览 -->
+        <div v-else-if="component.type === ComponentType.HERO_BANNER" class="hero-preview">
+          <div class="hero-placeholder" :style="{ background: (component as any).slides?.[0]?.backgroundColor || '#1a1a2e' }">
+            <div class="hero-text">
+              <div class="hero-title">{{ (component as any).slides?.[0]?.title || 'Hero 大图' }}</div>
+              <div class="hero-subtitle">{{ (component as any).slides?.[0]?.subtitle || '副标题' }}</div>
+            </div>
+            <div class="hero-meta">{{ (component as any).slides?.length || 1 }} 张轮播图 · {{ (component as any).height || '60vh' }}</div>
+          </div>
+        </div>
+
+        <!-- 分区标题预览 -->
+        <div v-else-if="component.type === ComponentType.SECTION_TITLE" class="section-title-preview">
+          <div :style="{ textAlign: (component as any).align || 'center', padding: '8px 0' }">
+            <div class="st-title" :style="{ color: (component as any).titleColor || '#1a1a2e' }">
+              {{ (component as any).title || '分区标题' }}
+            </div>
+            <div v-if="(component as any).divider" class="st-divider" />
+            <div v-if="(component as any).subtitle" class="st-subtitle" :style="{ color: (component as any).subtitleColor || '#666' }">
+              {{ (component as any).subtitle }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 视频组件预览 -->
+        <div v-else-if="component.type === ComponentType.VIDEO_BLOCK" class="video-preview">
+          <div class="video-placeholder">
+            <el-icon :size="40"><VideoPlay /></el-icon>
+            <div class="video-label">视频组件</div>
+            <div class="video-meta">
+              {{ (component as any).videoType === 'local' ? '本地视频' : '第三方嵌入' }}
+              · {{ (component as any).aspectRatio || '16:9' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 文章列表预览 -->
+        <div v-else-if="component.type === ComponentType.ARTICLE_LIST" class="article-list-preview">
+          <div class="al-placeholder">
+            <el-icon :size="40"><Document /></el-icon>
+            <div class="al-label">文章列表</div>
+            <div class="al-meta">
+              {{ layoutLabel((component as any).layout) }} · {{ (component as any).columns || 3 }}列 · 每页{{ (component as any).pageSize || 9 }}篇
+            </div>
+          </div>
+        </div>
+
+        <!-- 文章导航预览 -->
+        <div v-else-if="component.type === ComponentType.ARTICLE_NAV" class="article-nav-preview">
+          <div class="an-placeholder">
+            <el-icon :size="40"><Menu /></el-icon>
+            <div class="an-label">文章导航</div>
+            <div class="an-meta">{{ (component as any).navStyle === 'sidebar' ? '侧边栏' : '标签页' }} 样式</div>
+          </div>
+        </div>
+
+        <!-- 目录组件预览 -->
+        <div v-else-if="component.type === ComponentType.TABLE_OF_CONTENTS" class="toc-preview">
+          <div class="toc-placeholder">
+            <el-icon :size="40"><List /></el-icon>
+            <div class="toc-label">{{ (component as any).title || '目录' }}</div>
+            <div class="toc-meta">H2{{ (component as any).maxDepth === 3 ? '+H3' : '' }} · {{ (component as any).position === 'right-sticky' ? '右侧悬浮' : '顶部内嵌' }}</div>
+          </div>
+        </div>
+
+        <!-- 行容器预览 -->
+        <div v-else-if="component.type === ComponentType.ROW" class="row-preview">
+          <div class="row-container">
+            <div class="row-header">
+              <el-icon><Grid /></el-icon>
+              <span>行容器 ({{ (component as any).children?.length || 0 }} 列)</span>
+            </div>
+            <div class="row-drop-zone" :style="{ gap: (component as any).gap || '20px' }">
+              <div
+                v-for="(child, idx) in (component as any).children || []"
+                :key="child.id"
+                class="column-item"
+              >
+                <ComponentWrapper
+                  :component="child"
+                  :index="idx"
+                  :selected="false"
+                  @select="$emit('select', child)"
+                />
+              </div>
+              <div class="add-column-btn" @click.stop="handleAddColumn">
+                <el-icon><Plus /></el-icon>
+                <span>添加列</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 列容器预览 -->
+        <div v-else-if="component.type === ComponentType.COLUMN" class="column-preview">
+          <div class="column-container">
+            <div class="column-header">
+              <span>列 (宽度: {{ (component as any).width || 'auto' }})</span>
+            </div>
+            <div class="column-content">
+              <div
+                v-for="(child, idx) in (component as any).children || []"
+                :key="child.id"
+              >
+                <ComponentWrapper
+                  :component="child"
+                  :index="idx"
+                  :selected="false"
+                  @select="$emit('select', child)"
+                />
+              </div>
+              <div v-if="!(component as any).children?.length" class="empty-column">
+                拖拽组件到这里
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div v-else class="default-preview">
           <el-empty description="组件预览" :image-size="40" />
         </div>
@@ -104,9 +222,18 @@
 </template>
 
 <script setup lang="ts">
-import { Rank, Delete, PictureFilled, Menu, Edit } from '@element-plus/icons-vue';
-import { ComponentType, getComponentName } from '@/types/components';
+import { Rank, Delete, PictureFilled, Menu, Edit, VideoPlay, Document, List, Grid, Plus } from '@element-plus/icons-vue';
+import { ComponentType } from '@/types/components';
+import { getComponentName, getComponentDefaultProps } from '@/components/Editor/componentLibrary';
 import type { Component } from '@/types/components';
+import { useEditorStore } from '@/store/modules/editor';
+
+const editorStore = useEditorStore();
+
+const layoutLabel = (layout: string) => {
+  const map: Record<string, string> = { card: '卡片式', list: '列表式', magazine: '杂志式' };
+  return map[layout] ?? layout;
+};
 
 // Props
 const props = defineProps<{
@@ -130,6 +257,19 @@ const handleClick = () => {
 // 删除组件
 const handleDelete = () => {
   emit('delete', props.component.id);
+};
+
+// 添加列到行容器
+const handleAddColumn = () => {
+  if (props.component.type === ComponentType.ROW) {
+    const newColumn = getComponentDefaultProps(ComponentType.COLUMN);
+    const rowComponent = props.component as any;
+    if (!rowComponent.children) {
+      rowComponent.children = [];
+    }
+    rowComponent.children.push(newColumn);
+    editorStore.updateComponentProps(props.component.id, rowComponent);
+  }
 };
 </script>
 
@@ -269,5 +409,201 @@ const handleDelete = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Hero Banner 预览 */
+.hero-placeholder {
+  border-radius: 6px;
+  padding: 20px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-meta {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 分区标题预览 */
+.st-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.st-divider {
+  width: 40px;
+  height: 3px;
+  background: var(--el-color-primary);
+  margin: 6px auto;
+  border-radius: 2px;
+}
+
+.st-subtitle {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 视频、文章列表、文章导航、目录 - 共用占位样式 */
+.video-preview,
+.article-list-preview,
+.article-nav-preview,
+.toc-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+}
+
+.video-placeholder,
+.al-placeholder,
+.an-placeholder,
+.toc-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.video-label,
+.al-label,
+.an-label,
+.toc-label {
+  font-size: 14px;
+  color: var(--el-text-color-primary);
+  font-weight: 500;
+}
+
+.video-meta,
+.al-meta,
+.an-meta,
+.toc-meta {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+/* 行容器预览 */
+.row-preview {
+  border: 2px dashed #409eff;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f0f9ff;
+}
+
+.row-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #409eff;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+}
+
+.row-drop-zone {
+  display: flex;
+  min-height: 100px;
+  background: white;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.column-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-column-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 100px;
+  padding: 20px;
+  border: 2px dashed #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #909399;
+}
+
+.add-column-btn:hover {
+  border-color: #409eff;
+  color: #409eff;
+  background: #ecf5ff;
+}
+
+/* 列容器预览 */
+.column-preview {
+  border: 2px solid #67c23a;
+  border-radius: 6px;
+  padding: 8px;
+  background: #f0f9ff;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #67c23a;
+  padding: 4px 8px;
+  background: white;
+  border-radius: 4px;
+}
+
+.column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 60px;
+  background: white;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.empty-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  color: #909399;
+  font-size: 12px;
+  border: 2px dashed #dcdfe6;
+  border-radius: 4px;
 }
 </style>

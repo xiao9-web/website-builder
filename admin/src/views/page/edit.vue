@@ -39,8 +39,9 @@ onMounted(async () => {
 // 保存页面
 const handleSave = async (config: PageLayoutConfig) => {
   try {
+    console.log('Saving page config:', config)
     if (pageId.value) {
-      await updatePageApi(pageId.value, {
+      await updatePageApi(parseInt(pageId.value), {
         layout_config: config,
         title: config.settings.title,
       });
@@ -50,25 +51,27 @@ const handleSave = async (config: PageLayoutConfig) => {
         layout_config: config,
         title: config.settings.title,
         slug: config.settings.title.toLowerCase().replace(/\s+/g, '-'),
-        status: 'draft',
+        status: '0', // PageStatus.DRAFT
       });
       pageId.value = res.id.toString();
       ElMessage.success('创建成功');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('保存失败:', error);
-    ElMessage.error('保存失败');
+    console.error('错误详情:', error.response?.data);
+    ElMessage.error(error.response?.data?.message || '保存失败');
   }
 };
 
 // 发布页面
 const handlePublish = async (config: PageLayoutConfig) => {
   try {
+    console.log('Publishing page config:', config)
     if (pageId.value) {
-      await updatePageApi(pageId.value, {
+      await updatePageApi(parseInt(pageId.value), {
         layout_config: config,
         title: config.settings.title,
-        status: 'published',
+        status: '1', // PageStatus.PUBLISHED
       });
       ElMessage.success('发布成功');
     } else {
@@ -76,14 +79,15 @@ const handlePublish = async (config: PageLayoutConfig) => {
         layout_config: config,
         title: config.settings.title,
         slug: config.settings.title.toLowerCase().replace(/\s+/g, '-'),
-        status: 'published',
+        status: '1', // PageStatus.PUBLISHED
       });
       pageId.value = res.id.toString();
       ElMessage.success('发布成功');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('发布失败:', error);
-    ElMessage.error('发布失败');
+    console.error('错误详情:', error.response?.data);
+    ElMessage.error(error.response?.data?.message || '发布失败');
   }
 };
 </script>

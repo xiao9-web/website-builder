@@ -49,6 +49,11 @@ const router = createRouter({
       path: '/menu/:id',
       name: 'menu-articles',
       component: () => import('../views/MenuArticles.vue')
+    },
+    {
+      path: '/page/:id',
+      name: 'page-view',
+      component: () => import('../views/PageView.vue')
     }
   ]
 })

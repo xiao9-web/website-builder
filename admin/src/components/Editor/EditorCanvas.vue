@@ -3,6 +3,14 @@
     <div class="canvas-header">
       <div class="canvas-title">编辑区域</div>
       <div class="canvas-actions">
+        <el-button-group>
+          <el-button size="small" @click="addLayout('single')">单列</el-button>
+          <el-button size="small" @click="addLayout('two-column')">两列</el-button>
+          <el-button size="small" @click="addLayout('three-column')">三列</el-button>
+          <el-button size="small" @click="addLayout('sidebar-left')">左侧边栏</el-button>
+          <el-button size="small" @click="addLayout('sidebar-right')">右侧边栏</el-button>
+        </el-button-group>
+        <el-divider direction="vertical" />
         <el-button
           :icon="RefreshLeft"
           :disabled="!canUndo"
@@ -31,6 +39,7 @@
     <div
       ref="canvasContainer"
       class="canvas-container"
+      :style="canvasStyle"
       @dragenter.prevent="onDragEnter"
       @dragover.prevent="onDragOver"
       @dragleave.prevent="onDragLeave"
@@ -71,6 +80,8 @@ import ComponentWrapper from './ComponentWrapper.vue';
 import Sortable from 'sortablejs';
 import type { DragEvent } from 'vue';
 import type { Component } from '@/types/components';
+import { ComponentType } from '@/types/components';
+import { getComponentDefaultProps } from './componentLibrary';
 
 const editorStore = useEditorStore();
 
@@ -84,6 +95,31 @@ const components = computed(() => editorStore.components);
 const selectedComponentId = computed(() => editorStore.selectedComponentId);
 const canUndo = computed(() => editorStore.canUndo);
 const canRedo = computed(() => editorStore.canRedo);
+
+// 画布样式（应用渐变背景）
+const canvasStyle = computed(() => {
+  const settings = editorStore.config?.settings;
+  if (!settings) return {};
+
+  const style: any = {};
+
+  // 渐变背景优先
+  if (settings.backgroundGradient?.enabled && settings.backgroundGradient.colors?.length > 0) {
+    const colors = settings.backgroundGradient.colors.join(', ');
+    const direction = settings.backgroundGradient.direction || '135deg';
+    style.background = `linear-gradient(${direction}, ${colors})`;
+
+    // 动画效果
+    if (settings.backgroundGradient.animated) {
+      style.backgroundSize = '400% 400%';
+      style.animation = 'gradientShift 15s ease infinite';
+    }
+  } else if (settings.backgroundColor) {
+    style.backgroundColor = settings.backgroundColor;
+  }
+
+  return style;
+});
 
 // 初始化编辑器
 onMounted(() => {
@@ -197,6 +233,55 @@ const handleMoveComponent = (fromIndex: number, toIndex: number) => {
 const handleDeleteComponent = (componentId?: string) => {
   editorStore.deleteComponent(componentId);
 };
+
+// 添加布局
+const addLayout = (layoutType: string) => {
+  let rowComponent: any;
+
+  switch (layoutType) {
+    case 'single':
+      // 单列：不需要行容器，直接拖组件即可
+      return;
+    case 'two-column':
+      // 两列：50% + 50%
+      rowComponent = getComponentDefaultProps(ComponentType.ROW);
+      rowComponent.children = [
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' },
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' }
+      ];
+      break;
+    case 'three-column':
+      // 三列：33% + 33% + 33%
+      rowComponent = getComponentDefaultProps(ComponentType.ROW);
+      rowComponent.children = [
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' },
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' },
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' }
+      ];
+      break;
+    case 'sidebar-left':
+      // 左侧边栏：250px + 自适应
+      rowComponent = getComponentDefaultProps(ComponentType.ROW);
+      rowComponent.children = [
+        { ...getComponentDefaultProps(ComponentType.COLUMN), width: '250px', flex: '0' },
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' }
+      ];
+      break;
+    case 'sidebar-right':
+      // 右侧边栏：自适应 + 250px
+      rowComponent = getComponentDefaultProps(ComponentType.ROW);
+      rowComponent.children = [
+        { ...getComponentDefaultProps(ComponentType.COLUMN), flex: '1' },
+        { ...getComponentDefaultProps(ComponentType.COLUMN), width: '250px', flex: '0' }
+      ];
+      break;
+  }
+
+  if (rowComponent) {
+    editorStore.components.push(rowComponent);
+  }
+};
+
 </script>
 
 <style scoped>
@@ -232,8 +317,19 @@ const handleDeleteComponent = (componentId?: string) => {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: #f5f7fa;
   transition: background 0.3s;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .canvas-container.drag-over {

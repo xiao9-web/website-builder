@@ -10,6 +10,7 @@ const mockMenus = [
     id: 1,
     name: '首页',
     path: '/',
+    parent_id: null,
     sort: 0,
     is_visible: true,
     created_at: new Date(),
@@ -19,6 +20,7 @@ const mockMenus = [
     id: 2,
     name: '关于',
     path: '/about',
+    parent_id: null,
     sort: 1,
     is_visible: true,
     created_at: new Date(),
@@ -37,7 +39,13 @@ const mockMenus = [
 
 // 模拟 repository
 const mockMenuRepository = {
-  find: jest.fn().mockResolvedValue(mockMenus),
+  find: jest.fn().mockImplementation((options?: any) => {
+    const parentId = options?.where?.parent_id;
+    if (parentId !== undefined) {
+      return Promise.resolve(mockMenus.filter(m => (m as any).parent_id === parentId));
+    }
+    return Promise.resolve(mockMenus);
+  }),
   findOne: jest.fn().mockResolvedValue(mockMenus[0]),
   create: jest.fn().mockImplementation((dto) => dto),
   save: jest.fn().mockImplementation((menu) => Promise.resolve({ id: Date.now(), ...menu })),
@@ -62,6 +70,9 @@ describe('MenuService', () => {
 
     service = module.get<MenuService>(MenuService);
     repository = module.get<Repository<Menu>>(getRepositoryToken(Menu));
+
+    // 清空调用次数，但保留 mock 实现
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -87,7 +98,8 @@ describe('MenuService', () => {
   describe('findPublished', () => {
     it('should return visible menus', async () => {
       const menus = await service.findPublished();
-      expect(menus).toEqual(mockMenus);
+      // findPublished 会构建树形结构，所以顶层只包含 parent_id = null 的菜单
+      expect(menus).toEqual([mockMenus[0], mockMenus[1]]);
     });
   });
 

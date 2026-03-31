@@ -42,20 +42,6 @@
           <div class="article-info">
             <h2 class="article-title" v-html="highlightKeyword(article.title)"></h2>
             <p class="article-summary" v-html="highlightKeyword(article.summary || '暂无摘要')"></p>
-            <div class="article-meta">
-              <span class="meta-item">
-                <i class="icon">📅</i>
-                {{ formatDate(article.published_at) }}
-              </span>
-              <span class="meta-item">
-                <i class="icon">👁️</i>
-                {{ article.view_count }} 次阅读
-              </span>
-              <span v-if="article.category" class="meta-item">
-                <i class="icon">📁</i>
-                {{ article.category.name }}
-              </span>
-            </div>
           </div>
         </article>
       </div>
@@ -200,8 +186,9 @@ onMounted(() => {
 }
 
 .container {
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 40px;
 }
 
 .search-header {
@@ -294,7 +281,7 @@ onMounted(() => {
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 480px 1fr;
   gap: 24px;
 }
 
@@ -304,7 +291,7 @@ onMounted(() => {
 }
 
 .article-cover {
-  width: 200px;
+  width: 600px;
   height: 150px;
   overflow: hidden;
 }

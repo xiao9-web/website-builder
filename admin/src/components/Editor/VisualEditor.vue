@@ -58,7 +58,7 @@
                 移动端
               </el-button>
               <el-button
-                :icon="Ipad"
+                :icon="Monitor"
                 :type="deviceType === 'tablet' ? 'primary' : 'default'"
                 @click="deviceType = 'tablet'"
               >
@@ -99,7 +99,6 @@ import {
   DocumentCopy,
   Check,
   Iphone,
-  Ipad,
 } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useEditorStore } from '@/store/modules/editor';

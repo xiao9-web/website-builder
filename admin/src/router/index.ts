@@ -71,6 +71,15 @@ const routes = [
         },
       },
       {
+        path: 'attachment',
+        name: 'Attachment',
+        component: () => import('@/views/attachment/index.vue'),
+        meta: {
+          title: '附件管理',
+          icon: 'Picture',
+        },
+      },
+      {
         path: 'category',
         name: 'Category',
         component: () => import('@/views/category/index.vue'),

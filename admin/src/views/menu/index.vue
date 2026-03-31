@@ -66,6 +66,22 @@
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入菜单名称" />
         </el-form-item>
+        <el-form-item label="关联页面">
+          <el-select
+            v-model="form.page_id"
+            clearable
+            filterable
+            placeholder="选择页面模板"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="page in pageOptions"
+              :key="page.id"
+              :label="page.title"
+              :value="page.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="关联文章">
           <el-select
             v-model="form.article_id"
@@ -73,6 +89,7 @@
             filterable
             placeholder="选择文章后，菜单将跳转到该文章"
             style="width: 100%"
+            :disabled="!!form.page_id"
           >
             <el-option
               v-for="article in articleOptions"
@@ -83,7 +100,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="跳转路径" prop="path">
-          <el-input v-model="form.path" :disabled="!!form.article_id" placeholder="请输入跳转路径" />
+          <el-input v-model="form.path" :disabled="!!form.article_id || !!form.page_id" placeholder="请输入跳转路径" />
         </el-form-item>
         <el-form-item label="图标">
           <el-input v-model="form.icon" placeholder="请输入图标名称" />
@@ -117,7 +134,9 @@ import { ElMessage, ElMessageBox, type FormInstance, type TreeInstance } from 'e
 import { Plus, Check } from '@element-plus/icons-vue'
 import { getMenuTreeApi, createMenuApi, updateMenuApi, deleteMenuApi, updateMenuSortApi } from '@/api/menu'
 import { getArticleListApi } from '@/api/article'
+import { getPageListApi } from '@/api/page'
 import type { Menu, Article } from '@/types'
+import type { Page } from '@/api/page'
 
 const treeRef = ref<TreeInstance>()
 const formRef = ref<FormInstance>()
@@ -141,6 +160,7 @@ const form = reactive<Partial<Menu>>({
   sort: 0,
   parent_id: null,
   article_id: null,
+  page_id: null,
 })
 
 const rules = {
@@ -148,11 +168,21 @@ const rules = {
 }
 
 const articleOptions = ref<Article[]>([])
+const pageOptions = ref<Page[]>([])
 
 const fetchArticleOptions = async () => {
   try {
     const res = await getArticleListApi({ page: 1, pageSize: 200, status: '1', sortBy: 'published_at_desc' })
     articleOptions.value = res.list
+  } catch (error) {
+    // 忽略，不影响菜单编辑
+  }
+}
+
+const fetchPageOptions = async () => {
+  try {
+    const res = await getPageListApi({ page: 1, pageSize: 200 })
+    pageOptions.value = res.list
   } catch (error) {
     // 忽略，不影响菜单编辑
   }
@@ -186,6 +216,7 @@ const handleAdd = () => {
     sort: 0,
     parent_id: null,
     article_id: null,
+    page_id: null,
   })
   dialogVisible.value = true
 }
@@ -345,6 +376,7 @@ const fetchMenuTree = async () => {
 onMounted(() => {
   fetchMenuTree()
   fetchArticleOptions()
+  fetchPageOptions()
 })
 </script>
 

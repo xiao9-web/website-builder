@@ -28,6 +28,10 @@
             <el-icon><Files /></el-icon>
             <template #title>页面管理</template>
           </el-menu-item>
+          <el-menu-item index="/attachment">
+            <el-icon><Picture /></el-icon>
+            <template #title>附件管理</template>
+          </el-menu-item>
           <el-menu-item index="/site-config">
             <el-icon><Setting /></el-icon>
             <template #title>网站配置</template>
@@ -98,6 +102,7 @@ import {
   Odometer,
   Document,
   Files,
+  Picture,
   Setting,
   UploadFilled,
   User,
