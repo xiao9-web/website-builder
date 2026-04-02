@@ -28,14 +28,19 @@ const emit = defineEmits<{
   addComponent: [type: ComponentType]
 }>()
 
-// 从 componentLibrary 中获取所有组件
+// 从 componentLibrary 中获取所有组件，排除复杂的容器组件
 const componentItems = computed(() => {
-  return componentLibrary.components.map(comp => ({
-    type: comp.type,
-    name: comp.name,
-    icon: comp.icon,
-    description: comp.description
-  }))
+  return componentLibrary.components
+    .filter(comp => {
+      // 排除 ROW, COLUMN, CONTAINER 这些复杂的容器组件
+      return ![ComponentType.ROW, ComponentType.COLUMN, ComponentType.CONTAINER].includes(comp.type)
+    })
+    .map(comp => ({
+      type: comp.type,
+      name: comp.name,
+      icon: comp.icon,
+      description: comp.description
+    }))
 })
 
 const handleDragStart = (event: DragEvent, type: ComponentType) => {

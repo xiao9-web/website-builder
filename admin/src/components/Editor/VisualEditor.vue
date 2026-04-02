@@ -35,6 +35,7 @@
             :key="component.id"
             class="component-wrapper"
             :class="{ selected: editorStore.selectedComponentId === component.id }"
+            :style="{ width: component.style?.width || '100%' }"
             @click.stop="handleSelectComponent(component.id)"
           >
             <ComponentRenderer :component="component" />
@@ -216,6 +217,10 @@ const handleSelectTemplate = (config: PageLayoutConfig) => {
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-content: flex-start;
 }
 
 .empty-canvas {
@@ -227,12 +232,14 @@ const handleSelectTemplate = (config: PageLayoutConfig) => {
 
 .component-wrapper {
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   padding: 12px;
   border: 2px solid transparent;
   border-radius: 6px;
   transition: all 0.2s;
   cursor: pointer;
+  flex: 0 0 auto;
+  box-sizing: border-box;
 }
 
 .component-wrapper:hover {

@@ -89,40 +89,22 @@ const templates = ref<Template[]>([
           subtitle: '为什么选择我们',
         },
         {
-          ...getComponentDefaultProps(ComponentType.ROW),
-          gap: '30px',
-          children: [
-            {
-              ...getComponentDefaultProps(ComponentType.COLUMN),
-              children: [
-                {
-                  ...getComponentDefaultProps(ComponentType.CARD),
-                  title: '专业团队',
-                  content: '拥有多年行业经验的专业团队',
-                },
-              ],
-            },
-            {
-              ...getComponentDefaultProps(ComponentType.COLUMN),
-              children: [
-                {
-                  ...getComponentDefaultProps(ComponentType.CARD),
-                  title: '优质服务',
-                  content: '7x24小时全天候服务支持',
-                },
-              ],
-            },
-            {
-              ...getComponentDefaultProps(ComponentType.COLUMN),
-              children: [
-                {
-                  ...getComponentDefaultProps(ComponentType.CARD),
-                  title: '技术领先',
-                  content: '采用最新技术栈和最佳实践',
-                },
-              ],
-            },
-          ],
+          ...getComponentDefaultProps(ComponentType.CARD),
+          title: '专业团队',
+          content: '拥有多年行业经验的专业团队',
+          style: { width: '33.33%' }
+        },
+        {
+          ...getComponentDefaultProps(ComponentType.CARD),
+          title: '优质服务',
+          content: '7x24小时全天候服务支持',
+          style: { width: '33.33%' }
+        },
+        {
+          ...getComponentDefaultProps(ComponentType.CARD),
+          title: '技术领先',
+          content: '采用最新技术栈和最佳实践',
+          style: { width: '33.33%' }
         },
       ],
       settings: {
@@ -144,28 +126,14 @@ const templates = ref<Template[]>([
           title: '左右分栏示例',
         },
         {
-          ...getComponentDefaultProps(ComponentType.ROW),
-          gap: '40px',
-          children: [
-            {
-              ...getComponentDefaultProps(ComponentType.COLUMN),
-              children: [
-                {
-                  ...getComponentDefaultProps(ComponentType.TEXT),
-                  content: '<h3>左侧内容</h3><p>这里是左侧栏的内容区域，可以放置文字、图片等元素。</p>',
-                },
-              ],
-            },
-            {
-              ...getComponentDefaultProps(ComponentType.COLUMN),
-              children: [
-                {
-                  ...getComponentDefaultProps(ComponentType.TEXT),
-                  content: '<h3>右侧内容</h3><p>这里是右侧栏的内容区域，可以放置文字、图片等元素。</p>',
-                },
-              ],
-            },
-          ],
+          ...getComponentDefaultProps(ComponentType.TEXT),
+          content: '<h3>左侧内容</h3><p>这里是左侧栏的内容区域，可以放置文字、图片等元素。</p>',
+          style: { width: '50%' }
+        },
+        {
+          ...getComponentDefaultProps(ComponentType.TEXT),
+          content: '<h3>右侧内容</h3><p>这里是右侧栏的内容区域，可以放置文字、图片等元素。</p>',
+          style: { width: '50%' }
         },
       ],
       settings: {

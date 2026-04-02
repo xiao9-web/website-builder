@@ -14,6 +14,14 @@
           <!-- 通用属性 -->
           <el-divider content-position="left">基础</el-divider>
           <el-form label-position="top" size="small">
+            <el-form-item label="组件宽度">
+              <el-select v-model="componentWidth" @change="handleWidthChange">
+                <el-option label="整行 (100%)" value="100%" />
+                <el-option label="半行 (50%)" value="50%" />
+                <el-option label="三分之一 (33%)" value="33.33%" />
+                <el-option label="四分之一 (25%)" value="25%" />
+              </el-select>
+            </el-form-item>
             <el-form-item label="显示">
               <el-switch v-model="selectedComponent.visible" />
             </el-form-item>
@@ -92,6 +100,25 @@ const activeTab = ref('component');
 
 const selectedComponent = computed(() => editorStore.selectedComponent);
 const pageSettings = computed(() => editorStore.config?.settings || {});
+
+// 组件宽度
+const componentWidth = computed({
+  get: () => {
+    if (!selectedComponent.value) return '100%'
+    return (selectedComponent.value.style?.width as string) || '100%'
+  },
+  set: (value: string) => {
+    if (selectedComponent.value) {
+      editorStore.updateComponentProps(selectedComponent.value.id, {
+        style: { ...selectedComponent.value.style, width: value }
+      })
+    }
+  }
+})
+
+const handleWidthChange = () => {
+  // 宽度变化已通过 computed setter 处理
+}
 
 // 背景设置
 const backgroundType = ref<'none' | 'color' | 'gradient'>('none');
