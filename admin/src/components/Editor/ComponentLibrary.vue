@@ -20,18 +20,23 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ComponentType } from '@/types/components'
+import { componentLibrary } from './componentLibrary'
 
 const emit = defineEmits<{
   addComponent: [type: ComponentType]
 }>()
 
-const componentItems = [
-  { type: ComponentType.TEXT, name: '文本', icon: '📝' },
-  { type: ComponentType.IMAGE, name: '图片', icon: '🖼️' },
-  { type: ComponentType.BUTTON, name: '按钮', icon: '🔘' },
-  { type: ComponentType.CARD, name: '卡片', icon: '🎴' },
-]
+// 从 componentLibrary 中获取所有组件
+const componentItems = computed(() => {
+  return componentLibrary.components.map(comp => ({
+    type: comp.type,
+    name: comp.name,
+    icon: comp.icon,
+    description: comp.description
+  }))
+})
 
 const handleDragStart = (event: DragEvent, type: ComponentType) => {
   if (event.dataTransfer) {
