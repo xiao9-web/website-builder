@@ -57,12 +57,9 @@ import { getPageListApi, deletePageApi, createPageApi } from '@/api/page'
 import type { Page } from '@/api/page'
 import {
   homepageTemplate,
-  articleTemplate1,
-  articleTemplate2,
   aboutTemplate,
   productTemplate,
   contactTemplate,
-  blogListTemplate,
 } from '@/templates'
 
 const router = useRouter()
@@ -73,30 +70,9 @@ const templates = [
   {
     id: 'homepage',
     name: '首页模板',
-    description: '网站首页，可添加轮播图、产品展示等',
+    description: '网站首页，Hero区+特性展示',
     icon: '🏠',
     config: homepageTemplate,
-  },
-  {
-    id: 'blog-list',
-    name: '博客列表',
-    description: '文章列表展示页',
-    icon: '📚',
-    config: blogListTemplate,
-  },
-  {
-    id: 'article1',
-    name: '文章页（单栏）',
-    description: '适合长文阅读的单栏布局',
-    icon: '📄',
-    config: articleTemplate1,
-  },
-  {
-    id: 'article2',
-    name: '文章页（侧边栏）',
-    description: '带左侧导航的文章页',
-    icon: '📑',
-    config: articleTemplate2,
   },
   {
     id: 'about',
