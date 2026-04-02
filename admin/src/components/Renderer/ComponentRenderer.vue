@@ -328,6 +328,33 @@
       </div>
     </div>
 
+    <!-- 行容器 -->
+    <div v-else-if="component.type === ComponentType.ROW" class="row-component" :style="rowStyle">
+      <ComponentRenderer
+        v-for="child in (component as RowComponent).children"
+        :key="child.id"
+        :component="child"
+      />
+    </div>
+
+    <!-- 列容器 -->
+    <div v-else-if="component.type === ComponentType.COLUMN" class="column-component" :style="columnStyle">
+      <ComponentRenderer
+        v-for="child in (component as ColumnComponent).children"
+        :key="child.id"
+        :component="child"
+      />
+    </div>
+
+    <!-- 容器组件 -->
+    <div v-else-if="component.type === ComponentType.CONTAINER" class="container-component" :style="containerStyle">
+      <ComponentRenderer
+        v-for="child in (component as ContainerComponent).children"
+        :key="child.id"
+        :component="child"
+      />
+    </div>
+
     <!-- 默认兜底 -->
     <div v-else class="default-component">
       <div class="placeholder">未知组件类型: {{ component.type }}</div>
@@ -355,6 +382,9 @@ import {
   type ArticleListComponent,
   type ArticleNavComponent,
   type TableOfContentsComponent,
+  type RowComponent,
+  type ColumnComponent,
+  type ContainerComponent,
 } from '@/types/components'
 
 const props = defineProps<{ component: Component }>()
@@ -462,6 +492,40 @@ const embedSrc = computed(() => {
   const bvMatch = url.match(/bilibili\.com\/video\/((?:BV|av)[^/?]+)/)
   if (bvMatch) return `https://player.bilibili.com/player.html?bvid=${bvMatch[1]}&page=1`
   return url
+})
+
+// ─── 布局组件样式 ──────────────────────────────────────────────
+const rowStyle = computed(() => {
+  const c = props.component as RowComponent
+  return {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: c.gap || '20px',
+    alignItems: c.align || 'stretch',
+    justifyContent: c.justify || 'start',
+  }
+})
+
+const columnStyle = computed(() => {
+  const c = props.component as ColumnComponent
+  return {
+    width: c.width || 'auto',
+    flex: c.flex || '1',
+    padding: c.padding || '0',
+  }
+})
+
+const containerStyle = computed(() => {
+  const c = props.component as ContainerComponent
+  return {
+    display: 'flex',
+    flexDirection: c.layout === 'horizontal' ? 'row' : 'column',
+    gap: c.gap || '16px',
+    padding: c.padding || '20px',
+    backgroundColor: c.backgroundColor,
+    maxWidth: c.maxWidth || '100%',
+    margin: '0 auto',
+  }
 })
 
 // ─── 文章列表数据 ─────────────────────────────────────────────
@@ -779,4 +843,9 @@ nav { padding: 0 20px; }
 .toc-item.active a { color: #409eff; border-left-color: #409eff; background: #ecf5ff; font-weight: 600; }
 .toc-level-3 a { padding-left: 28px; font-size: 12px; }
 .toc-empty { padding: 12px 16px; font-size: 13px; color: #999; }
+
+/* ─── 布局组件 ───────────────────────────────── */
+.row-component { width: 100%; }
+.column-component { min-height: 20px; }
+.container-component { width: 100%; }
 </style>

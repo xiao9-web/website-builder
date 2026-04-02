@@ -7,6 +7,7 @@
         <span class="page-title">{{ pageTitle }}</span>
       </div>
       <div class="toolbar-right">
+        <el-button size="small" @click="showTemplates = true">📋 模板</el-button>
         <el-button size="small" @click="handleUndo" :disabled="!editorStore.canUndo">撤销</el-button>
         <el-button size="small" @click="handleRedo" :disabled="!editorStore.canRedo">重做</el-button>
         <el-button size="small" @click="handleSave">保存</el-button>
@@ -49,6 +50,9 @@
       <!-- 右侧属性面板 -->
       <PropertyPanelSimple />
     </div>
+
+    <!-- 模板选择对话框 -->
+    <PageTemplates v-model:visible="showTemplates" @select="handleSelectTemplate" />
   </div>
 </template>
 
@@ -60,6 +64,7 @@ import { ComponentType, type PageLayoutConfig } from '@/types/components'
 import ComponentLibrary from './ComponentLibrary.vue'
 import ComponentRenderer from '../Renderer/ComponentRenderer.vue'
 import PropertyPanelSimple from './PropertyPanelSimple.vue'
+import PageTemplates from './PageTemplates.vue'
 
 const props = defineProps<{
   initialConfig?: PageLayoutConfig | null
@@ -72,6 +77,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const editorStore = useEditorStore()
+const showTemplates = ref(false)
 
 const pageTitle = computed(() => editorStore.config?.settings?.title || '新页面')
 
@@ -148,6 +154,10 @@ const handleMoveDown = (index: number) => {
 
 const handleDelete = (id: string) => {
   editorStore.deleteComponent(id)
+}
+
+const handleSelectTemplate = (config: PageLayoutConfig) => {
+  editorStore.importConfig(config)
 }
 </script>
 

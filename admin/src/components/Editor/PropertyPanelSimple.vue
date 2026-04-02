@@ -31,9 +31,11 @@
             :component="selectedComponent"
             @update="handleComponentUpdate"
           />
-          <div v-else class="no-editor">
-            <el-empty description="该组件暂无可编辑属性" :image-size="60" />
-          </div>
+          <GenericEditor
+            v-else
+            :component="selectedComponent"
+            @update="handleComponentUpdate"
+          />
         </div>
       </el-tab-pane>
 
@@ -83,6 +85,7 @@ import { useEditorStore } from '@/store/modules/editor';
 import { ComponentType } from '@/types/components';
 import TextEditor from './PropertyEditors/TextEditor.vue';
 import ImageEditor from './PropertyEditors/ImageEditor.vue';
+import GenericEditor from './PropertyEditors/GenericEditor.vue';
 
 const editorStore = useEditorStore();
 const activeTab = ref('component');
