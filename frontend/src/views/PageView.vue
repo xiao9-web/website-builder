@@ -9,10 +9,12 @@
     </div>
     <div v-else-if="page" class="page-content" :style="contentStyle">
       <div class="page-body">
-        <!-- 这里渲染页面组件 -->
-        <div v-for="component in page.layout_config?.components" :key="component.id">
-          <component :is="getComponentType(component)" :data="component" />
-        </div>
+        <!-- 使用 ComponentRenderer 渲染页面组件 -->
+        <ComponentRenderer
+          v-for="component in page.layout_config?.components"
+          :key="component.id"
+          :component="component"
+        />
       </div>
     </div>
   </div>
@@ -22,6 +24,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPageApi } from '../api/page'
+import ComponentRenderer from '../components/Renderer/ComponentRenderer.vue'
 
 const route = useRoute()
 const loading = ref(true)
@@ -65,11 +68,6 @@ const contentStyle = computed(() => {
     fontFamily: settings.fontFamily,
   }
 })
-
-const getComponentType = (component: any) => {
-  // 简单渲染，后续可以扩展
-  return 'div'
-}
 
 onMounted(async () => {
   try {

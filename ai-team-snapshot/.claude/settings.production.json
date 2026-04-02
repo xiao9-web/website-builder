@@ -1,0 +1,40 @@
+
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "Bash(npm test)",
+      "Bash(npm run lint)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Read(./.env*)",
+      "Read(./secrets/**)",
+      "Bash(git push --force)",
+      "Bash(git reset --hard)",
+      "Bash(sudo *)",
+      "Bash(curl * | bash)",
+      "Write(**/*)",
+      "Edit(**/*)"
+    ]
+  },
+  "allowedTools": [
+    "Read",
+    "Glob",
+    "Grep"
+  ],
+  "disallowedTools": [
+    "Edit",
+    "Write",
+    "Bash(*)"
+  ],
+  "verbose": true,
+  "logLevel": "detailed",
+  "model": "claude-sonnet-4-6-20250929"
+}

@@ -1,0 +1,92 @@
+
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "Bash(npm *)",
+      "Bash(node *)",
+      "Bash(python3 *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(ls *)",
+      "Bash(pwd)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Read(./.env)",
+      "Read(./secrets/**)",
+      "Bash(git push --force)",
+      "Bash(git reset --hard)",
+      "Bash(sudo *)",
+      "Bash(curl * | bash)",
+      "Write(/root/.ssh/*)",
+      "Write(/root/.aws/*)"
+    ]
+  },
+  "allowedTools": [
+    "Read",
+    "Glob",
+    "Grep",
+    "Edit(src/**)",
+    "Write(src/**)",
+    "Write(tests/**)",
+    "Write(docs/**)",
+    "Bash(npm *)",
+    "Bash(node *)",
+    "Bash(python3 *)",
+    "Bash(git status)",
+    "Bash(git diff *)",
+    "Bash(git add *)",
+    "Bash(git commit *)",
+    "Bash(npx *)",
+    "Bash(*-h*)",
+    "Bash(*--help)"
+  ],
+  "disallowedTools": [
+    "Bash(rm -rf *)",
+    "Bash(sudo *)",
+    "Bash(curl * | bash)",
+    "Write(.env*)",
+    "Write(**/secrets/*)"
+  ],
+  "audit": {
+    "enabled": true,
+    "logPath": "./logs/claude-audit/",
+    "retention": "90d",
+    "logLevel": "detailed",
+    "events": [
+      "tool_use",
+      "file_access",
+      "command_execution",
+      "permission_change",
+      "error"
+    ],
+    "sensitivePatterns": [
+      "**/secrets/**",
+      "**/.env*",
+      "**/credentials*"
+    ]
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": 3600,
+    "maxSize": "100mb"
+  },
+  "costControl": {
+    "dailyLimit": 10.0,
+    "monthlyLimit": 200.0,
+    "alertThreshold": 0.8,
+    "actions": {
+      "onDailyLimitReached": "warn",
+      "onMonthlyLimitReached": "block"
+    }
+  },
+  "verbose": false,
+  "model": "claude-sonnet-4-6-20250929"
+}

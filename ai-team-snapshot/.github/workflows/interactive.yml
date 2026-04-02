@@ -1,0 +1,62 @@
+
+name: Interactive Commands - 文档2.2.2实现
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  process-command:
+    if: contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract command
+        id: extract
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          # 移除@claude前缀
+          COMMAND=$(echo "$COMMENT" | sed 's/@claude//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          echo "command=$COMMAND" >> $GITHUB_OUTPUT
+          echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+
+      - name: Process Claude Command
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-6-20250929
+          prompt: |
+            你是一个AI代码助手，正在处理GitHub PR中的命令：${{ steps.extract.outputs.command }}
+            
+            PR编号：${{ steps.extract.outputs.pr_number }}
+            PR分支：${{ github.event.pull_request.head.ref }}
+            
+            请根据命令执行相应操作：
+            - 如果是代码审查相关命令，请审查当前PR的代码变更
+            - 如果是安全扫描命令，请执行安全审查
+            - 如果是测试命令，请运行相关测试
+            - 如果是文档生成命令，请生成相关文档
+            
+            输出结果将作为评论回复到PR中。
+
+      - name: Post comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('claude-output.md', 'utf8');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.extract.outputs.pr_number }},
+              body: output
+            });

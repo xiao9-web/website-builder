@@ -1,0 +1,82 @@
+
+{
+  "mcpServers": {
+    "code-interpreter": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-code-interpreter"],
+      "trust": "full",
+      "env": {
+        "WORKING_DIRECTORY": "./workspace"
+      },
+      "limits": {
+        "memory": "512mb",
+        "cpu": "50%",
+        "timeout": 30000,
+        "maxRequests": 100
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "trust": "limited",
+      "allowedMethods": [
+        "search_repos",
+        "get_repo",
+        "create_issue",
+        "create_pr"
+      ],
+      "network": {
+        "allowedHosts": ["api.github.com"],
+        "blockedHosts": ["*.internal.corp"],
+        "allowedPorts": [443]
+      },
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-web-search"],
+      "trust": "limited",
+      "allowedMethods": [
+        "search"
+      ],
+      "network": {
+        "allowedHosts": ["*.bing.com", "*.google.com"],
+        "blockedHosts": ["*.internal.corp", "*.local"],
+        "allowedPorts": [443]
+      }
+    },
+    "internal-api": {
+      "command": "node",
+      "args": ["./mcp-servers/internal-api/index.js"],
+      "trust": "full",
+      "env": {
+        "API_KEY": "${INTERNAL_API_KEY}",
+        "DB_URL": "${INTERNAL_DB_URL}"
+      },
+      "network": {
+        "allowedHosts": ["api.internal.corp"],
+        "allowedPorts": [443, 8443]
+      }
+    },
+    "external-tool": {
+      "command": "npx",
+      "args": ["-y", "external-mcp-tool"],
+      "trust": "none",
+      "sandboxed": true,
+      "timeout": 30000,
+      "network": {
+        "allowedHosts": ["api.external.com"],
+        "blockedHosts": ["*"]
+      }
+    }
+  },
+  "security": {
+    "requireHttps": true,
+    "maxConcurrentConnections": 5,
+    "defaultTimeout": 60000,
+    "allowUntrustedCertificates": false,
+    "maxPayloadSize": "10mb"
+  }
+}

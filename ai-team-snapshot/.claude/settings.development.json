@@ -1,0 +1,29 @@
+
+{
+  "permissions": {
+    "allow": [
+      "*"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Read(./.env.production)",
+      "Bash(git push --force origin main)",
+      "Bash(sudo *)",
+      "Bash(curl * | bash)"
+    ]
+  },
+  "allowedTools": [
+    "*"
+  ],
+  "disallowedTools": [
+    "Bash(rm -rf *)",
+    "Bash(sudo *)",
+    "Bash(curl * | bash)",
+    "Write(.env.production)",
+    "Write(**/secrets/*)"
+  ],
+  "verbose": true,
+  "logLevel": "debug",
+  "model": "claude-haiku-4"
+}

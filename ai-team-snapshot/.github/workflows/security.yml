@@ -1,0 +1,48 @@
+
+name: Security Review - 文档2.3实现
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Check for sensitive data
+        run: |
+          grep -r "api_key\|password\|secret\|token\|private_key" --include="*.ts" --include="*.js" --include="*.json" --include="*.env*" . | grep -v node_modules | grep -v ".d.ts" > secrets-scan.txt || true
+          if [ -s secrets-scan.txt ]; then
+            echo "::error::发现敏感信息硬编码！"
+            cat secrets-scan.txt
+            exit 1
+          fi
+
+      - name: Claude Security Scan
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          command: "/security-review"
+
+      - name: Check for Critical Issues
+        run: |
+          if grep -q "Critical\|高危" security-report.md; then
+            echo "::error::发现高危安全问题，请修复后重新提交"
+            exit 1
+          fi

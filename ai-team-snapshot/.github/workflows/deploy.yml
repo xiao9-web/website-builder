@@ -1,0 +1,118 @@
+
+name: Deployment Pipeline - 文档2.5实现
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+permissions:
+  contents: read
+  deployments: write
+  statuses: write
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Deploy to Staging
+        run: |
+          echo "🚀 部署到测试环境..."
+          # 这里填写你的部署脚本
+          # 例如：scp dist/* user@staging-server:/var/www/
+          # 或者：kubectl apply -f k8s/staging/
+
+      - name: Notify deployment
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            请生成部署通知：
+            - 环境：测试环境
+            - 版本：${{ github.sha }}
+            - 分支：${{ github.ref }}
+            - 触发者：${{ github.actor }}
+            - 状态：部署成功
+            
+            请以简洁的格式输出，适合发送到团队群。
+
+  deploy-production:
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: deploy-staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production version
+        run: npm run build:production
+
+      - name: Run all tests
+        run: npm run test:all
+
+      - name: Backup production data
+        run: |
+          echo "💾 备份生产环境数据..."
+          # 备份脚本
+
+      - name: Deploy to Production
+        run: |
+          echo "🚀 部署到生产环境..."
+          # 生产部署脚本
+
+      - name: Post-deployment verification
+        run: |
+          echo "✅ 验证生产环境部署..."
+          # 健康检查脚本
+          curl -f https://your-domain.com/health || exit 1
+
+      - name: Generate deployment report
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            请生成生产部署报告：
+            - 版本：${{ github.sha }}
+            - 部署时间：$(date)
+            - 触发者：${{ github.actor }}
+            - 变更内容：最近10条提交记录
+            - 部署状态：成功
+            
+            输出格式适合发送给团队和 stakeholders。

@@ -1,0 +1,46 @@
+
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude-review:
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' &&
+       contains(github.event.comment.body, '@claude'))
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: "claude-sonnet-4-6-20250929"
+          max_tokens: 4096
+          timeout: 300
+          prompt: |
+            请审查以下代码变更：
+            
+            审查要点：
+            1. 代码质量和可维护性
+            2. 潜在的安全问题
+            3. 性能考量
+            4. 测试覆盖建议
+            
+            请使用中文回复，格式化输出审查结果。

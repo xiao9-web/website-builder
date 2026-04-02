@@ -1,0 +1,73 @@
+
+name: Documentation Generation - 文档2.2.2实现
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**/*.ts'
+      - 'src/**/*.js'
+      - 'docs/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate API Documentation
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            请扫描src/目录下的所有TypeScript代码，生成API文档。
+            
+            文档格式要求：
+            1. Markdown格式
+            2. 每个API包含：路径、方法、参数说明、返回值说明、错误码、使用示例
+            3. 按模块分类
+            4. 包含全局错误码说明
+            
+            输出到docs/api/目录，每个模块一个文件。
+
+      - name: Generate CHANGELOG
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            请根据最近的Git提交记录，生成CHANGELOG.md文件。
+            
+            格式要求：
+            ## [版本号] - 日期
+            ### 新增功能
+            - [功能描述]
+            
+            ### 修复问题
+            - [问题描述]
+            
+            ### 性能优化
+            - [优化描述]
+            
+            输出到CHANGELOG.md。
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/api/ CHANGELOG.md
+          git commit -m "docs: 自动更新API文档和CHANGELOG" || echo "No changes to commit"
+          git push

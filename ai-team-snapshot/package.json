@@ -1,0 +1,30 @@
+{
+  "name": "ai-team",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "audit:analyze": "python3 .claude/skills/project-specific/scripts/analyze-audit.py",
+    "audit:cost": "python3 .claude/skills/project-specific/scripts/monitor-cost.py",
+    "workflow": "node scripts/workflow.js",
+    "setup": "npm install && cp .env.example .env && echo '✅ 项目初始化完成！请编辑 .env 文件配置环境变量'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

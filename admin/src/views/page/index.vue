@@ -16,8 +16,8 @@
         <el-table-column prop="slug" label="路径" />
         <el-table-column prop="status" label="状态">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'published' ? 'success' : 'info'">
-              {{ row.status === 'published' ? '已发布' : '草稿' }}
+            <el-tag :type="row.status === '1' ? 'success' : 'info'">
+              {{ row.status === '1' ? '已发布' : '草稿' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getPageListApi, deletePageApi, createPageApi } from '@/api/page'
@@ -175,8 +175,20 @@ const handleDelete = async (row: any) => {
   }
 }
 
+// 页面可见性监听，返回时自动刷新
+const handleVisibilityChange = () => {
+  if (!document.hidden) {
+    loadPages()
+  }
+}
+
 onMounted(() => {
   loadPages()
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
