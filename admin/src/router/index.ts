@@ -116,6 +116,24 @@ const routes = [
         },
       },
       {
+        path: 'product',
+        name: 'Product',
+        component: () => import('@/views/product/index.vue'),
+        meta: {
+          title: '产品管理',
+          icon: 'ShoppingCart',
+        },
+      },
+      {
+        path: 'media',
+        name: 'Media',
+        component: () => import('@/views/media/index.vue'),
+        meta: {
+          title: '媒体库',
+          icon: 'PictureFilled',
+        },
+      },
+      {
         path: 'site-config',
         name: 'SiteConfig',
         component: () => import('@/views/site-config/index.vue'),

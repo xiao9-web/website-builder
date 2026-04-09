@@ -18,6 +18,10 @@ import { TagModule } from './tag/tag.module';
 import { SettingModule } from './setting/setting.module';
 import { AiModule } from './ai/ai.module';
 import { AttachmentModule } from './attachment/attachment.module';
+import { ThemeModule } from './theme/theme.module';
+import { PageConfigModule } from './page-config/page-config.module';
+import { ProductModule } from './product/product.module';
+import { MediaModule } from './media/media.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -67,6 +71,10 @@ import { RolesGuard } from './auth/guards/roles.guard';
     SettingModule,
     AiModule,
     AttachmentModule,
+    ThemeModule,
+    PageConfigModule,
+    ProductModule,
+    MediaModule,
   ],
   providers: [
     {
