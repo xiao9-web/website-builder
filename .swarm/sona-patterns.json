@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "patterns": {
+    "coder:测试网站构建系统的主题和页面配置功能": {
+      "keywords": [
+        "测试网站构建系统的主题和页面配置功能"
+      ],
+      "agent": "coder",
+      "confidence": 0.55,
+      "successCount": 1,
+      "failureCount": 0,
+      "lastUsed": 1775636051371,
+      "createdAt": 1775636051371
+    }
+  },
+  "stats": {
+    "trajectoriesProcessed": 1,
+    "successfulRoutings": 1,
+    "failedRoutings": 0,
+    "lastUpdate": 1775636051371
+  },
+  "metadata": {
+    "createdAt": "2026-04-08T08:14:11.398Z",
+    "savedAt": "2026-04-08T08:14:11.398Z"
+  }
+}

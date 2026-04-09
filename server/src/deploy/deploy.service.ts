@@ -299,7 +299,84 @@ export class DeployService {
   }
 
   async rollback(id: number, userId: number): Promise<DeployVersion> {
-    // TODO: 实现版本回滚逻辑
-    throw new Error('版本回滚功能开发中');
+    const targetVersion = await this.deployVersionRepository.findOne({ where: { id } });
+
+    if (!targetVersion) {
+      throw new Error('目标版本不存在');
+    }
+
+    if (targetVersion.status !== DeployStatus.SUCCESS) {
+      throw new Error('只能回滚到成功的版本');
+    }
+
+    if (targetVersion.is_active) {
+      throw new Error('该版本已经是当前活跃版本');
+    }
+
+    if (!targetVersion.snapshot_data) {
+      throw new Error('该版本没有快照数据，无法回滚');
+    }
+
+    const startTime = Date.now();
+    const newVersion = this.deployVersionRepository.create({
+      version: `${targetVersion.version}-rollback-${Date.now()}`,
+      description: `回滚到版本 ${targetVersion.version}`,
+      status: DeployStatus.RUNNING,
+      created_by: userId,
+      snapshot_data: targetVersion.snapshot_data,
+    });
+
+    await this.deployVersionRepository.save(newVersion);
+
+    try {
+      // 解析快照数据
+      const snapshotData = JSON.parse(targetVersion.snapshot_data);
+
+      // 使用快照数据重新部署
+      const buildDir = path.join(process.cwd(), 'temp', 'build', newVersion.version);
+      await fs.ensureDir(buildDir);
+
+      // 写入数据文件
+      await fs.writeJSON(path.join(buildDir, 'data.json'), snapshotData);
+
+      // 构建静态页面
+      await this.buildStaticSite(snapshotData);
+
+      // 上传到OSS
+      const previewUrl = await this.uploadToOSS(buildDir, newVersion.version);
+
+      // 刷新CDN（如果配置了）
+      if (process.env.ALIYUN_CDN_DOMAIN) {
+        await this.refreshCDN();
+      }
+
+      // 更新版本状态
+      const duration = Math.floor((Date.now() - startTime) / 1000);
+
+      // 将之前的活跃版本设为非活跃
+      await this.deployVersionRepository.update(
+        { is_active: true },
+        { is_active: false }
+      );
+
+      // 设置新版本为活跃
+      newVersion.status = DeployStatus.SUCCESS;
+      newVersion.is_active = true;
+      newVersion.duration = duration;
+      newVersion.deploy_log = `回滚成功，耗时 ${duration} 秒`;
+      newVersion.preview_url = process.env.ALIYUN_OSS_DOMAIN || '';
+
+      await this.deployVersionRepository.save(newVersion);
+
+      // 清理临时文件
+      await fs.remove(buildDir);
+
+      return newVersion;
+    } catch (error) {
+      newVersion.status = DeployStatus.FAILED;
+      newVersion.deploy_log = `回滚失败: ${error.message}`;
+      await this.deployVersionRepository.save(newVersion);
+      throw error;
+    }
   }
 }
