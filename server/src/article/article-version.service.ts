@@ -25,7 +25,7 @@ export class ArticleVersionService {
       summary: article.summary,
       cover_image: article.cover_image,
       category_id: article.category_id,
-      tags: article.tags,
+      tags: null,
       seo_title: article.seo_title,
       seo_description: article.seo_description,
       seo_keywords: article.seo_keywords,
@@ -84,7 +84,6 @@ export class ArticleVersionService {
     article.summary = version.summary;
     article.cover_image = version.cover_image;
     article.category_id = version.category_id;
-    article.tags = version.tags;
     article.seo_title = version.seo_title;
     article.seo_description = version.seo_description;
     article.seo_keywords = version.seo_keywords;

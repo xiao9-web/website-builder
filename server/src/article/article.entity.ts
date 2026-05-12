@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Menu } from '../menu/menu.entity';
+import { ArticleTag } from './article-tag.entity';
 
 export enum ArticleStatus {
   DRAFT = '0',
@@ -32,8 +33,8 @@ export class Article {
   @Column({ nullable: true })
   category_id: number;
 
-  @Column({ length: 255, nullable: true })
-  tags: string; // 逗号分隔的标签
+  @OneToMany(() => ArticleTag, at => at.article)
+  articleTags: ArticleTag[];
 
   @Column({ length: 255, nullable: true })
   seo_title: string;

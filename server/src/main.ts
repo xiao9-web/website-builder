@@ -12,9 +12,20 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
-  // 启用CORS
+  // 允许的来源：环境变量配置，开发模式默认允许 localhost
+  const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
+    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => {
+      // 允许无 origin 的请求（如 curl、服务器间调用）
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`不允许的来源: ${origin}`));
+      }
+    },
     credentials: true,
   });
   

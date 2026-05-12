@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Menu } from './menu.entity';
+import { Article, ArticleStatus } from '../article/article.entity';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 
@@ -10,6 +11,8 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu)
     private menuRepository: Repository<Menu>,
+    @InjectRepository(Article)
+    private articleRepository: Repository<Article>,
   ) {}
 
   async create(createMenuDto: CreateMenuDto): Promise<Menu> {
@@ -84,24 +87,22 @@ export class MenuService {
     await this.menuRepository.delete(id);
   }
 
-  async getMenuArticles(menuId: number) {
+  async getMenuArticles(menuId: number): Promise<{ menuName: string; articles: Article[] }> {
     const menu = await this.findOne(menuId);
     if (!menu) {
       return { menuName: '未知菜单', articles: [] };
     }
 
-    // 从中间表获取该菜单关联的所有文章
-    const articleMenus = await this.menuRepository.query(
-      `SELECT a.* FROM articles a
-       INNER JOIN article_menu am ON a.id = am.article_id
-       WHERE am.menu_id = ? AND a.status = '1' AND a.deleted_at IS NULL
-       ORDER BY a.published_at DESC`,
-      [menuId]
-    );
+    const articles = await this.articleRepository
+      .createQueryBuilder('article')
+      .innerJoin('article_menu', 'am', 'am.article_id = article.id')
+      .leftJoinAndSelect('article.author', 'author')
+      .where('am.menu_id = :menuId', { menuId })
+      .andWhere('article.status = :status', { status: ArticleStatus.PUBLISHED })
+      .andWhere('article.deleted_at IS NULL')
+      .orderBy('article.published_at', 'DESC')
+      .getMany();
 
-    return {
-      menuName: menu.name,
-      articles: articleMenus
-    };
+    return { menuName: menu.name, articles };
   }
 }

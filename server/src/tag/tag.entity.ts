@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { ArticleTag } from '../article/article-tag.entity';
 
 @Entity('tags')
 export class Tag {
@@ -13,6 +14,9 @@ export class Tag {
 
   @Column({ default: 0 })
   usage_count: number;
+
+  @OneToMany(() => ArticleTag, at => at.tag)
+  articleTags: ArticleTag[];
 
   @CreateDateColumn()
   created_at: Date;

@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -32,6 +34,12 @@ import { RolesGuard } from './auth/guards/roles.guard';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    // 定时任务
+    ScheduleModule.forRoot(),
+
+    // 请求频率限制：每分钟最多 60 次
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
 
     // 静态文件服务
     ServeStaticModule.forRoot({
@@ -77,6 +85,10 @@ import { RolesGuard } from './auth/guards/roles.guard';
     MediaModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

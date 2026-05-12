@@ -8,13 +8,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(private configService: ConfigService) {
-    const secret = configService.get<string>('JWT_SECRET') || 'default_secret_key';
+    const secret = configService.get<string>('JWT_SECRET');
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: secret,
     });
-    this.logger.log(`JWT Strategy initialized with secret: ${secret.substring(0, 10)}...`);
   }
 
   async validate(payload: any) {

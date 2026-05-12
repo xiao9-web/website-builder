@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { Category } from './category.entity';
+import { Article } from '../article/article.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
@@ -10,13 +11,15 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Article)
+    private articleRepository: Repository<Article>,
   ) {}
 
   // 生成slug
   private generateSlug(name: string): string {
     return name
       .toLowerCase()
-      .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+      .replace(/[^a-z0-9一-龥]+/g, '-')
       .replace(/^-|-$/g, '');
   }
 
@@ -141,8 +144,13 @@ export class CategoryService {
       throw new BadRequestException('该分类下有子分类，无法删除');
     }
 
-    // TODO: 检查是否有文章使用该分类
-    // 这里需要注入ArticleService或直接查询article表
+    // 检查是否有文章使用该分类
+    const articleCount = await this.articleRepository.count({
+      where: { category_id: id, deleted_at: IsNull() },
+    });
+    if (articleCount > 0) {
+      throw new BadRequestException(`该分类下有 ${articleCount} 篇文章，请先移除文章关联后再删除`);
+    }
 
     await this.categoryRepository.remove(category);
   }
