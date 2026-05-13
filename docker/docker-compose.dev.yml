@@ -1,0 +1,39 @@
+# Website Builder - Docker Services (Dev Extensions)
+# Adds pgAdmin 4 + Redis Commander for local development
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: wb-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - wb-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: wb-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - wb-network
+
+volumes:
+  pgadmin_data:
+    driver: local

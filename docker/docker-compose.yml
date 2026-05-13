@@ -1,0 +1,53 @@
+# Website Builder - Docker Services (Base)
+# PostgreSQL 16 + Redis 7
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: website_builder
+      POSTGRES_USER: wb_user
+      POSTGRES_PASSWORD: wb_pass
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wb_user -d website_builder"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - wb-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: wb-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - wb-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  wb-network:
+    driver: bridge

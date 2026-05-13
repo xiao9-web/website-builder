@@ -1,34 +1,11 @@
-services:
-  mysql:
-    image: mysql:latest
-    container_name: website-builder-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root123456
-      MYSQL_DATABASE: website_builder
-      MYSQL_USER: website_user
-      MYSQL_PASSWORD: website_pass
-      TZ: Asia/Shanghai
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./docker/mysql/data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --default-authentication-plugin=mysql_native_password
-      - --init-connect=SET NAMES utf8mb4
-      - --skip-character-set-client-handshake
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123456"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - website-builder-network
+# Root docker-compose - delegates to docker/ directory
+# Usage:
+#   docker compose up -d                                          (base: postgres + redis)
+#   docker compose -f docker/docker-compose.dev.yml up -d         (add pgadmin + redis-commander)
+#
+# Or use the Makefile:
+#   make dev-up       (base services)
+#   make dev-up-full  (base + dev tools)
 
-networks:
-  website-builder-network:
-    driver: bridge
+include:
+  - docker/docker-compose.yml
