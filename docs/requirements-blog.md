@@ -47,11 +47,14 @@
 
 ### 4.2 导航菜单
 
-- 最多 3 级嵌套
+- 固定 1 个"首页"菜单（不可删除）
+- 最多 6 个自定义顶级菜单（后台可增删改）
+- 每个菜单最多 3 级嵌套
 - Hover 展开子菜单
-- 菜单项仅指向分类（不支持独立页面、外部链接）
-- "关于"页面通过创建一个"关于"分类 + 一篇文章实现
+- 文章必须关联到叶子节点（最末级菜单），一个叶子菜单下可有多篇文章
+- "关于"页面通过创建一个"关于"菜单 + 一篇文章实现
 - 后台可视化拖拽管理菜单顺序和层级
+- 菜单即分类，不再有独立的"分类"概念
 
 ### 4.3 首页
 
@@ -76,10 +79,11 @@
 - 相关文章推荐
 - 评论区
 
-### 4.6 分类页
+### 4.6 菜单页
 
-- 分类名 + 该分类下的文章列表
+- 菜单名 + 该菜单下的文章列表
 - 列表样式与文章列表页一致
+- 仅叶子菜单有文章列表，非叶子菜单展示子菜单导航
 
 ### 4.7 归档页
 
@@ -123,14 +127,16 @@
 - WYSIWYG 富文本编辑器
 - 编辑器存储格式为 Markdown
 - 支持草稿 / 已发布状态
-- 支持设置封面图、分类、标签
+- 支持设置封面图、所属菜单（必选叶子菜单）、标签
 - 发布时触发 SSG 构建
 
-### 5.4 分类管理
+### 5.4 菜单管理
 
-- 树形结构（支持多级）
+- 固定"首页"菜单不可删除
+- 最多 6 个自定义顶级菜单
+- 树形结构（最多 3 级嵌套）
+- 可视化拖拽排序和层级调整
 - CRUD 操作
-- 排序
 
 ### 5.5 标签管理
 
@@ -148,20 +154,14 @@
 - 图片上传和管理
 - 在编辑器中插入图片
 
-### 5.8 菜单管理
-
-- 可视化拖拽排序
-- 支持最多 3 级嵌套
-- 菜单项关联到分类
-
-### 5.9 站点设置
+### 5.8 站点设置
 
 - 博客名称、描述、Logo
 - 社交链接配置
 - 主题色配置
 - Hero 区域内容配置
 
-### 5.10 构建管理
+### 5.9 构建管理
 
 - 手动触发构建
 - 构建历史和状态查看
@@ -180,22 +180,23 @@
 | excerpt | varchar(500) | 摘要 |
 | cover_image | varchar(500) | 封面图 URL |
 | status | enum | draft / published |
-| category_id | bigint FK | 所属分类 |
+| menu_id | bigint FK | 所属菜单（叶子节点） |
 | published_at | timestamp | 发布时间 |
 | created_at | timestamp | 创建时间 |
 | updated_at | timestamp | 更新时间 |
 | search_vector | tsvector | 全文搜索向量 |
 
-### categories（分类）
+### menus（菜单）
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | bigint PK | 主键 |
-| name | varchar(50) | 分类名 |
+| name | varchar(50) | 菜单名 |
 | slug | varchar(50) UNIQUE | URL 标识 |
 | description | varchar(200) | 描述 |
-| parent_id | bigint FK (self) | 父分类 |
+| parent_id | bigint FK (self) | 父菜单 |
 | sort_order | int | 排序 |
+| is_fixed | boolean | 是否固定菜单（首页） |
 
 ### tags（标签）
 
@@ -224,16 +225,6 @@
 | content | text | 评论内容 |
 | status | enum | pending / approved / rejected |
 | created_at | timestamp | 创建时间 |
-
-### menus（菜单）
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | bigint PK | 主键 |
-| name | varchar(50) | 显示名称 |
-| category_id | bigint FK | 关联分类 |
-| parent_id | bigint FK (self) | 父菜单 |
-| sort_order | int | 排序 |
 
 ### media（媒体）
 
@@ -291,14 +282,16 @@
 | DELETE | /api/admin/articles/{id} | 删除文章 |
 | POST | /api/admin/articles/{id}/publish | 发布并触发构建 |
 
-### 分类
+### 菜单
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | /api/categories | 分类树 |
-| POST | /api/admin/categories | 创建 |
-| PUT | /api/admin/categories/{id} | 更新 |
-| DELETE | /api/admin/categories/{id} | 删除 |
+| GET | /api/menus | 菜单树（公开） |
+| GET | /api/admin/menus | 菜单管理列表 |
+| POST | /api/admin/menus | 创建菜单 |
+| PUT | /api/admin/menus/{id} | 更新菜单 |
+| DELETE | /api/admin/menus/{id} | 删除菜单 |
+| PUT | /api/admin/menus/sort | 批量排序 |
 
 ### 标签
 
@@ -319,13 +312,6 @@
 | PUT | /api/admin/comments/{id}/approve | 审核通过 |
 | PUT | /api/admin/comments/{id}/reject | 拒绝 |
 | DELETE | /api/admin/comments/{id} | 删除 |
-
-### 菜单
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/menus | 菜单树 |
-| PUT | /api/admin/menus | 批量更新菜单 |
 
 ### 媒体
 
