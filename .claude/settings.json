@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git reset *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"exit: $?\")"
     ],
     "deny": [
       "Read(./.env)",
