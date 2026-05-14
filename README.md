@@ -6,10 +6,10 @@
 
 | 层级 | 技术 |
 |------|------|
-| 后端 | Java 21 + Spring Boot 3 + PostgreSQL 16 |
+| 后端 | Java 17 + Spring Boot 3 + PostgreSQL 16 |
 | 前端 | Next.js 14 + TypeScript + Tailwind CSS |
 | 缓存 | Redis 7 |
-| 构建 | Gradle (server) + pnpm (web) |
+| 构建 | Maven (server) + npm (web) |
 | 部署 | Docker + 阿里云 OSS/CDN |
 
 ## 项目结构
@@ -33,9 +33,9 @@ website-builder/
 ### 环境要求
 
 - Docker Desktop (含 Docker Compose v2)
-- Java 21+ (推荐 GraalVM)
+- Java 17+
 - Node.js 20+
-- pnpm 8+
+- npm 10+
 
 ### 1. 启动基础服务
 
@@ -77,6 +77,8 @@ make web-start
 make start
 ```
 
+该命令会先启动 PostgreSQL/Redis，然后并行启动后端和前端开发服务。
+
 ## 常用命令
 
 ```bash
@@ -102,7 +104,7 @@ apps/server/src/main/resources/db/migration/
 ```
 
 默认管理员账号：
-- 用户名: `admin`
+- 邮箱: `admin@xiao9.com`
 - 密码: `admin123`
 
 ## 许可证

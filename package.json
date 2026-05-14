@@ -4,26 +4,23 @@
   "description": "可视化官网构建系统，支持一键部署到阿里云",
   "private": true,
   "scripts": {
-    "install:all": "npm install && cd admin && npm install && cd ../server && npm install && cd ../frontend && npm install",
-    "dev:admin": "cd admin && npm run dev",
-    "dev:server": "cd server && npm run start:dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "build:admin": "cd admin && npm run build",
-    "build:server": "cd server && npm run build",
-    "build:frontend": "cd frontend && npm run build",
-    "build:all": "npm run build:admin && npm run build:server && npm run build:frontend",
-    "start:server": "cd server && npm run start:prod",
-    "lint": "npm run lint:admin && npm run lint:server && npm run lint:frontend",
-    "lint:admin": "cd admin && npm run lint",
-    "lint:server": "cd server && npm run lint",
-    "lint:frontend": "cd frontend && npm run lint"
+    "install:all": "npm install && cd apps/web && npm install",
+    "dev:server": "DB_USERNAME=wb_user DB_PASSWORD=wb_pass mvn -f apps/server/pom.xml spring-boot:run",
+    "dev:web": "cd apps/web && npm run dev",
+    "build:server": "mvn -f apps/server/pom.xml -DskipTests package",
+    "build:web": "cd apps/web && npm run build",
+    "build:all": "npm run build:server && npm run build:web",
+    "start:server": "DB_USERNAME=wb_user DB_PASSWORD=wb_pass java -jar apps/server/target/website-builder-0.1.0-SNAPSHOT.jar",
+    "lint": "npm run lint:web",
+    "lint:web": "cd apps/web && npm run lint"
   },
   "keywords": [
     "website-builder",
     "cms",
     "static-site-generator",
     "aliyun-oss",
-    "vue3"
+    "nextjs",
+    "spring-boot"
   ],
   "author": "",
   "license": "MIT",
