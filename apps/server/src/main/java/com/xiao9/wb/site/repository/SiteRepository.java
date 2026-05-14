@@ -13,6 +13,8 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
 
     Page<Site> findByOwnerId(Long ownerId, Pageable pageable);
 
+    Optional<Site> findBySlug(String slug);
+
     Optional<Site> findByDomain(String domain);
 
     Optional<Site> findBySubdomain(String subdomain);
@@ -20,4 +22,6 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
     boolean existsByDomain(String domain);
 
     boolean existsBySubdomain(String subdomain);
+
+    boolean existsBySlug(String slug);
 }

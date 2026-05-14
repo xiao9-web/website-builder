@@ -30,6 +30,9 @@ public class Site {
     @Column(length = 500)
     private String description;
 
+    @Column(length = 100)
+    private String slug;
+
     @Column(unique = true, length = 100)
     private String domain;
 
@@ -60,6 +63,8 @@ public class Site {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    private LocalDateTime publishedAt;
 
     public enum Status {
         DRAFT,

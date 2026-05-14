@@ -5,6 +5,7 @@ import com.xiao9.wb.common.response.PageResponse;
 import com.xiao9.wb.site.dto.BuildDTO;
 import com.xiao9.wb.site.dto.CreateSiteRequest;
 import com.xiao9.wb.site.dto.SiteDTO;
+import com.xiao9.wb.site.dto.UpdateSiteRequest;
 import com.xiao9.wb.site.service.BuildService;
 import com.xiao9.wb.site.service.SiteService;
 import com.xiao9.wb.user.entity.User;
@@ -27,7 +28,7 @@ public class SiteController {
             @RequestParam(defaultValue = "20") int size,
             @AuthenticationPrincipal User user
     ) {
-        PageResponse<SiteDTO> sites = siteService.listByOwner(user.getId(), page, size);
+        PageResponse<SiteDTO> sites = siteService.list(user, page, size);
         return ApiResponse.success(sites);
     }
 
@@ -36,7 +37,7 @@ public class SiteController {
             @PathVariable Long id,
             @AuthenticationPrincipal User user
     ) {
-        SiteDTO site = siteService.getById(id);
+        SiteDTO site = siteService.getById(id, user);
         return ApiResponse.success(site);
     }
 
@@ -49,12 +50,22 @@ public class SiteController {
         return ApiResponse.success(site);
     }
 
+    @PutMapping("/{id}")
+    public ApiResponse<SiteDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateSiteRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        SiteDTO site = siteService.update(id, request, user);
+        return ApiResponse.success(site);
+    }
+
     @PostMapping("/{id}/publish")
     public ApiResponse<SiteDTO> publish(
             @PathVariable Long id,
             @AuthenticationPrincipal User user
     ) {
-        SiteDTO site = siteService.publish(id, user.getId());
+        SiteDTO site = siteService.publish(id, user);
         return ApiResponse.success(site);
     }
 
@@ -63,12 +74,17 @@ public class SiteController {
             @PathVariable Long id,
             @AuthenticationPrincipal User user
     ) {
+        siteService.requireReadableSite(id, user);
         BuildDTO build = buildService.triggerBuild(id, "user:" + user.getId());
         return ApiResponse.success(build);
     }
 
     @GetMapping("/{id}/builds/latest")
-    public ApiResponse<BuildDTO> getLatestBuild(@PathVariable Long id) {
+    public ApiResponse<BuildDTO> getLatestBuild(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        siteService.requireReadableSite(id, user);
         BuildDTO build = buildService.getLatestBuild(id);
         return ApiResponse.success(build);
     }
@@ -78,7 +94,7 @@ public class SiteController {
             @PathVariable Long id,
             @AuthenticationPrincipal User user
     ) {
-        siteService.delete(id, user.getId());
+        siteService.delete(id, user);
         return ApiResponse.success();
     }
 }

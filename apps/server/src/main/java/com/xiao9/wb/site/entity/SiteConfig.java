@@ -45,6 +45,14 @@ public class SiteConfig {
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> customConfig;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> brandConfig;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> contentConfig;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;

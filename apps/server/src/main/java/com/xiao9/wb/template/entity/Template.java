@@ -29,6 +29,9 @@ public class Template {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(length = 100)
+    private String code;
+
     @Column(length = 500)
     private String description;
 

@@ -82,3 +82,26 @@
   - Leaves contact and media fields as null until real materials are provided.
   - Adds draft placeholder news only, not public fake news.
 - BE-003 now has a concrete schema/API gap to close: the Java entity layer still needs to represent `slug`, `code`, `brandConfig`, and `contentConfig`.
+
+## BE-003 Findings
+
+- The frontend already expects `site.slug`, but the backend `SiteDTO` did not return it before BE-003.
+- The frontend create-site flow sends `slug` and `templateId`; backend previously accepted `subdomain` but not `slug`, so create-site could not fully match the MVP URL model.
+- Existing backend security required authentication globally, but Site API methods themselves did not check ownership on read; BE-003 adds service-level access checks.
+- Existing templates from V2 do not all have `code`, but V4 seeds `corporate-site`; backend now supports resolving templates by either id or code.
+- SiteConfig default generation is now done during site creation, but a dedicated SiteConfig API is still needed for dashboard editing.
+
+## DOC-001 Findings
+
+- Current product requirements and task breakdown are already present, but current technical documentation was missing.
+- Existing technical docs in `docs/` contain historical stack assumptions, including Vue, NestJS, MySQL, drag-and-drop editing, and one-off CMS structures.
+- Developers need a current technical baseline before continuing BE-004 and frontend config editing work.
+- Added current docs for architecture, data model, API contracts, and SiteConfig schema.
+- `docs/README.md` now distinguishes current MVP baseline documents from historical references.
+
+## DOC-002 Findings
+
+- Keeping obsolete docs as "historical references" still creates risk because developers can follow stale links or outdated examples.
+- The current docs directory should prefer a small trusted baseline over a large mixed archive.
+- Obsolete Vue/NestJS/MySQL/drag-and-drop documents were deleted after the new MVP requirements and technical baseline were confirmed.
+- General references that do not directly conflict, such as `DEV_STANDARDS.md` and `AI_PIPELINE_GUIDE.md`, were kept for now.

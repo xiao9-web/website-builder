@@ -7,6 +7,7 @@ import java.util.Map;
 
 public record TemplateDTO(
         Long id,
+        String code,
         String name,
         String description,
         String category,
@@ -22,6 +23,7 @@ public record TemplateDTO(
     public static TemplateDTO from(Template template) {
         return new TemplateDTO(
                 template.getId(),
+                template.getCode(),
                 template.getName(),
                 template.getDescription(),
                 template.getCategory(),

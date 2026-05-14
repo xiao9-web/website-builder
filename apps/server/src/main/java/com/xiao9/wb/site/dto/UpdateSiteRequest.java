@@ -1,11 +1,9 @@
 package com.xiao9.wb.site.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record CreateSiteRequest(
-        @NotBlank(message = "Site name is required")
+public record UpdateSiteRequest(
         @Size(max = 100, message = "Name must not exceed 100 characters")
         String name,
 
@@ -20,9 +18,5 @@ public record CreateSiteRequest(
         @Size(min = 3, max = 50, message = "Subdomain must be between 3 and 50 characters")
         String subdomain,
 
-        String siteType,
-
-        Long templateId,
-
-        String templateCode
+        String status
 ) {}
