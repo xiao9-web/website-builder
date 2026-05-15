@@ -1,61 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Category from '../views/Category.vue'
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    return { top: 0, behavior: 'smooth' }
+  },
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/articles',
-      name: 'articles',
-      component: () => import('../views/ArticleList.vue')
-    },
-    {
-      path: '/articles/:slug',
-      name: 'article-detail',
-      component: () => import('../views/ArticleDetail.vue')
-    },
-    {
-      path: '/category/:id',
-      name: 'category',
-      component: () => import('../views/Category.vue')
-    },
-    {
-      path: '/tag/:slug',
-      name: 'tag',
-      component: () => import('../views/Tag.vue')
-    },
-    {
-      path: '/search',
-      name: 'search',
-      component: () => import('../views/Search.vue')
-    },
-    {
-      path: '/preview/:id',
-      name: 'article-preview',
-      component: () => import('../views/ArticlePreview.vue')
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/About.vue')
-    },
-    {
-      path: '/menu/:id',
-      name: 'menu-articles',
-      component: () => import('../views/MenuArticles.vue')
-    },
-    {
-      path: '/page/:id',
-      name: 'page-view',
-      component: () => import('../views/PageView.vue')
-    }
-  ]
+    { path: '/',          name: 'home',           component: () => import('../views/Home.vue') },
+    { path: '/about',     name: 'about',           component: () => import('../views/About.vue') },
+    { path: '/products',  name: 'products',        component: () => import('../views/Products.vue') },
+    { path: '/products/:id', name: 'product-detail', component: () => import('../views/ProductDetail.vue') },
+    { path: '/news',      name: 'news',            component: () => import('../views/News.vue') },
+    { path: '/news/:id',  name: 'news-detail',     component: () => import('../views/NewsDetail.vue') },
+    { path: '/contact',   name: 'contact',         component: () => import('../views/Contact.vue') },
+    // Catch-all
+    { path: '/:pathMatch(.*)*', redirect: '/' },
+  ],
 })
 
 export default router

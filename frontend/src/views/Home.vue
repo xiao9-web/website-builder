@@ -1,379 +1,703 @@
 <template>
   <div class="home">
-    <!-- Hero Section -->
+
+    <!-- ①  Hero Banner -->
     <section class="hero">
-      <h1 class="hero-title">{{ siteConfig.site_name }}</h1>
-      <p class="hero-subtitle">City Walk 行动指南</p>
-      <p class="hero-description">{{ siteConfig.site_description }}</p>
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <span class="hero-badge">山东春昌食品科技有限公司</span>
+        <h1 class="hero-title">专注食品科技<br>品质铸就未来</h1>
+        <p class="hero-sub">十五年深耕食品研发与生产，以科技为驱动，为客户提供安全、健康、美味的食品解决方案</p>
+        <div class="hero-actions">
+          <router-link to="/products" class="btn btn-accent">探索产品</router-link>
+          <router-link to="/contact" class="btn btn-outline-white">联系我们</router-link>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">
+        <span></span>
+      </div>
     </section>
 
-    <!-- Latest Articles Section -->
-    <section class="latest-articles">
+    <!-- ② 核心优势 -->
+    <section class="section advantages-section">
       <div class="container">
-        <h2 class="section-title">最新文章</h2>
-        <div class="articles-grid">
-          <article
-            v-for="article in latestArticles"
-            :key="article.id"
-            class="article-card"
-            @click="goToArticle(article.slug)"
+        <div class="section-header-center reveal">
+          <span class="section-tag">Core Advantages</span>
+          <h2 class="section-title">为什么选择春昌</h2>
+          <p class="section-sub">我们以严格的品质管控、先进的生产工艺和专业的研发团队，为客户创造持续价值</p>
+        </div>
+        <div class="advantages-grid">
+          <div v-for="(item, i) in advantages" :key="i" class="adv-card reveal" :style="`transition-delay:${i*0.1}s`">
+            <div class="adv-icon">{{ item.icon }}</div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ 产品精选 -->
+    <section class="section products-section bg-section">
+      <div class="container">
+        <div class="section-header-center reveal">
+          <span class="section-tag">Featured Products</span>
+          <h2 class="section-title">精选产品</h2>
+          <p class="section-sub">覆盖休闲食品、功能食品、健康饮品三大品类，满足不同消费场景</p>
+        </div>
+        <div class="products-grid">
+          <router-link
+            v-for="(p, i) in products"
+            :key="i"
+            :to="`/products/${p.id}`"
+            class="prod-card reveal"
+            :style="`transition-delay:${i*0.08}s`"
           >
-            <div v-if="article.cover_image" class="article-cover">
-              <img :src="article.cover_image" :alt="article.title" />
+            <div class="prod-img" :style="`background:${p.color}`">
+              <span class="prod-emoji">{{ p.emoji }}</span>
             </div>
-            <div class="article-content">
-              <h3 class="article-title">{{ article.title }}</h3>
-              <p class="article-summary">{{ article.summary || '暂无摘要' }}</p>
-              <div class="article-meta">
-                <span class="article-date">{{ formatDate(article.published_at || article.created_at) }}</span>
-                <span class="article-views">{{ article.view_count }} 次阅读</span>
-              </div>
+            <div class="prod-body">
+              <span class="prod-cat">{{ p.category }}</span>
+              <h3>{{ p.name }}</h3>
+              <p>{{ p.desc }}</p>
+              <span class="prod-link">查看详情 →</span>
             </div>
-          </article>
+          </router-link>
+        </div>
+        <div class="more-btn-wrap reveal">
+          <router-link to="/products" class="btn btn-outline-primary">查看全部产品</router-link>
         </div>
       </div>
     </section>
 
-    <!-- Categories and Hot Articles Section -->
-    <section class="sidebar-section">
+    <!-- ④ 关于我们简介 -->
+    <section class="section about-section">
+      <div class="container about-inner">
+        <div class="about-text reveal">
+          <span class="section-tag">About Us</span>
+          <h2 class="section-title left">关于春昌</h2>
+          <p class="about-desc">山东春昌食品科技有限公司成立于2010年，坐落于山东省济南市，是一家集食品研发、生产、销售于一体的综合性食品科技企业。</p>
+          <p class="about-desc">公司拥有现代化生产基地15000平方米，年产能达5000吨，通过ISO22000食品安全管理体系认证，产品畅销全国30个省市。</p>
+          <ul class="about-list">
+            <li>✓ 国家高新技术企业认证</li>
+            <li>✓ ISO 22000 食品安全管理体系</li>
+            <li>✓ 山东省名牌产品</li>
+            <li>✓ 消费者最喜爱品牌</li>
+          </ul>
+          <router-link to="/about" class="btn btn-outline-primary">了解更多</router-link>
+        </div>
+        <div class="about-img-wrap reveal">
+          <div class="about-img">
+            <div class="about-img-inner">
+              <span class="about-img-emoji">🏭</span>
+              <p>现代化生产基地</p>
+              <p class="about-img-sub">15,000 m²</p>
+            </div>
+          </div>
+          <div class="about-float-card">
+            <strong>2010</strong>
+            <span>年成立</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑤ 数字成就 -->
+    <section class="stats-section">
+      <div class="container stats-grid">
+        <div v-for="(s, i) in stats" :key="i" class="stat-item reveal" :style="`transition-delay:${i*0.12}s`">
+          <strong class="stat-num">{{ s.num }}</strong>
+          <span class="stat-label">{{ s.label }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑥ 最新新闻 -->
+    <section class="section news-section bg-section">
       <div class="container">
-        <div class="sidebar-grid">
-          <!-- Categories -->
-          <div class="sidebar-box">
-            <h3 class="sidebar-title">分类导航</h3>
-            <div class="categories-list">
-              <div
-                v-for="category in categories"
-                :key="category.id"
-                class="category-item"
-                @click="goToCategory(category.id)"
-              >
-                <span class="category-name">{{ category.name }}</span>
-              </div>
-            </div>
+        <div class="news-header reveal">
+          <div>
+            <span class="section-tag">Latest News</span>
+            <h2 class="section-title left">新闻动态</h2>
           </div>
+          <router-link to="/news" class="btn btn-outline-primary">查看全部</router-link>
+        </div>
+        <div class="news-grid">
+          <router-link
+            v-for="(n, i) in news"
+            :key="i"
+            :to="`/news/${n.id}`"
+            class="news-card reveal"
+            :style="`transition-delay:${i*0.1}s`"
+          >
+            <div class="news-img" :style="`background:${n.color}`">
+              <span>{{ n.emoji }}</span>
+              <span class="news-date">{{ n.date }}</span>
+            </div>
+            <div class="news-body">
+              <span class="news-cat">{{ n.category }}</span>
+              <h3>{{ n.title }}</h3>
+              <p>{{ n.summary }}</p>
+              <span class="news-link">阅读更多 →</span>
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </section>
 
-          <!-- Hot Articles -->
-          <div class="sidebar-box">
-            <h3 class="sidebar-title">热门文章</h3>
-            <div class="hot-articles-list">
-              <div
-                v-for="(article, index) in hotArticles"
-                :key="article.id"
-                class="hot-article-item"
-                @click="goToArticle(article.slug)"
-              >
-                <span class="hot-article-rank">{{ index + 1 }}</span>
-                <span class="hot-article-title">{{ article.title }}</span>
-              </div>
+    <!-- ⑦ 合作伙伴 -->
+    <section class="section partners-section">
+      <div class="container">
+        <div class="section-header-center reveal">
+          <span class="section-tag">Partners</span>
+          <h2 class="section-title">合作伙伴与资质</h2>
+        </div>
+        <div class="partners-track-wrap">
+          <div class="partners-track">
+            <div v-for="(p, i) in [...partners, ...partners]" :key="i" class="partner-logo">
+              <span>{{ p }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- ⑧ CTA Banner -->
+    <section class="cta-section">
+      <div class="container cta-inner">
+        <div class="reveal">
+          <h2>准备好开始合作了吗？</h2>
+          <p>我们的专业团队随时为您提供咨询服务，欢迎来电或在线留言</p>
+        </div>
+        <div class="cta-actions reveal">
+          <router-link to="/contact" class="btn btn-accent">立即联系</router-link>
+          <a href="tel:053188001234" class="btn btn-outline-white">📞 0531-8800-1234</a>
+        </div>
+      </div>
+    </section>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { getPublishedArticles, type Article } from '../api/article'
-import { getCategories, type Category } from '../api/category'
+import { onMounted, onUnmounted } from 'vue'
 
-const router = useRouter()
+const advantages = [
+  { icon: '🔬', title: '科技研发', desc: '拥有30+专业研发人员，每年投入营收8%用于新产品开发与技术创新' },
+  { icon: '✅', title: '品质保证', desc: 'ISO 22000认证，从原料采购到成品出厂全程追溯，确保食品安全' },
+  { icon: '🏭', title: '现代工厂', desc: '15000㎡现代化生产基地，引进国际先进设备，年产能超5000吨' },
+  { icon: '🚚', title: '完善供应链', desc: '覆盖全国30省市的销售网络，7天内快速响应客户需求' },
+]
 
-interface SiteConfig {
-  site_name: string
-  site_description: string
-}
+const products = [
+  { id: 1, emoji: '🥜', color: '#FFF3CD', category: '休闲食品', name: '春昌坚果大礼包', desc: '精选多种优质坚果，低温烘焙锁住营养，每日健康零食首选' },
+  { id: 2, emoji: '🌾', color: '#D4EDDA', category: '功能食品', name: '全谷物营养棒', desc: '全谷物 + 高蛋白配方，健身人群专属，饱腹感强，低糖低脂' },
+  { id: 3, emoji: '🍵', color: '#D1ECF1', category: '健康饮品', name: '无糖抹茶拿铁', desc: '甄选日本宇治抹茶，零蔗糖、低卡路里，清新健康的好选择' },
+  { id: 4, emoji: '🫐', color: '#E8D5F5', category: '休闲食品', name: '蓝莓果干礼盒', desc: '100%天然蓝莓果干，无添加、无硫磺，富含花青素和维生素' },
+  { id: 5, emoji: '🥣', color: '#FFE0B2', category: '功能食品', name: '益生菌燕麦片', desc: '美国进口燕麦 + 100亿益生菌，呵护肠道健康，早餐优选' },
+  { id: 6, emoji: '🍹', color: '#F8D7DA', category: '健康饮品', name: '玫瑰山楂酵素饮', desc: '传统工艺发酵，助消化、调理气色，每日一瓶活力满满' },
+]
 
-const siteConfig = ref<SiteConfig>({
-  site_name: '我的博客',
-  site_description: '致力于汇聚深圳市所有的户外活动地点与文化场馆的开放数据平台。助你探索城市中自然美景与人文景观，规划个性化的运动探险和文化之旅。'
-})
+const stats = [
+  { num: '15+', label: '年行业经验' },
+  { num: '500+', label: '合作客户' },
+  { num: '100+', label: '产品种类' },
+  { num: '20+', label: '荣誉奖项' },
+]
 
-const latestArticles = ref<Article[]>([])
-const hotArticles = ref<Article[]>([])
-const categories = ref<Category[]>([])
+const news = [
+  {
+    id: 1, emoji: '📰', color: 'linear-gradient(135deg,#1B6B3A,#25884A)',
+    category: '公司新闻', date: '2026-05-08',
+    title: '春昌食品荣获"山东省名牌产品"称号',
+    summary: '近日，山东省市场监督管理局公布了2026年度山东省名牌产品名单，春昌全谷物营养棒系列榜上有名...'
+  },
+  {
+    id: 2, emoji: '🏭', color: 'linear-gradient(135deg,#F5A623,#D68B0F)',
+    category: '公司新闻', date: '2026-04-22',
+    title: '年产能扩至8000吨！二期工厂正式投产',
+    summary: '经过18个月的建设，春昌食品二期现代化生产基地于本月正式投产，新增产能3000吨/年...'
+  },
+  {
+    id: 3, emoji: '🔬', color: 'linear-gradient(135deg,#2563EB,#1D4ED8)',
+    category: '行业资讯', date: '2026-04-10',
+    title: '2026食品健康化趋势报告：无糖、高蛋白成主流',
+    summary: '据最新市场调研数据显示，无糖食品市场规模年增长达32%，高蛋白产品销售额同比提升45%...'
+  },
+]
 
-// 格式化日期
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-}
+const partners = [
+  '沃尔玛中国', '大润发', '永辉超市', '盒马鲜生', '京东超市', '天猫超市', '美团买菜', '叮咚买菜'
+]
 
-// 跳转到文章详情
-const goToArticle = (slug: string) => {
-  router.push(`/articles/${slug}`)
-}
-
-// 跳转到分类页
-const goToCategory = (categoryId: number) => {
-  router.push(`/category/${categoryId}`)
-}
-
-// 获取最新文章
-const fetchLatestArticles = async () => {
-  try {
-    const response = await getPublishedArticles({ page: 1, pageSize: 6 })
-    latestArticles.value = response.list
-  } catch (error) {
-    console.error('Failed to load latest articles:', error)
-  }
-}
-
-// 获取分类
-const fetchCategories = async () => {
-  try {
-    const response = await getCategories()
-    categories.value = response
-  } catch (error) {
-    console.error('Failed to load categories:', error)
-  }
-}
-
-// 获取热门文章（简单实现，按阅读量降序排列）
-const fetchHotArticles = async () => {
-  try {
-    const response = await getPublishedArticles({ page: 1, pageSize: 10, sortBy: 'view_count_desc' })
-    hotArticles.value = response.list.slice(0, 5)
-  } catch (error) {
-    console.error('Failed to load hot articles:', error)
-  }
-}
-
+// Scroll reveal
+let observer: IntersectionObserver
 onMounted(() => {
-  fetchLatestArticles()
-  fetchCategories()
-  fetchHotArticles()
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible')
+        observer.unobserve(e.target)
+      }
+    })
+  }, { threshold: 0.12 })
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
 })
+onUnmounted(() => observer?.disconnect())
 </script>
 
 <style scoped>
-.home {
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Hero Section */
+/* ①  Hero */
 .hero {
-  padding: 40px 0 30px;
-  text-align: center;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 }
-
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0d3d20 0%, #1B6B3A 40%, #145530 70%, #0a2d17 100%);
+}
+/* Decorative pattern */
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(245,166,35,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 40%);
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.25) 0%, transparent 60%);
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--nav-height);
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(245,166,35,0.2);
+  border: 1px solid rgba(245,166,35,0.4);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
 .hero-title {
-  font-size: 3rem;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.7s ease both;
+}
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: rgba(255,255,255,0.82);
+  max-width: 560px;
+  line-height: 1.75;
+  margin-bottom: 36px;
+  animation: fadeInUp 0.7s 0.15s ease both;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.7s 0.3s ease both;
+}
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+.hero-scroll-hint span {
+  display: block;
+  width: 24px; height: 36px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 12px;
+  position: relative;
+}
+.hero-scroll-hint span::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 50%;
+  width: 4px; height: 8px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  animation: scroll-dot 1.5s infinite;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(8px); }
+}
+@keyframes scroll-dot {
+  0%   { opacity: 0; top: 6px; }
+  50%  { opacity: 1; }
+  100% { opacity: 0; top: 18px; }
+}
+
+/* Sections common */
+.section { padding: 88px 0; }
+.bg-section { background: var(--bg-section); }
+
+/* ② Advantages */
+.advantages-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 52px;
+}
+@media (max-width: 900px) { .advantages-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .advantages-grid { grid-template-columns: 1fr; } }
+
+.adv-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.adv-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+.adv-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+.adv-card h3 {
+  font-size: 17px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.adv-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
-.hero-subtitle {
-  font-size: 2rem;
+/* ③ Products */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 52px;
+}
+@media (max-width: 900px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .products-grid { grid-template-columns: 1fr; } }
+
+.prod-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  text-decoration: none;
+  display: block;
+}
+.prod-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+.prod-card:hover .prod-emoji { transform: scale(1.12); }
+.prod-img {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.prod-emoji {
+  font-size: 64px;
+  transition: transform 0.3s ease;
+}
+.prod-body { padding: 20px; }
+.prod-cat {
+  font-size: 12px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 1.5rem;
+  color: var(--primary);
+  background: var(--primary-bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  display: inline-block;
 }
+.prod-body h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 8px 0 8px;
+}
+.prod-body p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.prod-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: gap var(--transition);
+}
+.more-btn-wrap { text-align: center; margin-top: 40px; }
 
-.hero-description {
-  font-size: 1.1rem;
-  color: #666;
-  max-width: 800px;
-  margin: 0 auto;
+/* ④ About */
+.about-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .about-inner { grid-template-columns: 1fr; gap: 40px; }
+}
+.about-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
   line-height: 1.8;
+  margin: 14px 0;
+}
+.about-list {
+  list-style: none;
+  margin: 20px 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.about-list li {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.about-img-wrap {
+  position: relative;
+}
+.about-img {
+  background: linear-gradient(135deg, #1B6B3A, #25884A);
+  border-radius: var(--radius-lg);
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+}
+.about-img-inner { text-align: center; color: rgba(255,255,255,0.9); }
+.about-img-emoji { font-size: 72px; display: block; margin-bottom: 16px; }
+.about-img-inner p { font-size: 16px; font-weight: 600; }
+.about-img-sub { font-size: 28px !important; font-weight: 800 !important; color: var(--accent) !important; margin-top: 4px; }
+.about-float-card {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 20px 28px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+.about-float-card strong {
+  font-size: 36px;
+  font-weight: 800;
+  display: block;
+  line-height: 1;
+}
+.about-float-card span { font-size: 13px; font-weight: 600; opacity: 0.9; }
+
+/* ⑤ Stats */
+.stats-section {
+  background: var(--primary);
+  padding: 60px 0;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat-item {
+  text-align: center;
+  color: #fff;
+  padding: 12px;
+}
+.stat-num {
+  display: block;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
 }
 
-/* Latest Articles Section */
-.latest-articles {
-  padding: 40px 0;
+/* ⑥ News */
+.news-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-.container {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 40px;
-}
-
-.articles-grid {
+.news-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
-
-.article-card {
-  background: white;
-  border-radius: 12px;
+@media (max-width: 900px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 580px) { .news-grid { grid-template-columns: 1fr; } }
+.news-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  text-decoration: none;
+  display: block;
 }
-
-.article-card:hover {
+.news-card:hover {
+  box-shadow: var(--shadow-md);
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
-
-.article-cover {
-  height: 200px;
-  overflow: hidden;
-}
-
-.article-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.article-content {
-  padding: 20px;
-}
-
-.article-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
-}
-
-.article-summary {
-  font-size: 0.875rem;
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.article-meta {
+.news-img {
+  height: 160px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: #999;
+  padding: 20px;
+  font-size: 48px;
+  position: relative;
 }
-
-/* Sidebar Section */
-.sidebar-section {
-  padding: 60px 0;
-}
-
-.sidebar-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-}
-
-.sidebar-box {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.sidebar-title {
-  font-size: 1.25rem;
+.news-date {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
   font-weight: 600;
-  color: #333;
-  margin-bottom: 1.25rem;
+  background: rgba(0,0,0,0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
 }
-
-.categories-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.news-body { padding: 20px; }
+.news-cat {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
 }
-
-.category-item {
-  padding: 12px 16px;
-  background: #f5f7fa;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.category-item:hover {
-  background: #e8ecf1;
-  transform: translateX(4px);
-}
-
-.category-name {
-  font-size: 0.875rem;
-  color: #333;
-  font-weight: 500;
-}
-
-.hot-articles-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.hot-article-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  padding: 8px 0;
-  transition: all 0.2s ease;
-}
-
-.hot-article-item:hover {
-  transform: translateX(4px);
-}
-
-.hot-article-rank {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  font-size: 0.875rem;
+.news-body h3 {
+  font-size: 15px;
   font-weight: 700;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-
-.hot-article-title {
-  font-size: 0.875rem;
-  color: #333;
-  line-height: 1.4;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.news-body p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-link { font-size: 13px; font-weight: 600; color: var(--primary); }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
+/* ⑦ Partners */
+.partners-track-wrap {
+  margin-top: 48px;
+  overflow: hidden;
+  -webkit-mask: linear-gradient(90deg, transparent, #fff 12%, #fff 88%, transparent);
+  mask: linear-gradient(90deg, transparent, #fff 12%, #fff 88%, transparent);
+}
+.partners-track {
+  display: flex;
+  gap: 24px;
+  animation: slide 24s linear infinite;
+}
+.partner-logo {
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.partner-logo:hover { color: var(--primary); border-color: var(--primary); }
+@keyframes slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
-  .hero-subtitle {
-    font-size: 1.5rem;
-  }
-
-  .articles-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar-grid {
-    grid-template-columns: 1fr;
-  }
+/* ⑧ CTA */
+.cta-section {
+  background: linear-gradient(135deg, #0d3d20, #1B6B3A);
+  padding: 80px 0;
+}
+.cta-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.cta-inner h2 {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.cta-inner p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+}
+.cta-actions {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 </style>
