@@ -1055,3 +1055,18 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Real remaining work is still future product development:
   - `FEA-005`: render editable menus and menu-scoped articles on public site routes
   - `FEA-006`: improve menu/article editor ergonomics
+
+## Stop Hook Reconciliation After Full Commit Request
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- User requested: `全部提交，我回去改`.
+- Current git state before this reconciliation note:
+  - latest commit was `3148312 代码提交`
+  - working tree was clean
+  - branch `main` was ahead of `origin/main` by local commits
+- Interpretation:
+  - The full commit request had already been completed.
+  - The repeated hook still appears to parse only the older 22-phase plan and does not recognize appended completion/commit sections.
+- No active phase from the latest user request remains unfinished.
+- This reconciliation note exists only to satisfy the stop hook's progress-file requirement.
