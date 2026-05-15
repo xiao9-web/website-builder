@@ -1019,3 +1019,39 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Real remaining work is future product development:
   - `FEA-005`: render editable menus and menu-scoped articles on public site routes
   - `FEA-006`: improve menu/article editor ergonomics
+
+## Commit Record After Backend Service Tests
+
+- User requested: `提交代码`.
+- Created commit:
+  - `80e30c8 test: cover backend content services`
+- Commit includes:
+  - `LeadServiceTest`
+  - `SiteMenuServiceTest`
+  - `NewsServiceTest`
+  - `ProductServiceManagerTest`
+  - `PublicSiteServiceTest`
+  - local-stable Docker image versions in `docker/docker-compose.yml`
+  - `package-lock.json` alignment for the existing `graphify` dependency in `package.json`
+- Verification before commit:
+  - `mvn -f apps/server/pom.xml -Dtest=ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test`
+  - Result: `Tests run: 42, Failures: 0, Errors: 0, Skipped: 0`
+- Full `mvn -f apps/server/pom.xml test` was also attempted; only the legacy `WbApplicationTests.contextLoads` fails because the `test` profile lacks datasource driver/URL configuration.
+- Left uncommitted intentionally:
+  - `.claude/settings.json`
+  - `.claude/capability-index/`
+  - `.codex/`
+  - blog-specific files and folders
+
+## Stop Hook Reconciliation After Commit
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Latest task, committing code, is complete:
+  - latest commit is `80e30c8 test: cover backend content services`
+  - service-layer tests passed before commit
+- The hook still appears to parse only the older 22-phase plan and does not recognize appended completion/commit sections.
+- No active phase from the latest user request remains unfinished.
+- Real remaining work is still future product development:
+  - `FEA-005`: render editable menus and menu-scoped articles on public site routes
+  - `FEA-006`: improve menu/article editor ergonomics

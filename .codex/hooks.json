@@ -1,0 +1,50 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/meta-kim-memory-save.mjs --event session-start",
+            "timeout": 10,
+            "statusMessage": "Loading Meta_Kim memory"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/meta-kim-memory-save.mjs --event user-prompt",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/graphify-context.mjs"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/meta-kim-memory-save.mjs --event stop",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

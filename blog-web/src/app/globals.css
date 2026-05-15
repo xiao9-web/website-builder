@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-rgb: 255, 255, 255;
+}
+
+.dark {
+  --foreground-rgb: 226, 232, 240;
+  --background-rgb: 15, 23, 42;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Prose code block styling */
+.prose pre {
+  @apply rounded-lg border border-slate-200 dark:border-slate-700;
+}
+
+.prose code {
+  @apply text-primary-600 dark:text-primary-400;
+}
+
+.prose pre code {
+  @apply text-inherit;
+}

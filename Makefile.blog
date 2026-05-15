@@ -1,0 +1,43 @@
+# Blog System — common Docker Compose commands
+# Usage: make -f Makefile.blog <target>
+
+COMPOSE_FILE := docker/docker-compose.blog.yml
+COMPOSE := docker compose -f $(COMPOSE_FILE)
+
+.PHONY: up down build logs db-shell redis-shell restart clean help
+
+help: ## Show available commands
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}'
+
+up: ## Start all blog services
+	$(COMPOSE) up -d
+
+down: ## Stop all blog services
+	$(COMPOSE) down
+
+build: ## Build blog-server image and start services
+	$(COMPOSE) up -d --build blog-server
+
+logs: ## Tail logs for all services
+	$(COMPOSE) logs -f
+
+logs-server: ## Tail blog-server logs
+	$(COMPOSE) logs -f blog-server
+
+logs-nginx: ## Tail nginx logs
+	$(COMPOSE) logs -f blog-nginx
+
+db-shell: ## Open psql shell in blog-postgres
+	docker exec -it blog-postgres psql -U $${BLOG_DB_USER:-blog_user} -d $${BLOG_DB_NAME:-blog}
+
+redis-shell: ## Open redis-cli in blog-redis
+	docker exec -it blog-redis redis-cli -a $${BLOG_REDIS_PASSWORD:-redis_pass}
+
+restart: down up ## Restart all services
+
+clean: ## Stop services and remove volumes (destructive)
+	$(COMPOSE) down -v
+	@echo "All blog volumes removed."
+
+status: ## Show running containers
+	$(COMPOSE) ps

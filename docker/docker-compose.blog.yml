@@ -1,0 +1,112 @@
+# Blog System - Docker Compose
+# Services: PostgreSQL 16, Redis 7, blog-server (Spring Boot), Nginx (static)
+# Usage: docker compose -f docker/docker-compose.blog.yml up -d
+
+services:
+  blog-postgres:
+    image: postgres:16-alpine
+    container_name: blog-postgres
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_DB: ${BLOG_DB_NAME:-blog}
+      POSTGRES_USER: ${BLOG_DB_USER:-blog_user}
+      POSTGRES_PASSWORD: ${BLOG_DB_PASSWORD:-blog_pass}
+      TZ: Asia/Shanghai
+    ports:
+      - "${BLOG_DB_PORT:-5433}:5432"
+    volumes:
+      - blog_postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BLOG_DB_USER:-blog_user} -d ${BLOG_DB_NAME:-blog}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - blog-network
+
+  blog-redis:
+    image: redis:7-alpine
+    container_name: blog-redis
+    restart: unless-stopped
+    ports:
+      - "${BLOG_REDIS_PORT:-6380}:6379"
+    volumes:
+      - blog_redis_data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${BLOG_REDIS_PASSWORD:-redis_pass}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${BLOG_REDIS_PASSWORD:-redis_pass}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - blog-network
+
+  blog-server:
+    build:
+      context: ../blog-server
+      dockerfile: Dockerfile
+    container_name: blog-server
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      SPRING_PROFILES_ACTIVE: ${BLOG_PROFILE:-prod}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://blog-postgres:5432/${BLOG_DB_NAME:-blog}
+      SPRING_DATASOURCE_USERNAME: ${BLOG_DB_USER:-blog_user}
+      SPRING_DATASOURCE_PASSWORD: ${BLOG_DB_PASSWORD:-blog_pass}
+      SPRING_DATA_REDIS_HOST: blog-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${BLOG_REDIS_PASSWORD:-redis_pass}
+      JWT_SECRET: ${BLOG_JWT_SECRET:-change-me-in-production}
+      JWT_ACCESS_EXPIRATION: ${BLOG_JWT_ACCESS_EXP:-3600}
+      JWT_REFRESH_EXPIRATION: ${BLOG_JWT_REFRESH_EXP:-604800}
+      SSG_OUTPUT_DIR: /app/static-output
+    ports:
+      - "${BLOG_SERVER_PORT:-8080}:8080"
+    volumes:
+      - blog_static_output:/app/static-output
+    depends_on:
+      blog-postgres:
+        condition: service_healthy
+      blog-redis:
+        condition: service_healthy
+    networks:
+      - blog-network
+
+  blog-nginx:
+    image: nginx:1.25-alpine
+    container_name: blog-nginx
+    restart: unless-stopped
+    ports:
+      - "${BLOG_HTTP_PORT:-80}:80"
+      - "${BLOG_HTTPS_PORT:-443}:443"
+    volumes:
+      - blog_static_output:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - blog-server
+    networks:
+      - blog-network
+
+volumes:
+  blog_postgres_data:
+    driver: local
+  blog_redis_data:
+    driver: local
+  blog_static_output:
+    driver: local
+
+networks:
+  blog-network:
+    driver: bridge
