@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString("zh-CN", {
     year: "numeric",
-    month: "short",
+    month: "2-digit",
     day: "numeric",
   });
 }

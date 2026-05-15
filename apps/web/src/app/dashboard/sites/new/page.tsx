@@ -15,13 +15,13 @@ import type { Template } from "@/types/template";
 import { slugify } from "@/lib/utils";
 
 const createSiteSchema = z.object({
-  name: z.string().min(2, "Site name must be at least 2 characters"),
+  name: z.string().min(2, "站点名称至少 2 个字符"),
   slug: z
     .string()
-    .min(2, "Slug must be at least 2 characters")
+    .min(2, "访问标识至少 2 个字符")
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens",
+      "访问标识只能包含小写字母、数字和连字符",
     ),
   description: z.string().optional(),
 });
@@ -72,26 +72,25 @@ export default function NewSitePage() {
       });
       router.push(`/dashboard/sites/${site.id}/edit`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create site");
+      setError(err instanceof Error ? err.message : "创建站点失败，请稍后再试。");
     }
   };
 
   if (templatesLoading) {
-    return <Loading fullScreen text="Loading templates..." />;
+    return <Loading fullScreen text="正在加载模板..." />;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Create New Site</h1>
+        <h1 className="text-2xl font-bold text-gray-900">新建站点</h1>
         <p className="mt-1 text-sm text-gray-500">
           {step === "template"
-            ? "Step 1: Choose a template"
-            : "Step 2: Configure your site"}
+            ? "第 1 步：选择模板"
+            : "第 2 步：填写站点信息"}
         </p>
       </div>
 
-      {/* Progress Steps */}
       <div className="mb-8 flex items-center gap-4">
         <div
           className={`flex items-center gap-2 ${step === "template" ? "text-primary-600" : "text-gray-400"}`}
@@ -101,7 +100,7 @@ export default function NewSitePage() {
           >
             1
           </span>
-          <span className="text-sm font-medium">Template</span>
+          <span className="text-sm font-medium">选择模板</span>
         </div>
         <div className="h-px flex-1 bg-gray-200" />
         <div
@@ -112,7 +111,7 @@ export default function NewSitePage() {
           >
             2
           </span>
-          <span className="text-sm font-medium">Details</span>
+          <span className="text-sm font-medium">站点信息</span>
         </div>
       </div>
 
@@ -130,7 +129,7 @@ export default function NewSitePage() {
           </div>
           <div className="mt-8 flex justify-end">
             <Button onClick={handleContinue} disabled={!selectedTemplate}>
-              Continue
+              下一步
             </Button>
           </div>
         </div>
@@ -148,7 +147,7 @@ export default function NewSitePage() {
 
             <div className="mb-4 rounded-lg bg-gray-50 p-3">
               <p className="text-sm text-gray-600">
-                Template:{" "}
+                已选模板：{" "}
                 <span className="font-medium text-gray-900">
                   {selectedTemplate?.name}
                 </span>
@@ -157,21 +156,21 @@ export default function NewSitePage() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Input
-                label="Site Name"
-                placeholder="My Awesome Site"
+                label="站点名称"
+                placeholder="山东春昌食品科技股份有限公司"
                 error={errors.name?.message}
                 {...register("name", { onChange: handleNameChange })}
               />
               <Input
-                label="Slug"
-                placeholder="my-awesome-site"
-                helperText="This will be used in your site URL"
+                label="访问标识"
+                placeholder="chunchang"
+                helperText="将用于生成站点访问地址，例如 /sites/chunchang"
                 error={errors.slug?.message}
                 {...register("slug")}
               />
               <Input
-                label="Description (optional)"
-                placeholder="A brief description of your site"
+                label="站点描述（选填）"
+                placeholder="简要说明站点用途和主营业务"
                 error={errors.description?.message}
                 {...register("description")}
               />
@@ -181,14 +180,14 @@ export default function NewSitePage() {
                   variant="outline"
                   onClick={() => setStep("template")}
                 >
-                  Back
+                  返回
                 </Button>
                 <Button
                   type="submit"
                   className="flex-1"
                   isLoading={isSubmitting}
                 >
-                  Create Site
+                  创建站点
                 </Button>
               </div>
             </form>

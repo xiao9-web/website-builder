@@ -3,6 +3,10 @@ import type { Site, CreateSiteData, UpdateSiteData } from "@/types/site";
 import type { Template } from "@/types/template";
 import api from "@/lib/api";
 
+interface SitePageResponse {
+  content: Site[];
+}
+
 interface SiteState {
   sites: Site[];
   currentSite: Site | null;
@@ -30,7 +34,8 @@ export const useSiteStore = create<SiteState>((set, get) => ({
   fetchSites: async () => {
     set({ isLoading: true });
     try {
-      const sites = (await api.get("/sites")) as Site[];
+      const response = (await api.get("/sites")) as Site[] | SitePageResponse;
+      const sites = Array.isArray(response) ? response : response.content;
       set({ sites, isLoading: false });
     } catch (error) {
       set({ isLoading: false });

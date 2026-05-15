@@ -12,7 +12,7 @@ export default function DashboardLayout({
   const { isAuthenticated, isInitialized, user, logout } = useAuth();
 
   if (!isInitialized) {
-    return <Loading fullScreen text="Loading..." />;
+    return <Loading fullScreen text="正在加载..." />;
   }
 
   if (!isAuthenticated) {
@@ -24,7 +24,7 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
-          <h2 className="text-lg font-semibold text-gray-800">Dashboard</h2>
+          <h2 className="text-lg font-semibold text-gray-800">运营后台</h2>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700">
               {user?.name?.charAt(0).toUpperCase() || "U"}
@@ -36,7 +36,7 @@ export default function DashboardLayout({
               onClick={logout}
               className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100"
             >
-              Logout
+              退出
             </button>
           </div>
         </header>

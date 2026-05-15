@@ -9,7 +9,7 @@ INSERT INTO users (name, email, password, role, enabled)
 VALUES (
     'Admin',
     'admin@xiao9.com',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+    '$2a$10$G/oP36zRE0l.8F7vJEexB.mThAW9bfeQe36vJeHRfmM7ir2v..ko.',
     'ADMIN',
     TRUE
 );

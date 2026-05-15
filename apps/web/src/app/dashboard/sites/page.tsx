@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
 import { formatDate } from "@/lib/utils";
+import { siteStatusClass, siteStatusLabel } from "@/lib/site-status";
 
 export default function SitesPage() {
   const { sites, isLoading, fetchSites, deleteSite } = useSiteStore();
@@ -18,7 +19,7 @@ export default function SitesPage() {
   const handleDelete = async (id: string, name: string) => {
     if (
       window.confirm(
-        `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+        `确定删除「${name}」吗？此操作无法撤销。`,
       )
     ) {
       await deleteSite(id);
@@ -26,16 +27,16 @@ export default function SitesPage() {
   };
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading sites..." />;
+    return <Loading fullScreen text="正在加载站点..." />;
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Sites</h1>
+          <h1 className="text-2xl font-bold text-gray-900">站点管理</h1>
           <p className="mt-1 text-sm text-gray-500">
-            {sites.length} site{sites.length !== 1 ? "s" : ""} total
+            共 {sites.length} 个站点
           </p>
         </div>
         <Link href="/dashboard/sites/new">
@@ -54,7 +55,7 @@ export default function SitesPage() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            New Site
+            新建站点
           </Button>
         </Link>
       </div>
@@ -63,10 +64,10 @@ export default function SitesPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-gray-500">
-              You haven&apos;t created any sites yet.
+              还没有创建任何站点。
             </p>
             <Link href="/dashboard/sites/new" className="mt-4 inline-block">
-              <Button>Create Your First Site</Button>
+              <Button>创建第一个站点</Button>
             </Link>
           </CardContent>
         </Card>
@@ -95,30 +96,29 @@ export default function SitesPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900">{site.name}</h3>
                     <p className="text-sm text-gray-500">
-                      {site.slug} &middot; Updated {formatDate(site.updatedAt)}
+                      {site.slug} &middot; 更新于 {formatDate(site.updatedAt)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      site.status === "published"
-                        ? "bg-green-100 text-green-700"
-                        : site.status === "draft"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-700"
-                    }`}
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${siteStatusClass(site.status)}`}
                   >
-                    {site.status}
+                    {siteStatusLabel(site.status)}
                   </span>
                   <Link href={`/dashboard/sites/${site.id}/edit`}>
                     <Button variant="outline" size="sm">
-                      Edit
+                      编辑
+                    </Button>
+                  </Link>
+                  <Link href={`/dashboard/sites/${site.id}/content`}>
+                    <Button variant="outline" size="sm">
+                      内容
                     </Button>
                   </Link>
                   <Link href={`/preview/${site.id}`} target="_blank">
                     <Button variant="ghost" size="sm">
-                      Preview
+                      预览
                     </Button>
                   </Link>
                   <Button
@@ -127,7 +127,7 @@ export default function SitesPage() {
                     onClick={() => handleDelete(site.id, site.name)}
                     className="text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
-                    Delete
+                    删除
                   </Button>
                 </div>
               </CardContent>

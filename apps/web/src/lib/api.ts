@@ -25,7 +25,7 @@ api.interceptors.response.use(
   (response) => {
     const data = response.data as ApiResponse;
     if (data.code !== 0 && data.code !== 200) {
-      return Promise.reject(new Error(data.message || "Request failed"));
+      return Promise.reject(new Error(data.message || "请求失败"));
     }
     return data.data as never;
   },
@@ -37,7 +37,7 @@ api.interceptors.response.use(
       }
     }
     const message =
-      error.response?.data?.message || error.message || "Network error";
+      error.response?.data?.message || error.message || "网络异常，请稍后再试";
     return Promise.reject(new Error(message));
   },
 );

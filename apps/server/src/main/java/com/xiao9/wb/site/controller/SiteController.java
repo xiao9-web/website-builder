@@ -4,7 +4,9 @@ import com.xiao9.wb.common.response.ApiResponse;
 import com.xiao9.wb.common.response.PageResponse;
 import com.xiao9.wb.site.dto.BuildDTO;
 import com.xiao9.wb.site.dto.CreateSiteRequest;
+import com.xiao9.wb.site.dto.SiteConfigDTO;
 import com.xiao9.wb.site.dto.SiteDTO;
+import com.xiao9.wb.site.dto.UpdateSiteConfigRequest;
 import com.xiao9.wb.site.dto.UpdateSiteRequest;
 import com.xiao9.wb.site.service.BuildService;
 import com.xiao9.wb.site.service.SiteService;
@@ -58,6 +60,25 @@ public class SiteController {
     ) {
         SiteDTO site = siteService.update(id, request, user);
         return ApiResponse.success(site);
+    }
+
+    @GetMapping("/{id}/config")
+    public ApiResponse<SiteConfigDTO> getConfig(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        SiteConfigDTO config = siteService.getConfig(id, user);
+        return ApiResponse.success(config);
+    }
+
+    @PutMapping("/{id}/config")
+    public ApiResponse<SiteConfigDTO> updateConfig(
+            @PathVariable Long id,
+            @RequestBody UpdateSiteConfigRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        SiteConfigDTO config = siteService.updateConfig(id, request, user);
+        return ApiResponse.success(config);
     }
 
     @PostMapping("/{id}/publish")

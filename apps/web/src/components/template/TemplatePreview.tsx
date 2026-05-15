@@ -21,13 +21,13 @@ export function TemplatePreview({
         <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
         <div className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
         <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
-        <span className="ml-2 text-xs text-gray-400">Preview</span>
+        <span className="ml-2 text-xs text-gray-400">预览</span>
       </div>
       <div className="relative aspect-[16/10] w-full">
         <iframe
           src={`${previewUrl}?config=${encodeURIComponent(JSON.stringify(config))}`}
           className="h-full w-full border-0"
-          title="Template preview"
+          title="模板预览"
           sandbox="allow-scripts allow-same-origin"
         />
       </div>

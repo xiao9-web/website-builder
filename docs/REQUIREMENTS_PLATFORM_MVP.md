@@ -117,6 +117,21 @@ Structured site configuration.
 
 It stores site-level content such as brand, theme, navigation, hero content, contact information, SEO, cooperation content, and homepage sections.
 
+### SiteMenu
+
+Editable site menu and content column.
+
+Rules:
+
+- The homepage is a system menu and cannot be deleted.
+- Non-homepage menus can be created, edited, hidden, sorted, and deleted.
+- Menus support at most three levels.
+- A menu cannot be moved under itself or under any of its descendant menus.
+- Moving a menu must not cause any descendant menu to exceed the three-level limit.
+- Articles can be assigned to a non-homepage menu.
+- Deleting a menu keeps its articles and clears their menu assignment.
+- A menu can be used as a navigation entry even before it has articles.
+
 ### ProductService
 
 Corporate website product or service item.
@@ -130,7 +145,13 @@ Examples:
 
 ### News
 
-Corporate website dynamic article.
+Corporate website dynamic article or menu-scoped article.
+
+Rules:
+
+- Articles can belong to a menu.
+- Articles can still have a category such as company news or product knowledge.
+- Article publication status remains `DRAFT`, `PUBLISHED`, or `OFFLINE`.
 
 Categories:
 
@@ -241,6 +262,46 @@ Required modules:
 - Quick actions: create site, manage sites, view leads, manage templates.
 - Recent sites table.
 - Recent leads table.
+
+### 7.x Site Content Management
+
+Route:
+
+```text
+/dashboard/sites/{siteId}/content
+```
+
+Purpose:
+
+Manage the editable content behind a site.
+
+Required modules:
+
+- Site configuration.
+- Editable menu columns.
+- Product/service entries.
+- Menu-scoped articles.
+- Leads.
+
+Menu requirements:
+
+- Show all site menus in sort order.
+- Allow creating a first-level menu.
+- Allow creating second-level and third-level child menus.
+- Reject fourth-level menus.
+- Allow editing menu label, slug, parent, sort order, and visibility.
+- Reject moving a menu under itself or under any of its descendants.
+- Reject moving a menu if any existing descendant would become fourth-level or deeper.
+- Do not allow deleting the homepage menu.
+- Do not allow assigning the homepage menu as a normal article column.
+
+Article requirements:
+
+- Allow creating an article under a selected menu.
+- Allow editing an article's menu assignment.
+- Allow creating articles without a menu when needed.
+- Allow publishing, offline, draft editing, and deletion.
+- Show article menu, category, status, and updated time in the list.
 
 Recent sites columns:
 
@@ -1544,4 +1605,3 @@ Do not implement these in the first phase:
 - Delete operations require confirmation.
 - Mobile contact actions must remain easy to access.
 - Do not invent unverified company facts such as founding year, production capacity, certificates, or customer names.
-

@@ -44,9 +44,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       const response = (await api.post("/auth/login", data)) as AuthResponse;
-      setToken(response.token);
-      setStoredUser(response.user);
-      set({ user: response.user, token: response.token, isLoading: false });
+      const user = response.user ?? {
+        id: "",
+        email: data.email,
+        name: data.email,
+        createdAt: "",
+        updatedAt: "",
+      };
+      setToken(response.access_token);
+      setStoredUser(user);
+      set({ user, token: response.access_token, isLoading: false });
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -57,9 +64,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       const response = (await api.post("/auth/register", data)) as AuthResponse;
-      setToken(response.token);
-      setStoredUser(response.user);
-      set({ user: response.user, token: response.token, isLoading: false });
+      const user = response.user ?? {
+        id: "",
+        email: data.email,
+        name: data.name,
+        createdAt: "",
+        updatedAt: "",
+      };
+      setToken(response.access_token);
+      setStoredUser(user);
+      set({ user, token: response.access_token, isLoading: false });
     } catch (error) {
       set({ isLoading: false });
       throw error;

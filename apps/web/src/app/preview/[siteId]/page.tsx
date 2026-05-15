@@ -19,7 +19,7 @@ export default function PreviewPage() {
         const data = (await api.get(`/sites/${siteId}`)) as Site;
         setSite(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load site");
+        setError(err instanceof Error ? err.message : "站点加载失败");
       } finally {
         setIsLoading(false);
       }
@@ -31,7 +31,7 @@ export default function PreviewPage() {
   }, [siteId]);
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading preview..." />;
+    return <Loading fullScreen text="正在加载预览..." />;
   }
 
   if (error || !site) {
@@ -39,9 +39,9 @@ export default function PreviewPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            Preview Unavailable
+            暂时无法预览
           </h1>
-          <p className="mt-2 text-gray-600">{error || "Site not found"}</p>
+          <p className="mt-2 text-gray-600">{error || "未找到站点"}</p>
         </div>
       </div>
     );
@@ -52,7 +52,7 @@ export default function PreviewPage() {
   return (
     <div className="h-screen w-full">
       <div className="flex h-10 items-center justify-between border-b border-gray-200 bg-gray-900 px-4">
-        <span className="text-sm text-gray-300">{site.name} - Preview</span>
+        <span className="text-sm text-gray-300">{site.name} - 预览</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">{site.slug}</span>
         </div>
@@ -60,7 +60,7 @@ export default function PreviewPage() {
       <iframe
         src={previewUrl}
         className="h-[calc(100vh-2.5rem)] w-full border-0"
-        title={`Preview of ${site.name}`}
+        title={`${site.name} 预览`}
         sandbox="allow-scripts allow-same-origin"
       />
     </div>

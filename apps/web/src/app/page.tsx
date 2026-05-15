@@ -5,66 +5,70 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <span className="text-xl font-bold text-primary-600">WebBuilder</span>
+          <span className="text-xl font-bold text-emerald-700">小九建站</span>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
               className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
-              Sign In
+              登录后台
             </Link>
             <Link
-              href="/register"
-              className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+              href="/sites/chunchang"
+              className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
             >
-              Get Started
+              查看春昌官网
             </Link>
           </div>
         </div>
       </header>
 
       <main className="flex flex-1 flex-col">
-        {/* Hero Section */}
-        <section className="flex flex-1 items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 px-4 py-20">
+        <section className="flex flex-1 items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-amber-50 px-4 py-20">
           <div className="mx-auto max-w-4xl text-center">
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              Build Your Website
-              <span className="block text-primary-600">
-                In Minutes, Not Days
+              多站点建站平台
+              <span className="block text-emerald-700">
+                先把真实业务跑起来
               </span>
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-600">
-              Choose from professional templates, customize with our visual
-              editor, and publish your site instantly. No coding required.
+              用模板和结构化表单管理企业官网、产品服务、最近动态和留言线索。
+              第一阶段先跑通山东春昌食品科技股份有限公司官网，再扩展个人博客。
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/register"
-                className="rounded-lg bg-primary-600 px-8 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-700"
+                href="/sites/chunchang"
+                className="rounded-lg bg-emerald-700 px-8 py-3 text-base font-medium text-white shadow-sm hover:bg-emerald-800"
               >
-                Start Building Free
+                查看春昌官网预览
+              </Link>
+              <Link
+                href="/manage/chunchang"
+                className="rounded-lg border border-emerald-700 bg-white px-8 py-3 text-base font-medium text-emerald-800 shadow-sm hover:bg-emerald-50"
+              >
+                查看运营管理台
               </Link>
               <Link
                 href="/dashboard/templates"
                 className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50"
               >
-                Browse Templates
+                模板中心
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
         <section className="border-t border-gray-200 bg-white py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="mb-12 text-center text-3xl font-bold text-gray-900">
-              Everything You Need
+              当前产品能力
             </h2>
             <div className="grid gap-8 md:grid-cols-3">
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
                   <svg
-                    className="h-6 w-6 text-primary-600"
+                    className="h-6 w-6 text-emerald-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -79,17 +83,16 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                  Professional Templates
+                  企业官网模板
                 </h3>
                 <p className="text-gray-600">
-                  Choose from dozens of professionally designed templates for
-                  any industry.
+                  用配置驱动首页、产品服务、合作机会、最近动态和联系方式。
                 </p>
               </div>
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
                   <svg
-                    className="h-6 w-6 text-primary-600"
+                    className="h-6 w-6 text-emerald-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -104,17 +107,16 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                  Visual Editor
+                  表单化内容管理
                 </h3>
                 <p className="text-gray-600">
-                  Customize every aspect of your site with our intuitive
-                  form-based editor.
+                  第一阶段不做拖拽，先用清晰表单管理真实业务内容。
                 </p>
               </div>
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100">
                   <svg
-                    className="h-6 w-6 text-primary-600"
+                    className="h-6 w-6 text-emerald-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -129,11 +131,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                  Instant Publish
+                  留言获客闭环
                 </h3>
                 <p className="text-gray-600">
-                  Deploy your site with one click. Get a custom domain or use
-                  our free subdomain.
+                  访客提交咨询，后台查看线索并标记跟进状态。
                 </p>
               </div>
             </div>
@@ -143,7 +144,7 @@ export default function HomePage() {
 
       <footer className="border-t border-gray-200 bg-white py-8">
         <p className="text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} WebBuilder. All rights reserved.
+          &copy; {new Date().getFullYear()} 小九建站。当前为本地 MVP 预览。
         </p>
       </footer>
     </div>

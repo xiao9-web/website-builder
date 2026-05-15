@@ -18,7 +18,7 @@ export function useTemplates(category?: string) {
       const data = (await api.get("/templates", { params })) as Template[];
       setTemplates(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load templates");
+      setError(err instanceof Error ? err.message : "模板加载失败");
     } finally {
       setIsLoading(false);
     }
@@ -31,7 +31,7 @@ export function useTemplates(category?: string) {
       )) as TemplateCategory[];
       setCategories(data);
     } catch {
-      // Categories are non-critical, silently fail
+      // 分类加载失败不阻塞模板列表。
     }
   }, []);
 
@@ -68,7 +68,7 @@ export function useTemplate(id: string | null) {
         setTemplate(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load template",
+          err instanceof Error ? err.message : "模板加载失败",
         );
       } finally {
         setIsLoading(false);

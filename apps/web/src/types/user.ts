@@ -19,6 +19,9 @@ export interface LoginData {
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
+  access_token: string;
+  refresh_token: string;
+  token_type: "Bearer";
+  expires_in: number;
+  user?: User;
 }

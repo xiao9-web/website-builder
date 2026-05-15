@@ -14,7 +14,7 @@ export default function TemplatesPage() {
     useTemplates(selectedCategory);
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading templates..." />;
+    return <Loading fullScreen text="正在加载模板..." />;
   }
 
   if (error) {
@@ -29,14 +29,13 @@ export default function TemplatesPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Template Marketplace
+          模板市场
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Browse and select a template to start building your site
+          选择适合行业的模板，快速搭建企业官网。
         </p>
       </div>
 
-      {/* Category Filter */}
       <div className="mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => setSelectedCategory(undefined)}
@@ -46,7 +45,7 @@ export default function TemplatesPage() {
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
-          All
+          全部
         </button>
         {categories.map((cat) => (
           <button
@@ -63,10 +62,9 @@ export default function TemplatesPage() {
         ))}
       </div>
 
-      {/* Template Grid */}
       {templates.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-gray-500">No templates found for this category.</p>
+          <p className="text-gray-500">该分类下暂无模板。</p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

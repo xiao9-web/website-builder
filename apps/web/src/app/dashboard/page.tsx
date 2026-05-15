@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
 import { formatDate } from "@/lib/utils";
+import { siteStatusClass, siteStatusLabel } from "@/lib/site-status";
 
 export default function DashboardPage() {
   const { sites, isLoading, fetchSites } = useSiteStore();
@@ -16,16 +17,16 @@ export default function DashboardPage() {
   }, [fetchSites]);
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading your sites..." />;
+    return <Loading fullScreen text="正在加载站点..." />;
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Sites</h1>
+          <h1 className="text-2xl font-bold text-gray-900">我的站点</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Manage and edit your websites
+            管理企业官网、内容更新和客户咨询入口
           </p>
         </div>
         <Link href="/dashboard/sites/new">
@@ -44,7 +45,7 @@ export default function DashboardPage() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            New Site
+            新建站点
           </Button>
         </Link>
       </div>
@@ -67,13 +68,13 @@ export default function DashboardPage() {
               />
             </svg>
             <h3 className="mt-4 text-lg font-medium text-gray-900">
-              No sites yet
+              还没有站点
             </h3>
             <p className="mt-2 text-sm text-gray-500">
-              Get started by creating your first website from a template.
+              选择模板后即可创建第一个企业官网。
             </p>
             <Link href="/dashboard/sites/new" className="mt-4 inline-block">
-              <Button>Create Your First Site</Button>
+              <Button>创建第一个站点</Button>
             </Link>
           </CardContent>
         </Card>
@@ -92,19 +93,13 @@ export default function DashboardPage() {
                       <p className="mt-1 text-sm text-gray-500">{site.slug}</p>
                     </div>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        site.status === "published"
-                          ? "bg-green-100 text-green-700"
-                          : site.status === "draft"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-gray-100 text-gray-700"
-                      }`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${siteStatusClass(site.status)}`}
                     >
-                      {site.status}
+                      {siteStatusLabel(site.status)}
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-gray-400">
-                    Updated {formatDate(site.updatedAt)}
+                    更新于 {formatDate(site.updatedAt)}
                   </p>
                 </CardContent>
               </Card>

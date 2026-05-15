@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("请输入有效邮箱"),
+  password: z.string().min(6, "密码至少 6 位"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -37,7 +37,7 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Login failed. Please try again.",
+        err instanceof Error ? err.message : "登录失败，请稍后再试。",
       );
     }
   };
@@ -47,13 +47,13 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
-            WebBuilder
+            小九建站
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">
-            Welcome back
+            登录运营后台
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Sign in to your account to continue
+            管理站点内容、产品服务、最近动态和留言线索
           </p>
         </div>
 
@@ -69,31 +69,31 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
-              label="Email"
+              label="邮箱"
               type="email"
-              placeholder="you@example.com"
+              placeholder="admin@xiao9.com"
               error={errors.email?.message}
               {...register("email")}
             />
             <Input
-              label="Password"
+              label="密码"
               type="password"
-              placeholder="Enter your password"
+              placeholder="请输入密码"
               error={errors.password?.message}
               {...register("password")}
             />
             <Button type="submit" className="w-full" isLoading={isSubmitting}>
-              Sign In
+              登录
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don&apos;t have an account?{" "}
+            还没有账号？{" "}
             <Link
               href="/register"
               className="font-medium text-primary-600 hover:text-primary-500"
             >
-              Sign up
+              注册
             </Link>
           </p>
         </div>

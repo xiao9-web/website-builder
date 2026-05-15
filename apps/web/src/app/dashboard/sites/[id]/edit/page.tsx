@@ -30,7 +30,7 @@ export default function SiteEditPage() {
   }, [siteId, fetchSite]);
 
   if (isLoading || !currentSite) {
-    return <Loading fullScreen text="Loading editor..." />;
+    return <Loading fullScreen text="正在加载编辑器..." />;
   }
 
   const schema = currentTemplate?.schema as JSONSchema | undefined;
@@ -53,24 +53,24 @@ export default function SiteEditPage() {
           <h1 className="text-lg font-semibold text-gray-900">
             {currentSite.name}
           </h1>
-          <p className="text-sm text-gray-500">Edit site configuration</p>
+          <p className="text-sm text-gray-500">编辑站点配置</p>
         </div>
         <div className="flex items-center gap-3">
           {hasChanges && (
-            <span className="text-sm text-amber-600">Unsaved changes</span>
+            <span className="text-sm text-amber-600">有未保存修改</span>
           )}
           <Button
             variant="outline"
             onClick={() => window.open(`/preview/${currentSite.id}`, "_blank")}
           >
-            Preview
+            预览
           </Button>
           <Button
             onClick={handleSave}
             isLoading={isSaving}
             disabled={!hasChanges}
           >
-            Save Changes
+            保存修改
           </Button>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function SiteEditPage() {
           ) : (
             <div className="py-8 text-center">
               <p className="text-sm text-gray-500">
-                No schema available for this template.
+                当前模板暂无可配置表单。
               </p>
             </div>
           )}
@@ -104,7 +104,7 @@ export default function SiteEditPage() {
             />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <p className="text-sm text-gray-500">Preview not available</p>
+              <p className="text-sm text-gray-500">暂时无法预览</p>
             </div>
           )}
         </div>

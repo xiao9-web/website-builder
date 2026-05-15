@@ -264,14 +264,16 @@ BEGIN
         v_site_id,
         v_content_config -> 'seo',
         v_brand_config -> 'theme',
-        '[
-            {"label": "首页", "href": "/"},
-            {"label": "产品服务", "href": "/products"},
-            {"label": "关于我们", "href": "/about"},
-            {"label": "最近动态", "href": "/news"},
-            {"label": "合作机会", "href": "/cooperation"},
-            {"label": "联系我们", "href": "/contact"}
-        ]'::jsonb,
+        '{
+            "items": [
+                {"label": "首页", "href": "/"},
+                {"label": "产品服务", "href": "/products"},
+                {"label": "关于我们", "href": "/about"},
+                {"label": "最近动态", "href": "/news"},
+                {"label": "合作机会", "href": "/cooperation"},
+                {"label": "联系我们", "href": "/contact"}
+            ]
+        }'::jsonb,
         jsonb_build_object(
             'mobileContactBar', true,
             'leadEntryPoints', jsonb_build_array('phone', 'wechat', 'message')
@@ -286,14 +288,16 @@ BEGIN
     SET
         seo_config = v_content_config -> 'seo',
         theme_config = v_brand_config -> 'theme',
-        navigation_config = '[
-            {"label": "首页", "href": "/"},
-            {"label": "产品服务", "href": "/products"},
-            {"label": "关于我们", "href": "/about"},
-            {"label": "最近动态", "href": "/news"},
-            {"label": "合作机会", "href": "/cooperation"},
-            {"label": "联系我们", "href": "/contact"}
-        ]'::jsonb,
+        navigation_config = '{
+            "items": [
+                {"label": "首页", "href": "/"},
+                {"label": "产品服务", "href": "/products"},
+                {"label": "关于我们", "href": "/about"},
+                {"label": "最近动态", "href": "/news"},
+                {"label": "合作机会", "href": "/cooperation"},
+                {"label": "联系我们", "href": "/contact"}
+            ]
+        }'::jsonb,
         custom_config = jsonb_build_object(
             'mobileContactBar', true,
             'leadEntryPoints', jsonb_build_array('phone', 'wechat', 'message')

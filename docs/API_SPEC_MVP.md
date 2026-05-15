@@ -258,7 +258,94 @@ Rules:
 
 - If `slug` changes, format and uniqueness are validated.
 - If `subdomain` changes, uniqueness is validated.
-- Invalid status is rejected.
+
+## 4.x Site Menu API
+
+Status:
+
+Implemented for editable menus and menu-scoped articles.
+
+### GET /api/sites/{siteId}/menus
+
+Purpose:
+
+List editable menus for a site.
+
+Auth:
+
+Authenticated.
+
+Response data:
+
+```json
+[
+  {
+    "id": 1,
+    "siteId": 1,
+    "parentId": null,
+    "label": "首页",
+    "slug": "home",
+    "menuType": "HOME",
+    "level": 1,
+    "sortOrder": 0,
+    "visible": true,
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+]
+```
+
+### POST /api/sites/{siteId}/menus
+
+Purpose:
+
+Create a menu.
+
+Rules:
+
+- `label` is required.
+- `slug` is required and unique within the site.
+- `parentId` can be null for a first-level menu.
+- Menus can have at most three levels.
+- Fourth-level creation returns `400`.
+
+Request:
+
+```json
+{
+  "parentId": null,
+  "label": "知识中心",
+  "slug": "knowledge-center",
+  "sortOrder": 60,
+  "visible": true
+}
+```
+
+### PUT /api/sites/{siteId}/menus/{menuId}
+
+Purpose:
+
+Update menu label, slug, parent, sort order, and visibility.
+
+Rules:
+
+- The homepage menu cannot be assigned a parent.
+- The homepage menu slug cannot be changed.
+- Menus can have at most three levels.
+- A menu cannot be assigned to itself or any descendant menu as parent.
+- Updating a menu parent cannot make existing descendants exceed the three-level limit.
+
+### DELETE /api/sites/{siteId}/menus/{menuId}
+
+Purpose:
+
+Delete a non-homepage menu.
+
+Rules:
+
+- Homepage menu cannot be deleted.
+- Menus with child menus cannot be deleted until children are deleted.
+- Articles under a deleted menu are kept and their menu assignment is cleared.
 
 ### DELETE /api/sites/{siteId}
 
@@ -366,7 +453,7 @@ Rules:
 
 Status:
 
-Planned as BE-005.
+Implemented in BE-005.
 
 Admin endpoints:
 
@@ -382,13 +469,15 @@ Rules:
 
 - Scope all records to site.
 - Validate required `name` and `summary`.
+- `GET` supports optional `enabled=true|false`; omitting `enabled` returns all records for dashboard management.
 - Support sort order.
+- Returned records are ordered by `sortOrder ASC, createdAt ASC`.
 
 ## 7. News API
 
 Status:
 
-Planned as BE-006.
+Implemented in BE-006.
 
 Admin endpoints:
 
@@ -404,6 +493,9 @@ PATCH /api/sites/{siteId}/news/{newsId}/status
 Rules:
 
 - Slug unique within site.
+- `GET` supports optional `status=DRAFT|PUBLISHED|OFFLINE`; omitting `status` returns all records for dashboard management.
+- Creating news defaults to `DRAFT` when status is omitted.
+- Publishing sets `publishedAt`; moving to `DRAFT` or `OFFLINE` clears `publishedAt`.
 - Draft is hidden from public APIs.
 - Published is visible.
 - Offline is hidden.
@@ -412,7 +504,7 @@ Rules:
 
 Status:
 
-Planned as BE-007.
+Implemented in BE-007.
 
 Admin endpoints:
 
@@ -446,13 +538,16 @@ Rules:
 - `phone` is required.
 - `message` is required.
 - Public submit does not require login.
+- Public submit resolves the target site by slug and creates a `NEW` lead.
+- Public response returns only a lead id and success message.
+- Admin list supports optional `status=NEW|CONTACTED|CLOSED|INVALID`.
 - Admin list/detail/status changes require site access.
 
 ## 9. Public Site API
 
 Status:
 
-Planned as BE-008.
+Implemented in BE-008.
 
 Public endpoints:
 
@@ -469,6 +564,7 @@ Rules:
 - Return only public-safe fields.
 - Products return enabled records only.
 - News returns published records only.
+- Offline and error sites return not found.
 - Leads can be submitted without login.
 
 ## 10. Error Behavior

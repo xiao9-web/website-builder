@@ -4,7 +4,9 @@ import com.xiao9.wb.common.exception.BusinessException;
 import com.xiao9.wb.common.exception.ErrorCode;
 import com.xiao9.wb.common.response.PageResponse;
 import com.xiao9.wb.site.dto.CreateSiteRequest;
+import com.xiao9.wb.site.dto.SiteConfigDTO;
 import com.xiao9.wb.site.dto.SiteDTO;
+import com.xiao9.wb.site.dto.UpdateSiteConfigRequest;
 import com.xiao9.wb.site.dto.UpdateSiteRequest;
 import com.xiao9.wb.site.entity.Site;
 import com.xiao9.wb.site.entity.SiteConfig;
@@ -86,7 +88,7 @@ public class SiteService {
                 .build();
 
         siteRepository.save(site);
-        createDefaultConfig(site, template);
+        ensureDefaultConfig(site);
         log.info("Site created: {} by user {}", site.getName(), ownerId);
         return SiteDTO.from(site);
     }
@@ -121,6 +123,40 @@ public class SiteService {
 
         siteRepository.save(site);
         return SiteDTO.from(site);
+    }
+
+    @Transactional(readOnly = true)
+    public SiteConfigDTO getConfig(Long siteId, User user) {
+        Site site = requireReadableSite(siteId, user);
+        SiteConfig config = siteConfigRepository.findBySiteId(site.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Site config not found"));
+        return SiteConfigDTO.from(config);
+    }
+
+    @Transactional
+    public SiteConfigDTO updateConfig(Long siteId, UpdateSiteConfigRequest request, User user) {
+        Site site = requireWritableSite(siteId, user);
+        SiteConfig config = siteConfigRepository.findBySiteId(site.getId())
+                .orElseGet(() -> buildDefaultConfig(site));
+
+        Map<String, Object> seoConfig = request.seoConfig() != null ? request.seoConfig() : config.getSeoConfig();
+        Map<String, Object> themeConfig = request.themeConfig() != null ? request.themeConfig() : config.getThemeConfig();
+        Map<String, Object> navigationConfig = request.navigationConfig() != null ? request.navigationConfig() : config.getNavigationConfig();
+        Map<String, Object> customConfig = request.customConfig() != null ? request.customConfig() : config.getCustomConfig();
+        Map<String, Object> brandConfig = request.brandConfig() != null ? request.brandConfig() : config.getBrandConfig();
+        Map<String, Object> contentConfig = request.contentConfig() != null ? request.contentConfig() : config.getContentConfig();
+
+        validateSiteConfig(seoConfig, navigationConfig, brandConfig, contentConfig);
+
+        config.setSeoConfig(seoConfig);
+        config.setThemeConfig(themeConfig);
+        config.setNavigationConfig(navigationConfig);
+        config.setCustomConfig(customConfig);
+        config.setBrandConfig(brandConfig);
+        config.setContentConfig(contentConfig);
+
+        siteConfigRepository.save(config);
+        return SiteConfigDTO.from(config);
     }
 
     @Transactional
@@ -230,15 +266,21 @@ public class SiteService {
                 });
     }
 
-    private void createDefaultConfig(Site site, Template template) {
+    private SiteConfig ensureDefaultConfig(Site site) {
         if (siteConfigRepository.findBySiteId(site.getId()).isPresent()) {
-            return;
+            return siteConfigRepository.findBySiteId(site.getId()).get();
         }
 
+        SiteConfig config = buildDefaultConfig(site);
+        return siteConfigRepository.save(config);
+    }
+
+    private SiteConfig buildDefaultConfig(Site site) {
+        Template template = site.getTemplate();
         Map<String, Object> brandConfig = defaultBrandConfig(site);
         Map<String, Object> contentConfig = defaultContentConfig(site);
 
-        SiteConfig config = SiteConfig.builder()
+        return SiteConfig.builder()
                 .site(site)
                 .seoConfig(Map.of(
                         "title", site.getName(),
@@ -253,8 +295,6 @@ public class SiteService {
                 .brandConfig(brandConfig)
                 .contentConfig(contentConfig)
                 .build();
-
-        siteConfigRepository.save(config);
     }
 
     private Map<String, Object> defaultThemeConfig(Template template) {
@@ -324,5 +364,82 @@ public class SiteService {
         ));
         content.put("contact", contact);
         return content;
+    }
+
+    private void validateSiteConfig(
+            Map<String, Object> seoConfig,
+            Map<String, Object> navigationConfig,
+            Map<String, Object> brandConfig,
+            Map<String, Object> contentConfig
+    ) {
+        requireMap(seoConfig, "seoConfig");
+        requireText(seoConfig, "title", "seoConfig.title");
+        requireText(seoConfig, "description", "seoConfig.description");
+
+        requireMap(navigationConfig, "navigationConfig");
+        Object navItems = navigationConfig.get("items");
+        if (!(navItems instanceof List<?> navList) || navList.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "navigationConfig.items is required");
+        }
+
+        requireMap(brandConfig, "brandConfig");
+        requireText(brandConfig, "companyName", "brandConfig.companyName");
+        requireText(brandConfig, "shortName", "brandConfig.shortName");
+        requireText(brandConfig, "businessDirection", "brandConfig.businessDirection");
+        Object brandWords = brandConfig.get("brandWords");
+        if (!(brandWords instanceof List<?> words) || words.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "brandConfig.brandWords is required");
+        }
+
+        requireMap(contentConfig, "contentConfig");
+        requireNestedMap(contentConfig, "hero", "contentConfig.hero");
+        requireNestedMap(contentConfig, "contact", "contentConfig.contact");
+        requireNestedMap(contentConfig, "about", "contentConfig.about");
+        requireNestedMap(contentConfig, "cooperation", "contentConfig.cooperation");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hero = (Map<String, Object>) contentConfig.get("hero");
+        requireText(hero, "headline", "contentConfig.hero.headline");
+        requireText(hero, "subheadline", "contentConfig.hero.subheadline");
+        requireText(hero, "primaryCta", "contentConfig.hero.primaryCta");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> about = (Map<String, Object>) contentConfig.get("about");
+        requireText(about, "summary", "contentConfig.about.summary");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> cooperation = (Map<String, Object>) contentConfig.get("cooperation");
+        requireText(cooperation, "title", "contentConfig.cooperation.title");
+        requireText(cooperation, "description", "contentConfig.cooperation.description");
+        Object cooperationItems = cooperation.get("items");
+        if (!(cooperationItems instanceof List<?> cooperationList) || cooperationList.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "contentConfig.cooperation.items is required");
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> contact = (Map<String, Object>) contentConfig.get("contact");
+        if (!(contact.get("messageEnabled") instanceof Boolean)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "contentConfig.contact.messageEnabled is required");
+        }
+    }
+
+    private void requireMap(Map<String, Object> value, String label) {
+        if (value == null || value.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, label + " is required");
+        }
+    }
+
+    private void requireNestedMap(Map<String, Object> parent, String key, String label) {
+        Object value = parent.get(key);
+        if (!(value instanceof Map<?, ?> nested) || nested.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, label + " is required");
+        }
+    }
+
+    private void requireText(Map<String, Object> map, String key, String label) {
+        Object value = map.get(key);
+        if (!(value instanceof String text) || text.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, label + " is required");
+        }
     }
 }

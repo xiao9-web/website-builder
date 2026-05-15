@@ -12,13 +12,13 @@ import { Button } from "@/components/ui/Button";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Please enter a valid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    name: z.string().min(2, "姓名至少 2 个字符"),
+    email: z.string().email("请输入有效邮箱"),
+    password: z.string().min(6, "密码至少 6 位"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "两次输入的密码不一致",
     path: ["confirmPassword"],
   });
 
@@ -50,7 +50,7 @@ export default function RegisterPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Registration failed. Please try again.",
+          : "注册失败，请稍后再试。",
       );
     }
   };
@@ -60,13 +60,13 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
-            WebBuilder
+            小九建站
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">
-            Create your account
+            创建账号
           </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Start building your website today
+            开始管理你的企业官网和内容站点
           </p>
         </div>
 
@@ -82,45 +82,45 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
-              label="Name"
+              label="姓名"
               type="text"
-              placeholder="Your name"
+              placeholder="请输入姓名"
               error={errors.name?.message}
               {...register("name")}
             />
             <Input
-              label="Email"
+              label="邮箱"
               type="email"
               placeholder="you@example.com"
               error={errors.email?.message}
               {...register("email")}
             />
             <Input
-              label="Password"
+              label="密码"
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="至少 6 位"
               error={errors.password?.message}
               {...register("password")}
             />
             <Input
-              label="Confirm Password"
+              label="确认密码"
               type="password"
-              placeholder="Repeat your password"
+              placeholder="再次输入密码"
               error={errors.confirmPassword?.message}
               {...register("confirmPassword")}
             />
             <Button type="submit" className="w-full" isLoading={isSubmitting}>
-              Create Account
+              创建账号
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            已有账号？{" "}
             <Link
               href="/login"
               className="font-medium text-primary-600 hover:text-primary-500"
             >
-              Sign in
+              去登录
             </Link>
           </p>
         </div>

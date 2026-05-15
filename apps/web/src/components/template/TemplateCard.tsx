@@ -32,7 +32,7 @@ export function TemplateCard({
       <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
         <Image
           src={template.thumbnail}
-          alt={`${template.name} template preview`}
+          alt={`${template.name} 模板预览`}
           fill
           className="object-cover transition-transform hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -62,7 +62,7 @@ export function TemplateCard({
             ))}
           </div>
           <span className="text-xs text-gray-400">
-            {template.downloads} uses
+            {template.downloads} 次使用
           </span>
         </div>
       </div>

@@ -1,6 +1,13 @@
 import type { Template } from "./template";
 
-export type SiteStatus = "draft" | "published" | "archived";
+export type SiteStatus =
+  | "DRAFT"
+  | "PUBLISHED"
+  | "OFFLINE"
+  | "ERROR"
+  | "draft"
+  | "published"
+  | "archived";
 
 export interface Site {
   id: string;

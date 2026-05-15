@@ -7,7 +7,7 @@ import { useState } from "react";
 
 const navItems = [
   {
-    label: "Dashboard",
+    label: "工作台",
     href: "/dashboard",
     icon: (
       <svg
@@ -27,7 +27,7 @@ const navItems = [
     ),
   },
   {
-    label: "My Sites",
+    label: "站点管理",
     href: "/dashboard/sites",
     icon: (
       <svg
@@ -47,7 +47,7 @@ const navItems = [
     ),
   },
   {
-    label: "Templates",
+    label: "模板中心",
     href: "/dashboard/templates",
     icon: (
       <svg
@@ -85,13 +85,13 @@ export function Sidebar() {
             href="/dashboard"
             className="text-lg font-bold text-primary-600"
           >
-            WebBuilder
+            小九建站
           </Link>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? "展开侧边栏" : "收起侧边栏"}
         >
           <svg
             className="h-5 w-5"
@@ -121,7 +121,7 @@ export function Sidebar() {
 
       <nav
         className="flex-1 space-y-1 px-3 py-4"
-        aria-label="Sidebar navigation"
+        aria-label="后台导航"
       >
         {navItems.map((item) => {
           const isActive =
@@ -165,7 +165,7 @@ export function Sidebar() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            New Site
+            新建站点
           </Link>
         )}
       </div>

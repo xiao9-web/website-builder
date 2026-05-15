@@ -56,7 +56,7 @@ export function Loading({
       <div
         className="flex min-h-screen items-center justify-center"
         role="status"
-        aria-label={text || "Loading"}
+        aria-label={text || "正在加载"}
       >
         {spinner}
       </div>
@@ -64,7 +64,7 @@ export function Loading({
   }
 
   return (
-    <div role="status" aria-label={text || "Loading"}>
+    <div role="status" aria-label={text || "正在加载"}>
       {spinner}
     </div>
   );

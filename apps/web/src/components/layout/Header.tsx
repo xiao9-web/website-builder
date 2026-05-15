@@ -11,7 +11,7 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl font-bold text-primary-600">
-            WebBuilder
+            小九建站
           </Link>
           {isAuthenticated && (
             <nav className="hidden items-center gap-6 md:flex">
@@ -19,19 +19,19 @@ export function Header() {
                 href="/dashboard"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                Dashboard
+                工作台
               </Link>
               <Link
                 href="/dashboard/templates"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                Templates
+                模板中心
               </Link>
               <Link
                 href="/dashboard/sites"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                My Sites
+                站点管理
               </Link>
             </nav>
           )}
@@ -50,7 +50,7 @@ export function Header() {
                 onClick={logout}
                 className="rounded-lg px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               >
-                Logout
+                退出
               </button>
             </div>
           ) : (
@@ -59,13 +59,13 @@ export function Header() {
                 href="/login"
                 className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
               >
-                Sign In
+                登录
               </Link>
               <Link
                 href="/register"
                 className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
               >
-                Get Started
+                开始使用
               </Link>
             </div>
           )}
