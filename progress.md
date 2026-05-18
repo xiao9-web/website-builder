@@ -1329,3 +1329,51 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `npm run build:web` passed
 - Limitation:
   - This is a frontend advisory check; real company materials are still needed before public launch.
+
+## E2E-REFRESH Full Local Smoke After Docker Recovery
+
+- Docker daemon recovered.
+- Started project Docker services:
+  - `wb-postgres`
+  - `wb-redis`
+- Ran `make db-migrate`:
+  - database validated 6 migrations
+  - applied `V6__assign_existing_news_to_default_menu.sql`
+  - schema is now at version `v6`
+- Started backend with `npm run dev:server`:
+  - Spring Boot ready on `http://localhost:8080`
+  - Flyway confirmed schema is up to date
+- Started frontend with `npm run dev:web`:
+  - Next.js ready on `http://localhost:3000`
+- Auth/API smoke:
+  - login `admin@xiao9.com / admin123` returned token
+  - `GET /api/sites` returned HTTP `200`
+  - `GET /api/public/sites/chunchang/config` returned HTTP `200`
+  - `GET /api/sites/1/menus` returned HTTP `200`
+  - `GET /api/sites/1/builds/latest` returned HTTP `200` with no data before first build
+- Page smoke:
+  - `http://localhost:3000/` returned HTTP `200`
+  - `http://localhost:3000/login` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+  - `http://localhost:3000/dashboard/sites/1` returned HTTP `200`
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang/news` returned HTTP `200`
+- Publish/build smoke:
+  - `POST /api/sites/1/build` returned HTTP `200`
+  - build status returned `SUCCESS`
+  - output URL returned `https://chunchang.xiao9.com`
+  - `GET /api/sites/1/builds/latest` returned the successful build
+  - `GET /api/sites/1/builds` returned one build record
+  - `GET /api/sites/1` returned status `PUBLISHED`
+  - `GET /api/sites/1` returned `publishedAt = 2026-05-18T14:26:33.641818`
+- Public news note:
+  - `GET /api/public/sites/chunchang/news` returned an empty array because seeded news records are drafts.
+  - This is expected under the public rule that only `PUBLISHED` articles are visible.
+- Current local URLs:
+  - frontend: `http://localhost:3000`
+  - backend: `http://localhost:8080`
+  - public Chunchang site: `http://localhost:3000/sites/chunchang`
+  - admin login: `http://localhost:3000/login`
+- Login:
+  - `admin@xiao9.com`
+  - `admin123`

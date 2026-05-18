@@ -49,6 +49,10 @@ Build the Website Builder Platform MVP around the active implementation directio
 26. [complete] FEA-005: Public menu pages and article detail pages.
 27. [complete] FEA-006: Content-management menu/article UX improvements.
 28. [complete] FEA-006-P: Admin-to-public preview links for visible menus and published articles.
+29. [complete] PUB-001: Publish/build visibility on site detail.
+30. [complete] PUB-002: Build history API and compact site-detail history.
+31. [complete] READY-001: Launch material readiness checklist.
+32. [complete] E2E-REFRESH: Full local Docker/database/backend/frontend smoke test after Docker recovery.
 
 ## Backlog
 
@@ -56,9 +60,9 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 
 Recommended next slice:
 
-1. [pending] E2E-REFRESH: Run the full authenticated browser smoke again after Docker Desktop is available.
-2. [pending] PUB-001: Publish/build records workflow and public publish-state polish.
-3. [pending] FEP: Public corporate-site polish with real assets after company materials are available.
+1. [pending] FEP: Public corporate-site polish with real assets after company materials are available.
+2. [pending] UX-ADMIN: Dedicated build-history page and richer article editing controls.
+3. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
 
 ## Completed Execution: BE-001
 
