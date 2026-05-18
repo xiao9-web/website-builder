@@ -1446,3 +1446,21 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `http://localhost:3000/sites/chunchang/news` returned HTTP `200`
   - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`
   - `http://localhost:8080/api/public/sites/chunchang/config` returned HTTP `200`
+
+## UX-ADMIN-002 Article Editing Publish-Readiness Hints
+
+- Improved the dashboard content-management news/article workflow without changing backend schema.
+- Added publish-readiness guidance for articles:
+  - missing menu assignment
+  - short summary
+  - short body content
+- The new article form now explains that only published articles appear on the public site.
+- New and edit forms show live summary/body character counts.
+- Article list rows now show readiness chips and summary/body lengths.
+- Publishing an incomplete article now asks for confirmation instead of silently publishing low-quality public content.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - restarted `npm run dev:web` after build
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`

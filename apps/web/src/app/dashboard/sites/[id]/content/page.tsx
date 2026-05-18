@@ -128,6 +128,18 @@ function countMenuNews(news: NewsDTO[], menuId: number): number {
   return news.filter((item) => item.menuId === menuId).length;
 }
 
+function charCount(value?: string | null): number {
+  return (value ?? "").trim().length;
+}
+
+function newsReadinessWarnings(item: Pick<NewsDTO, "menuId" | "summary" | "content">): string[] {
+  const warnings: string[] = [];
+  if (!item.menuId) warnings.push("未选择栏目");
+  if (charCount(item.summary) < 20) warnings.push("摘要偏短");
+  if (charCount(item.content) < 80) warnings.push("正文偏短");
+  return warnings;
+}
+
 function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
   const result = new Set<number>();
   const collect = (parentId: number) => {
@@ -741,6 +753,18 @@ export default function SiteContentPage() {
   };
 
   const handleNewsStatus = async (item: NewsDTO, status: NewsDTO["status"]) => {
+    if (status === "PUBLISHED") {
+      const warnings = newsReadinessWarnings(item);
+      if (
+        warnings.length > 0 &&
+        !window.confirm(
+          `这篇动态还有 ${warnings.join("、")} 的问题，发布后前台效果可能不完整。仍然发布吗？`,
+        )
+      ) {
+        return;
+      }
+    }
+
     const updated = await updateNewsStatus(siteId, item.id, status);
     setNews((items) =>
       items.map((newsItem) => (newsItem.id === updated.id ? updated : newsItem)),
@@ -1615,6 +1639,9 @@ export default function SiteContentPage() {
               <h2 className="text-lg font-semibold">新增最近动态</h2>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm leading-6 text-blue-800">
+                建议发布前补齐所属栏目、摘要和正文。公开站只展示“已发布”动态，草稿不会出现在前台。
+              </div>
               <Input
                 label="标题"
                 value={newsForm.title}
@@ -1670,6 +1697,7 @@ export default function SiteContentPage() {
               />
               <Input
                 label="摘要"
+                helperText={`${charCount(newsForm.summary)} 字；建议 20-120 字，便于前台列表展示。`}
                 value={newsForm.summary}
                 onChange={(event) =>
                   setNewsForm((form) => ({
@@ -1692,6 +1720,9 @@ export default function SiteContentPage() {
                     }))
                   }
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  {charCount(newsForm.content)} 字；建议至少 80 字，避免发布后详情页过空。
+                </p>
               </label>
               <Button onClick={handleCreateNews} isLoading={isSaving}>
                 保存为草稿
@@ -1747,6 +1778,28 @@ export default function SiteContentPage() {
                 <div key={item.id} className="rounded-lg border p-4">
                   {editingNewsId === item.id ? (
                     <div className="space-y-4">
+                      {newsReadinessWarnings({
+                        menuId: newsEditForm.menuId
+                          ? Number(newsEditForm.menuId)
+                          : null,
+                        summary: newsEditForm.summary,
+                        content: newsEditForm.content,
+                      }).length ? (
+                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-800">
+                          发布前建议处理：
+                          {newsReadinessWarnings({
+                            menuId: newsEditForm.menuId
+                              ? Number(newsEditForm.menuId)
+                              : null,
+                            summary: newsEditForm.summary,
+                            content: newsEditForm.content,
+                          }).join("、")}
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+                          这篇动态的栏目、摘要和正文长度已满足基础发布建议。
+                        </div>
+                      )}
                       <div className="grid gap-4 md:grid-cols-2">
                         <Input
                           label="标题"
@@ -1806,6 +1859,7 @@ export default function SiteContentPage() {
                         />
                         <Input
                           label="摘要"
+                          helperText={`${charCount(newsEditForm.summary)} 字；建议 20-120 字。`}
                           value={newsEditForm.summary}
                           onChange={(event) =>
                             setNewsEditForm((form) => ({
@@ -1829,6 +1883,9 @@ export default function SiteContentPage() {
                             }))
                           }
                         />
+                        <p className="mt-1 text-sm text-gray-500">
+                          {charCount(newsEditForm.content)} 字；建议至少 80 字。
+                        </p>
                       </label>
                       <div className="flex gap-2">
                         <Button
@@ -1857,6 +1914,26 @@ export default function SiteContentPage() {
                         </h3>
                         <p className="mt-1 text-sm text-gray-600">
                           {item.summary || "暂无摘要"}
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {newsReadinessWarnings(item).length ? (
+                            newsReadinessWarnings(item).map((warning) => (
+                              <span
+                                key={warning}
+                                className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700"
+                              >
+                                {warning}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                              发布资料完整
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-2 text-xs text-gray-500">
+                          摘要 {charCount(item.summary)} 字 · 正文{" "}
+                          {charCount(item.content)} 字
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">

@@ -55,6 +55,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 32. [complete] E2E-REFRESH: Full local Docker/database/backend/frontend smoke test after Docker recovery.
 33. [complete] UX-ADMIN-001: Dedicated build-history page.
 34. [complete] FEP-001: Public Chunchang corporate-site polish for Chinese local demo.
+35. [complete] UX-ADMIN-002: Article editing publish-readiness hints.
 
 ## Backlog
 
@@ -63,7 +64,7 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 Recommended next slice:
 
 1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
-2. [pending] UX-ADMIN: Richer article editing controls.
+2. [pending] UX-ADMIN: Remaining rich article editing controls such as cover image URL, preview pane, and optional richer formatting.
 3. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
 
 ## Completed Execution: BE-001
