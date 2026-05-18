@@ -1377,3 +1377,26 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Login:
   - `admin@xiao9.com`
   - `admin123`
+
+## Stop Hook Reconciliation After 32-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (32/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Current visible run ledger now has 32 current steps and all 32 are marked `[complete]`.
+- Latest completed commits:
+  - `4d8129d docs: align routes and build endpoints`
+  - `7c4c98e docs: record full local smoke test`
+  - `bd44673 feat: add launch readiness checklist`
+- Current local services are still running:
+  - frontend `http://localhost:3000`
+  - backend `http://localhost:8080`
+  - `wb-postgres`
+  - `wb-redis`
+- Real remaining work is backlog, not incomplete current phases:
+  - `FEP`: public corporate-site polish with real assets after company materials are available
+  - `UX-ADMIN`: dedicated build-history page and richer article editing controls
+  - `DATA-REAL`: replace placeholder company materials after real materials are provided
+- Conclusion:
+  - The hook is again treating future backlog as unfinished current phases.
+  - No current run step is actually open.
+  - Continue with backlog implementation work.
