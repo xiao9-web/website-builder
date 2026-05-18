@@ -43,6 +43,12 @@ Build the Website Builder Platform MVP around the active implementation directio
 20. [complete] FE-MANAGE-001: No-login local Chunchang management demo.
 21. [complete] FEA-001: Authenticated dashboard content-management page.
 22. [complete] FEA-002: Edit existing product services and recent news records.
+23. [complete] FEA-003: Real authenticated end-to-end smoke test with Docker database, backend, login, and content APIs.
+24. [complete] FEA-004: Editable menus and menu-scoped articles.
+25. [complete] FEA-004-T: Menu/article service unit tests and requirement sync.
+26. [complete] FEA-005: Public menu pages and article detail pages.
+27. [complete] FEA-006: Content-management menu/article UX improvements.
+28. [complete] FEA-006-P: Admin-to-public preview links for visible menus and published articles.
 
 ## Backlog
 
@@ -50,8 +56,9 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 
 Recommended next slice:
 
-1. [pending] FEA-003: Real authenticated end-to-end smoke test with Docker database, backend, login, and content APIs.
-2. [pending] FEP: Public corporate-site polish with real assets after company materials are available.
+1. [pending] E2E-REFRESH: Run the full authenticated browser smoke again after Docker Desktop is available.
+2. [pending] PUB-001: Publish/build records workflow and public publish-state polish.
+3. [pending] FEP: Public corporate-site polish with real assets after company materials are available.
 
 ## Completed Execution: BE-001
 

@@ -142,6 +142,20 @@ function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
   return result;
 }
 
+function publicMenuHref(siteSlug: string, menu: SiteMenuDTO): string {
+  const baseHref = `/sites/${siteSlug}`;
+  if (menu.menuType === "HOME") return baseHref;
+
+  const anchorSlugs: Record<string, string> = {
+    products: "products",
+    about: "about",
+    cooperation: "cooperation",
+    contact: "contact",
+  };
+  const anchor = anchorSlugs[menu.slug];
+  return anchor ? `${baseHref}#${anchor}` : `${baseHref}/${menu.slug}`;
+}
+
 function heroFrom(config: SiteConfigDTO | null) {
   const content = config?.contentConfig ?? {};
   const hero =
@@ -1445,6 +1459,14 @@ export default function SiteContentPage() {
                         >
                           编辑
                         </Button>
+                        {currentSite?.slug && menu.visible ? (
+                          <Link
+                            href={publicMenuHref(currentSite.slug, menu)}
+                            target="_blank"
+                          >
+                            <Button size="sm" variant="outline">查看前台</Button>
+                          </Link>
+                        ) : null}
                         {menu.menuType !== "HOME" ? (
                           <Button
                             size="sm"
@@ -1730,6 +1752,14 @@ export default function SiteContentPage() {
                         >
                           编辑
                         </Button>
+                        {currentSite?.slug && item.status === "PUBLISHED" ? (
+                          <Link
+                            href={`/sites/${currentSite.slug}/articles/${item.slug}`}
+                            target="_blank"
+                          >
+                            <Button size="sm" variant="outline">查看前台</Button>
+                          </Link>
+                        ) : null}
                         <Button
                           size="sm"
                           variant="outline"

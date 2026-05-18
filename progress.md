@@ -1216,3 +1216,18 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `npm run build:web` passed
 - Limitation:
   - Docker daemon is still unavailable, so DB-backed browser smoke remains pending.
+
+## FEA-006-P Admin-To-Public Preview Links
+
+- Added direct public preview links in the authenticated content-management page:
+  - visible menu rows can open the matching public route
+  - homepage routes to `/sites/{slug}`
+  - built-in section menus route to homepage anchors
+  - content-column menus route to `/sites/{slug}/{menuSlug}`
+  - published article rows can open `/sites/{slug}/articles/{newsSlug}`
+- Updated `task_plan.md` top-level run steps so the visible project ledger now reflects the completed FEA-003 through FEA-006 work.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+- Environment:
+  - Docker daemon is still unavailable, so full DB-backed browser smoke remains blocked.
