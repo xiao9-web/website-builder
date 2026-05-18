@@ -60,6 +60,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 37. [complete] DOC-ACCEPT-001: Local demo and acceptance guide.
 38. [complete] DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
 39. [complete] UX-ADMIN-003: Image URL previews for logo, QR code, product images, and article covers.
+40. [complete] REQ-MENU-ARTICLE-001: Clarify menu-scoped articles, rich-text editing, and build/preview visibility requirements.
 
 ## Backlog
 
@@ -68,7 +69,7 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 Recommended next slice:
 
 1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
-2. [pending] UX-ADMIN: Remaining rich article editing controls such as article preview pane and optional richer formatting.
+2. [pending] UX-ADMIN: Implement menu-scoped article workflow, rich-text editor, public rich-text rendering, and preview/build freshness behavior.
 3. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
 
 ## Completed Execution: BE-001

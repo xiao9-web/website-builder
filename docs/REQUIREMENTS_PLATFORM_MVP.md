@@ -126,9 +126,12 @@ Rules:
 - The homepage is a system menu and cannot be deleted.
 - Non-homepage menus can be created, edited, hidden, sorted, and deleted.
 - Menus support at most three levels.
+- Every non-homepage menu is a content column and can own articles.
+- Public navigation for non-homepage menus must route to that menu's public column page, not silently fall back to a homepage anchor.
 - A menu cannot be moved under itself or under any of its descendant menus.
 - Moving a menu must not cause any descendant menu to exceed the three-level limit.
-- Articles can be assigned to a non-homepage menu.
+- Articles must be assigned to a non-homepage menu before they can be published.
+- The dashboard must allow creating an article directly from a menu row, with that menu preselected.
 - Deleting a menu keeps its articles and clears their menu assignment.
 - A menu can be used as a navigation entry even before it has articles.
 
@@ -149,9 +152,12 @@ Corporate website dynamic article or menu-scoped article.
 
 Rules:
 
-- Articles can belong to a menu.
+- Articles belong to a non-homepage menu.
 - Articles can still have a category such as company news or product knowledge.
+- Draft imported articles may temporarily have no menu, but unassigned articles cannot be published to the public site.
 - Article publication status remains `DRAFT`, `PUBLISHED`, or `OFFLINE`.
+- Article body editing requires a rich-text editor in phase one.
+- Public article pages must render the saved rich-text body, with unsafe HTML sanitized before display.
 
 Categories:
 
@@ -307,25 +313,38 @@ Menu requirements:
 
 Article requirements:
 
-- Allow creating an article under a selected menu.
+- Allow creating an article under any selected non-homepage menu.
+- Allow creating an article directly from a menu row with that menu preselected.
 - Allow editing an article's menu assignment.
-- Allow creating articles without a menu when needed.
+- Allow unassigned draft articles only for migration/import or temporary saving; block publishing until a non-homepage menu is selected.
 - Allow publishing, offline, draft editing, and deletion.
 - Show article menu, category, status, and updated time in the list.
 - Show the full menu path for an article, not only the leaf menu label.
 - Allow filtering articles by menu and by status.
+- Provide a rich-text editor for article body editing.
+- The rich-text editor must support at least paragraphs, bold text, headings, unordered lists, and ordered lists.
+- The editor should provide a usable toolbar; a plain textarea is not sufficient for the phase-one article workflow.
+- Show basic publishing readiness hints for missing menu assignment, short summary, and short body.
 
 Public rendering requirements:
 
 - Public site navigation should read visible menus from the backend menu model.
 - The homepage menu should route to the public site homepage.
-- Built-in first-level menus such as product services, about, cooperation, and contact may anchor to homepage sections.
-- Content-column menus should support public routes such as `/sites/{slug}/{menuSlug}`.
+- Every visible non-homepage menu should support a public route such as `/sites/{slug}/{menuSlug}`.
+- Built-in homepage sections such as product services, about, cooperation, and contact can still exist on the homepage, but visible menu navigation must not prevent those menus from having public column pages and menu-scoped articles.
 - Menu pages should list published articles assigned to that menu.
 - Existing imported or seeded articles without a menu assignment should be assigned to the default recent-news menu during migration when possible.
-- Article detail pages should render published article title, summary, category, date, body, and a contact call-to-action.
+- Article detail pages should render published article title, summary, category, date, rich-text body, cover image, and a contact call-to-action.
 - Hidden menus, draft articles, offline articles, and offline/error sites must not be publicly visible.
 - Public frontend fallback data may be used when the backend is unavailable, but explicit backend `404` or validation failures must not be replaced by fallback content.
+
+Content update / build visibility requirements:
+
+- Saved menu changes must be visible in the local public preview without requiring a separate manual rebuild.
+- Saved article changes must be visible in the local public preview after the article is published.
+- Rebuild/publish must use the latest saved menus, menu hierarchy, article assignments, article body, product services, and site configuration.
+- The build history UI must make clear whether the current build is a validation/build record or a real deployed static artifact.
+- In phase one, if real static deployment is not implemented, the public local preview is the source of truth for content verification after saving.
 
 Recent sites columns:
 
@@ -732,6 +751,7 @@ News form fields:
 - Title
 - Slug
 - Summary
+- Menu / column
 - Category
 - Cover image
 - Content
@@ -740,8 +760,22 @@ News form fields:
 
 Editor:
 
-- Phase one can use Markdown in a textarea.
-- Rich text or dedicated Markdown editor is postponed.
+- Phase one must provide a rich-text editor, not only a plain textarea.
+- Required editor capabilities:
+  - paragraph text
+  - bold text
+  - headings
+  - unordered lists
+  - ordered lists
+  - saved rich-text rendering on public article detail pages
+- Saved rich text must be sanitized before public rendering.
+
+Publication rules:
+
+- Publishing requires a non-homepage menu assignment.
+- Unassigned articles may exist only as drafts.
+- All non-homepage menus can own articles.
+- Creating an article from a menu row should preselect that menu.
 
 Statuses:
 

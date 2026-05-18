@@ -513,12 +513,15 @@ PATCH /api/sites/{siteId}/news/{newsId}/status
 Rules:
 
 - Slug unique within site.
-- `GET` supports optional `status=DRAFT|PUBLISHED|OFFLINE`; omitting `status` returns all records for dashboard management.
+- News can be assigned to a non-homepage menu through `menuId`.
+- `GET` supports optional `status=DRAFT|PUBLISHED|OFFLINE` and optional `menuId`; omitting filters returns all records for dashboard management.
 - Creating news defaults to `DRAFT` when status is omitted.
+- Publishing requires a non-homepage `menuId`; unassigned articles may remain draft only.
 - Publishing sets `publishedAt`; moving to `DRAFT` or `OFFLINE` clears `publishedAt`.
 - Draft is hidden from public APIs.
 - Published is visible.
 - Offline is hidden.
+- `content` stores rich-text HTML from the dashboard editor and must be sanitized before public rendering.
 
 ## 8. Lead API
 
@@ -589,6 +592,7 @@ Rules:
 - Products return enabled records only.
 - News returns published records only.
 - Menu-scoped news returns published records under a visible menu only.
+- Every visible non-homepage menu can serve as a public article column through `/api/public/sites/{slug}/menus/{menuSlug}` and `/api/public/sites/{slug}/menus/{menuSlug}/news`.
 - Offline and error sites return not found.
 - Leads can be submitted without login.
 

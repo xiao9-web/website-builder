@@ -667,15 +667,21 @@ Work:
 
 - Implement news table.
 - Implement news create/edit form.
-- Support Markdown textarea.
+- Support menu-scoped article creation for every non-homepage menu.
+- Add a "write article" entry from menu rows that preselects the menu.
+- Support rich-text article body editing.
+- Render saved rich text safely on public article pages.
 - Implement publish/offline status actions.
 - Implement delete confirmation.
 
 Acceptance:
 
 - User can create draft news.
-- User can publish and unpublish news.
-- Public preview only displays published news.
+- User can create an article directly under a selected non-homepage menu.
+- User can publish and unpublish menu-scoped articles.
+- Publishing is blocked or clearly prevented when no non-homepage menu is selected.
+- Public preview only displays published news under visible menus.
+- Saved menu and article changes are reflected in local public preview after save/publish without requiring a separate manual rebuild.
 
 ### FEA-011: Cooperation and Contact Tabs
 

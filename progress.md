@@ -1600,3 +1600,27 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
   - `http://localhost:3000/sites/chunchang` returned HTTP `200`
   - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`
+
+## REQ-MENU-ARTICLE-001 Menu-Scoped Articles And Rich Text Requirement Update
+
+- User clarified two product gaps:
+  - Articles should be written under menus/columns; every non-homepage menu should support articles.
+  - Article body editing needs a rich-text editor, not only a plain textarea.
+  - Newly added menus and saved articles should be reflected in public preview/build behavior.
+- Updated `docs/REQUIREMENTS_PLATFORM_MVP.md`:
+  - every non-homepage menu is a content column and can own articles
+  - public navigation for non-homepage menus should route to menu public pages
+  - publishing requires a non-homepage menu assignment
+  - dashboard should allow creating an article directly from a menu row
+  - rich-text editor is required in phase one
+  - public article pages must render sanitized rich text
+  - saved menu/article changes must be visible in local public preview after save/publish
+  - rebuild/publish must use latest saved menus, hierarchy, article assignments, body, product services, and config
+- Updated `docs/API_SPEC_MVP.md`:
+  - `menuId` is part of news management semantics
+  - `GET /news` supports `menuId`
+  - menu-scoped public news belongs to every visible non-homepage menu
+  - `content` stores rich-text HTML and must be sanitized before public rendering
+- Updated `docs/DEVELOPMENT_TASKS_MVP.md`:
+  - replaced Markdown-textarea wording with rich-text/menu-scoped article workflow requirements
+- Current implementation changes are intentionally not committed yet; the requirements baseline was updated first.
