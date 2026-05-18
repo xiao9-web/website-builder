@@ -305,3 +305,10 @@
 - The frontend should not offer invalid parent choices when editing a menu; hiding the current menu and its descendants reduces avoidable backend validation errors.
 - Article lists become noisy once menu-scoped content grows; filtering by menu and status is required for day-to-day maintenance.
 - Article rows should show the full menu path because duplicated leaf names can exist in different branches.
+
+## PUB-001 Publish And Build Findings
+
+- Publishing is not credible to users unless the latest build result is visible on the site detail page.
+- A successful build must update `sites.published_at`; otherwise the UI can show a published status with no publish time.
+- Latest build should mean the latest attempt, not only the latest successful attempt, because failed builds need to be visible for troubleshooting.
+- Site detail needs both a publish/build action and a compact latest-build panel before a full build-history page is worth adding.

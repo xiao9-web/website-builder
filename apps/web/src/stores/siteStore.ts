@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import type { Site, CreateSiteData, UpdateSiteData } from "@/types/site";
+import type {
+  BuildRecord,
+  Site,
+  CreateSiteData,
+  UpdateSiteData,
+} from "@/types/site";
 import type { Template } from "@/types/template";
 import api from "@/lib/api";
 
@@ -22,6 +27,8 @@ interface SiteState {
   updateConfig: (config: Record<string, unknown>) => void;
   setCurrentTemplate: (template: Template | null) => void;
   publishSite: (id: string) => Promise<void>;
+  triggerBuild: (id: string) => Promise<BuildRecord>;
+  fetchLatestBuild: (id: string) => Promise<BuildRecord | null>;
 }
 
 export const useSiteStore = create<SiteState>((set, get) => ({
@@ -117,5 +124,26 @@ export const useSiteStore = create<SiteState>((set, get) => ({
       set({ isSaving: false });
       throw error;
     }
+  },
+
+  triggerBuild: async (id: string) => {
+    set({ isSaving: true });
+    try {
+      const build = (await api.post(`/sites/${id}/build`)) as BuildRecord;
+      const refreshedSite = (await api.get(`/sites/${id}`)) as Site;
+      set((state) => ({
+        currentSite: refreshedSite,
+        sites: state.sites.map((s) => (s.id === id ? refreshedSite : s)),
+        isSaving: false,
+      }));
+      return build;
+    } catch (error) {
+      set({ isSaving: false });
+      throw error;
+    }
+  },
+
+  fetchLatestBuild: async (id: string) => {
+    return (await api.get(`/sites/${id}/builds/latest`)) as BuildRecord | null;
   },
 }));

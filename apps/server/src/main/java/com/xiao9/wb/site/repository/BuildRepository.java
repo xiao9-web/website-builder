@@ -13,5 +13,7 @@ public interface BuildRepository extends JpaRepository<Build, Long> {
 
     Page<Build> findBySiteIdOrderByCreatedAtDesc(Long siteId, Pageable pageable);
 
+    Optional<Build> findFirstBySiteIdOrderByCreatedAtDesc(Long siteId);
+
     Optional<Build> findFirstBySiteIdAndStatusOrderByCreatedAtDesc(Long siteId, Build.Status status);
 }

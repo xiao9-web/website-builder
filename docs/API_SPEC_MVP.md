@@ -386,7 +386,7 @@ Authenticated.
 
 Purpose:
 
-Get latest successful build for a site.
+Get the latest build record for a site, regardless of success or failure.
 
 Auth:
 

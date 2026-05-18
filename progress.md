@@ -1248,3 +1248,33 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - The hook is treating future backlog as unfinished current phases.
   - No completed current run step is actually open.
   - Next executable work without Docker should be `PUB-001` or another frontend/backend slice that can be build-tested without live database services.
+
+## PUB-001 Publish And Build Visibility
+
+- Started the next non-Docker-dependent backlog slice after the 28-step ledger reconciliation.
+- Backend changes:
+  - successful builds now set `sites.status = PUBLISHED`
+  - successful builds now set `sites.published_at` to the build completion time
+  - latest build lookup now returns the newest build attempt, not only the newest successful build
+- Backend test added:
+  - `BuildServiceTest`
+  - verifies successful builds update site status and `publishedAt`
+  - verifies latest build returns failed attempts too
+- Frontend changes:
+  - added `BuildRecord` and `BuildStatus` types
+  - added build status labels/classes
+  - site detail page can trigger a manual build
+  - site detail page shows latest build status, trigger source, duration, timestamps, output URL, and log
+  - publish button now uses the build flow and refreshes latest build information
+- Documentation updated:
+  - `docs/REQUIREMENTS_PLATFORM_MVP.md`
+  - `docs/API_SPEC_MVP.md`
+  - `findings.md`
+- Verification:
+  - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest test` passed with `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0`
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - `npm run build:server` passed
+  - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest,ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test` passed with `Tests run: 47, Failures: 0, Errors: 0, Skipped: 0`
+- Limitation:
+  - Docker daemon is still unavailable, so live DB-backed build/publish smoke remains pending.

@@ -93,6 +93,7 @@ public class BuildService {
             build.setBuildLog("Build completed successfully");
 
             site.setStatus(Site.Status.PUBLISHED);
+            site.setPublishedAt(build.getCompletedAt());
             siteRepository.save(site);
 
             log.info("Build {} completed successfully in {}ms", buildId, build.getDurationMs());
@@ -113,7 +114,7 @@ public class BuildService {
 
     @Transactional(readOnly = true)
     public BuildDTO getLatestBuild(Long siteId) {
-        return buildRepository.findFirstBySiteIdAndStatusOrderByCreatedAtDesc(siteId, Build.Status.SUCCESS)
+        return buildRepository.findFirstBySiteIdOrderByCreatedAtDesc(siteId)
                 .map(BuildDTO::from)
                 .orElse(null);
     }

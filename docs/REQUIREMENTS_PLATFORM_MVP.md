@@ -854,6 +854,10 @@ Preview module:
 Publish module:
 
 - Button: `发布站点`
+- Site detail should show the latest build record after publish or manual build.
+- A successful build should set the site status to `PUBLISHED` and update `published_at`.
+- The latest build panel should show status, output URL, duration, trigger source, created time, completed time, and build log when available.
+- Manual rebuild should be available from the site detail page.
 
 Publish confirmation:
 
