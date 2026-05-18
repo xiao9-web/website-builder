@@ -59,6 +59,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 36. [complete] DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
 37. [complete] DOC-ACCEPT-001: Local demo and acceptance guide.
 38. [complete] DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
+39. [complete] UX-ADMIN-003: Image URL previews for logo, QR code, product images, and article covers.
 
 ## Backlog
 
@@ -67,7 +68,7 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 Recommended next slice:
 
 1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
-2. [pending] UX-ADMIN: Remaining rich article editing controls such as cover image URL, preview pane, and optional richer formatting.
+2. [pending] UX-ADMIN: Remaining rich article editing controls such as article preview pane and optional richer formatting.
 3. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
 
 ## Completed Execution: BE-001

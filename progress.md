@@ -1583,3 +1583,20 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Conclusion:
   - No current run step is open.
   - The real remaining work is either optional UX polish or real-material entry after company materials arrive.
+
+## UX-ADMIN-003 Image URL Previews
+
+- Added dashboard image previews for real-material URL fields:
+  - logo URL preview
+  - WeChat QR code URL preview
+  - product image URL preview
+  - article cover image URL preview
+- Existing list rows now show configured product/article images inline when URLs exist.
+- This reduces real-material entry mistakes without adding a media library or backend changes.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - restarted `npm run dev:web` after build
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+  - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`

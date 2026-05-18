@@ -140,6 +140,35 @@ function newsReadinessWarnings(item: Pick<NewsDTO, "menuId" | "summary" | "conte
   return warnings;
 }
 
+function ImagePreview({
+  url,
+  label,
+  compact = false,
+}: {
+  url?: string | null;
+  label: string;
+  compact?: boolean;
+}) {
+  const trimmedUrl = url?.trim();
+  if (!trimmedUrl) return null;
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+      <p className="mb-2 text-xs font-medium text-gray-500">{label}</p>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={trimmedUrl}
+        alt={label}
+        className={
+          compact
+            ? "h-24 w-24 rounded-md border border-gray-200 bg-white object-cover"
+            : "aspect-video w-full rounded-md border border-gray-200 bg-white object-cover"
+        }
+      />
+    </div>
+  );
+}
+
 function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
   const result = new Set<number>();
   const collect = (parentId: number) => {
@@ -1066,6 +1095,11 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <ImagePreview
+                url={configForm.logoUrl}
+                label="Logo 预览"
+                compact
+              />
               <Input
                 label="业务方向"
                 value={configForm.businessDirection}
@@ -1193,6 +1227,11 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <ImagePreview
+                url={configForm.wechatQrUrl}
+                label="微信二维码预览"
+                compact
+              />
               <Input
                 label="地址"
                 value={configForm.address}
@@ -1267,6 +1306,7 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <ImagePreview url={productForm.imageUrl} label="产品图片预览" />
               <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-gray-700">
                   说明
@@ -1332,6 +1372,10 @@ export default function SiteContentPage() {
                             }))
                           }
                         />
+                        <ImagePreview
+                          url={productEditForm.imageUrl}
+                          label="产品图片预览"
+                        />
                       </div>
                       <Input
                         label="摘要"
@@ -1391,6 +1435,10 @@ export default function SiteContentPage() {
                         <p className="mt-1 text-xs text-gray-500">
                           图片：{product.imageUrl ? "已配置" : "未配置"}
                         </p>
+                        <ImagePreview
+                          url={product.imageUrl}
+                          label="当前产品图片"
+                        />
                         <span
                           className={`mt-3 inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                             product.enabled
@@ -1774,6 +1822,7 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <ImagePreview url={newsForm.coverImage} label="封面图片预览" />
               <Input
                 label="摘要"
                 helperText={`${charCount(newsForm.summary)} 字；建议 20-120 字，便于前台列表展示。`}
@@ -1946,6 +1995,10 @@ export default function SiteContentPage() {
                             }))
                           }
                         />
+                        <ImagePreview
+                          url={newsEditForm.coverImage}
+                          label="封面图片预览"
+                        />
                         <Input
                           label="摘要"
                           helperText={`${charCount(newsEditForm.summary)} 字；建议 20-120 字。`}
@@ -2027,6 +2080,7 @@ export default function SiteContentPage() {
                         <p className="mt-1 text-xs text-gray-500">
                           封面：{item.coverImage ? "已配置" : "未配置"}
                         </p>
+                        <ImagePreview url={item.coverImage} label="当前封面" />
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <Button
