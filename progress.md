@@ -1464,3 +1464,25 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - restarted `npm run dev:web` after build
   - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
   - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+
+## DATA-REAL-001 Real-Material URL Fields
+
+- Added dashboard inputs for real material URLs already supported by the backend schema:
+  - site logo URL in `brandConfig.logoUrl`
+  - WeChat QR code URL in `contentConfig.contact.wechatQrUrl`
+  - product image URL in product-service `imageUrl`
+  - article cover image URL in news `coverImage`
+- Public site now consumes those fields:
+  - header shows the uploaded logo URL when configured
+  - homepage product cards show product images when configured
+  - homepage news cards and menu news cards show cover images when configured
+  - article detail page shows cover image when configured
+  - contact section shows WeChat QR code when configured
+- Empty image fields keep the current text-first layout and do not introduce fake materials.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - restarted `npm run dev:web` after build
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang/news` returned HTTP `200`

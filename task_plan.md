@@ -56,6 +56,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 33. [complete] UX-ADMIN-001: Dedicated build-history page.
 34. [complete] FEP-001: Public Chunchang corporate-site polish for Chinese local demo.
 35. [complete] UX-ADMIN-002: Article editing publish-readiness hints.
+36. [complete] DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
 
 ## Backlog
 

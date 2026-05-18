@@ -66,6 +66,14 @@ export default async function PublicMenuPage({ params }: PublicMenuPageProps) {
                   key={item.id}
                   className="rounded-md border border-stone-200 bg-white p-6 shadow-sm"
                 >
+                  {item.coverImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.coverImage}
+                      alt={item.title}
+                      className="mb-5 aspect-[16/9] w-full rounded-md border border-stone-200 object-cover"
+                    />
+                  ) : null}
                   <div className="flex items-center gap-3 text-xs text-stone-500">
                     <span>{item.category || menu.label}</span>
                     {item.publishedAt ? (

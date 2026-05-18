@@ -181,6 +181,14 @@ export default async function PublicSitePage({ params }: PublicSitePageProps) {
                 key={product.id}
                 className="rounded-md border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-800/30 hover:shadow-md"
               >
+                {product.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="mb-5 aspect-[16/9] w-full rounded-md border border-stone-200 object-cover"
+                  />
+                ) : null}
                 <div className="flex items-start justify-between gap-4">
                   <h3 className="text-xl font-semibold text-stone-950">
                     {product.name}
@@ -289,6 +297,14 @@ export default async function PublicSitePage({ params }: PublicSitePageProps) {
                   key={item.id}
                   className="rounded-md border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-800/30 hover:shadow-md"
                 >
+                  {item.coverImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.coverImage}
+                      alt={item.title}
+                      className="mb-5 aspect-[16/9] w-full rounded-md border border-stone-200 object-cover"
+                    />
+                  ) : null}
                   <div className="flex items-center gap-3 text-xs text-stone-500">
                     <span>{item.category || "动态"}</span>
                     {item.publishedAt ? (
@@ -362,6 +378,19 @@ export default async function PublicSitePage({ params }: PublicSitePageProps) {
                 </p>
               ) : null}
             </div>
+            {contact.wechatQrUrl ? (
+              <div className="mt-6 inline-block rounded-md border border-stone-200 bg-white p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={contact.wechatQrUrl}
+                  alt="微信二维码"
+                  className="h-32 w-32 rounded object-cover"
+                />
+                <p className="mt-2 text-center text-xs text-stone-500">
+                  扫码添加微信
+                </p>
+              </div>
+            ) : null}
           </div>
           <div className="rounded-md border border-stone-200 bg-[#f7f5ee] p-6">
             <LeadForm siteSlug={config.slug} />

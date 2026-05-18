@@ -60,6 +60,14 @@ export default async function PublicArticlePage({
             {article.summary}
           </p>
         ) : null}
+        {article.coverImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={article.coverImage}
+            alt={article.title}
+            className="mt-8 aspect-[16/9] w-full rounded-md border border-stone-200 object-cover shadow-sm"
+          />
+        ) : null}
         <div className="mt-10 rounded-md border border-stone-200 bg-white p-6 text-base leading-8 text-stone-700 shadow-sm sm:p-8">
           {(article.content || "正文内容待补充。")
             .split("\n")

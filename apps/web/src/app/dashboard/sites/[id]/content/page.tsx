@@ -277,6 +277,7 @@ export default function SiteContentPage() {
     seoDescription: "",
     companyName: "",
     shortName: "",
+    logoUrl: "",
     businessDirection: "",
     brandWords: "",
     heroHeadline: "",
@@ -289,6 +290,7 @@ export default function SiteContentPage() {
     cooperationItems: "",
     phone: "",
     wechat: "",
+    wechatQrUrl: "",
     address: "",
     contactNotice: "",
   });
@@ -297,6 +299,7 @@ export default function SiteContentPage() {
     name: "",
     summary: "",
     description: "",
+    imageUrl: "",
     scenarios: "",
   });
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
@@ -304,6 +307,7 @@ export default function SiteContentPage() {
     name: "",
     summary: "",
     description: "",
+    imageUrl: "",
     scenarios: "",
   });
 
@@ -330,6 +334,7 @@ export default function SiteContentPage() {
     summary: "",
     content: "",
     category: "公司动态",
+    coverImage: "",
   });
   const [editingNewsId, setEditingNewsId] = useState<number | null>(null);
   const [newsEditForm, setNewsEditForm] = useState({
@@ -339,6 +344,7 @@ export default function SiteContentPage() {
     summary: "",
     content: "",
     category: "",
+    coverImage: "",
   });
   const [newsMenuFilter, setNewsMenuFilter] = useState("all");
   const [newsStatusFilter, setNewsStatusFilter] = useState<
@@ -419,6 +425,7 @@ export default function SiteContentPage() {
           seoDescription: textValue(seo.description),
           companyName: textValue(brand.companyName),
           shortName: textValue(brand.shortName),
+          logoUrl: textValue(brand.logoUrl),
           businessDirection: textValue(brand.businessDirection),
           brandWords: mapItems(brand.brandWords).join("、"),
           heroHeadline: textValue(hero.headline),
@@ -431,6 +438,7 @@ export default function SiteContentPage() {
           cooperationItems: mapItems(cooperation.items).join("、"),
           phone: textValue(contact.phone),
           wechat: textValue(contact.wechat),
+          wechatQrUrl: textValue(contact.wechatQrUrl),
           address: textValue(contact.address),
           contactNotice: textValue(contact.notice),
         });
@@ -469,6 +477,7 @@ export default function SiteContentPage() {
           ...config.brandConfig,
           companyName: configForm.companyName,
           shortName: configForm.shortName,
+          logoUrl: configForm.logoUrl || null,
           businessDirection: configForm.businessDirection,
           brandWords: configForm.brandWords
             ? splitList(configForm.brandWords)
@@ -499,6 +508,7 @@ export default function SiteContentPage() {
             ...contactFrom(config),
             phone: configForm.phone || null,
             wechat: configForm.wechat || null,
+            wechatQrUrl: configForm.wechatQrUrl || null,
             address: configForm.address || null,
             notice: configForm.contactNotice,
           },
@@ -526,12 +536,19 @@ export default function SiteContentPage() {
         name: productForm.name,
         summary: productForm.summary,
         description: productForm.description,
+        imageUrl: productForm.imageUrl || undefined,
         scenarios: splitList(productForm.scenarios),
         sortOrder: products.length + 1,
         enabled: true,
       });
       setProducts((items) => [...items, created]);
-      setProductForm({ name: "", summary: "", description: "", scenarios: "" });
+      setProductForm({
+        name: "",
+        summary: "",
+        description: "",
+        imageUrl: "",
+        scenarios: "",
+      });
       setSuccess("产品服务已新增。");
     } catch (err) {
       setError(err instanceof Error ? err.message : "产品服务新增失败。");
@@ -559,6 +576,7 @@ export default function SiteContentPage() {
       name: product.name,
       summary: product.summary,
       description: product.description || "",
+      imageUrl: product.imageUrl || "",
       scenarios: (product.scenarios ?? []).map(String).join("、"),
     });
     setError("");
@@ -571,6 +589,7 @@ export default function SiteContentPage() {
       name: "",
       summary: "",
       description: "",
+      imageUrl: "",
       scenarios: "",
     });
   };
@@ -589,7 +608,7 @@ export default function SiteContentPage() {
         name: productEditForm.name,
         summary: productEditForm.summary,
         description: productEditForm.description,
-        imageUrl: product.imageUrl || undefined,
+        imageUrl: productEditForm.imageUrl || undefined,
         scenarios: splitList(productEditForm.scenarios),
         sortOrder: product.sortOrder,
         enabled: product.enabled,
@@ -737,6 +756,7 @@ export default function SiteContentPage() {
         summary: "",
         content: "",
         category: "公司动态",
+        coverImage: "",
       });
       setSuccess("最近动态已保存为草稿。");
     } catch (err) {
@@ -780,6 +800,7 @@ export default function SiteContentPage() {
       summary: item.summary || "",
       content: item.content || "",
       category: item.category || "",
+      coverImage: item.coverImage || "",
     });
     setError("");
     setSuccess("");
@@ -794,6 +815,7 @@ export default function SiteContentPage() {
       summary: "",
       content: "",
       category: "",
+      coverImage: "",
     });
   };
 
@@ -814,7 +836,7 @@ export default function SiteContentPage() {
         summary: newsEditForm.summary,
         content: newsEditForm.content,
         category: newsEditForm.category,
-        coverImage: item.coverImage || undefined,
+        coverImage: newsEditForm.coverImage || undefined,
         status: item.status,
       });
       setNews((items) =>
@@ -1034,6 +1056,17 @@ export default function SiteContentPage() {
                 }
               />
               <Input
+                label="Logo 图片 URL"
+                helperText="可先填写公网图片地址；未填写时前台使用文字标识。"
+                value={configForm.logoUrl}
+                onChange={(event) =>
+                  setConfigForm((form) => ({
+                    ...form,
+                    logoUrl: event.target.value,
+                  }))
+                }
+              />
+              <Input
                 label="业务方向"
                 value={configForm.businessDirection}
                 onChange={(event) =>
@@ -1150,6 +1183,17 @@ export default function SiteContentPage() {
                 }
               />
               <Input
+                label="微信二维码 URL"
+                helperText="可填写二维码图片地址；公开站会在联系区展示。"
+                value={configForm.wechatQrUrl}
+                onChange={(event) =>
+                  setConfigForm((form) => ({
+                    ...form,
+                    wechatQrUrl: event.target.value,
+                  }))
+                }
+              />
+              <Input
                 label="地址"
                 value={configForm.address}
                 onChange={(event) =>
@@ -1212,6 +1256,17 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <Input
+                label="产品图片 URL"
+                helperText="可填写真实产品图地址；未填写时前台显示文字卡片。"
+                value={productForm.imageUrl}
+                onChange={(event) =>
+                  setProductForm((form) => ({
+                    ...form,
+                    imageUrl: event.target.value,
+                  }))
+                }
+              />
               <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-gray-700">
                   说明
@@ -1264,6 +1319,16 @@ export default function SiteContentPage() {
                             setProductEditForm((form) => ({
                               ...form,
                               scenarios: event.target.value,
+                            }))
+                          }
+                        />
+                        <Input
+                          label="产品图片 URL"
+                          value={productEditForm.imageUrl}
+                          onChange={(event) =>
+                            setProductEditForm((form) => ({
+                              ...form,
+                              imageUrl: event.target.value,
                             }))
                           }
                         />
@@ -1322,6 +1387,9 @@ export default function SiteContentPage() {
                         <p className="mt-2 text-xs text-gray-500">
                           {(product.scenarios ?? []).map(String).join("、") ||
                             "暂无场景"}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          图片：{product.imageUrl ? "已配置" : "未配置"}
                         </p>
                         <span
                           className={`mt-3 inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -1696,6 +1764,17 @@ export default function SiteContentPage() {
                 }
               />
               <Input
+                label="封面图片 URL"
+                helperText="可填写真实新闻或产品图片地址；未填写时前台显示文字内容。"
+                value={newsForm.coverImage}
+                onChange={(event) =>
+                  setNewsForm((form) => ({
+                    ...form,
+                    coverImage: event.target.value,
+                  }))
+                }
+              />
+              <Input
                 label="摘要"
                 helperText={`${charCount(newsForm.summary)} 字；建议 20-120 字，便于前台列表展示。`}
                 value={newsForm.summary}
@@ -1858,6 +1937,16 @@ export default function SiteContentPage() {
                           }
                         />
                         <Input
+                          label="封面图片 URL"
+                          value={newsEditForm.coverImage}
+                          onChange={(event) =>
+                            setNewsEditForm((form) => ({
+                              ...form,
+                              coverImage: event.target.value,
+                            }))
+                          }
+                        />
+                        <Input
                           label="摘要"
                           helperText={`${charCount(newsEditForm.summary)} 字；建议 20-120 字。`}
                           value={newsEditForm.summary}
@@ -1934,6 +2023,9 @@ export default function SiteContentPage() {
                         <p className="mt-2 text-xs text-gray-500">
                           摘要 {charCount(item.summary)} 字 · 正文{" "}
                           {charCount(item.content)} 字
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          封面：{item.coverImage ? "已配置" : "未配置"}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
