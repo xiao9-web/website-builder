@@ -858,6 +858,8 @@ Publish module:
 - A successful build should set the site status to `PUBLISHED` and update `published_at`.
 - The latest build panel should show status, output URL, duration, trigger source, created time, completed time, and build log when available.
 - Manual rebuild should be available from the site detail page.
+- Site detail should show a compact recent build history list after builds exist.
+- Build history should include failed attempts, not only successful builds.
 
 Publish confirmation:
 

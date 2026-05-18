@@ -12,6 +12,10 @@ interface SitePageResponse {
   content: Site[];
 }
 
+interface BuildPageResponse {
+  content: BuildRecord[];
+}
+
 interface SiteState {
   sites: Site[];
   currentSite: Site | null;
@@ -29,6 +33,7 @@ interface SiteState {
   publishSite: (id: string) => Promise<void>;
   triggerBuild: (id: string) => Promise<BuildRecord>;
   fetchLatestBuild: (id: string) => Promise<BuildRecord | null>;
+  fetchBuilds: (id: string) => Promise<BuildRecord[]>;
 }
 
 export const useSiteStore = create<SiteState>((set, get) => ({
@@ -145,5 +150,12 @@ export const useSiteStore = create<SiteState>((set, get) => ({
 
   fetchLatestBuild: async (id: string) => {
     return (await api.get(`/sites/${id}/builds/latest`)) as BuildRecord | null;
+  },
+
+  fetchBuilds: async (id: string) => {
+    const response = (await api.get(`/sites/${id}/builds`)) as
+      | BuildRecord[]
+      | BuildPageResponse;
+    return Array.isArray(response) ? response : response.content;
   },
 }));

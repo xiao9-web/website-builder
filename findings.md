@@ -312,3 +312,9 @@
 - A successful build must update `sites.published_at`; otherwise the UI can show a published status with no publish time.
 - Latest build should mean the latest attempt, not only the latest successful attempt, because failed builds need to be visible for troubleshooting.
 - Site detail needs both a publish/build action and a compact latest-build panel before a full build-history page is worth adding.
+
+## PUB-002 Build History Findings
+
+- A latest-build panel is not enough once users publish repeatedly; site detail needs at least a compact recent-history list.
+- Build history should be paged at API level even if the first UI only shows the first few rows.
+- Single-build reads must verify the build belongs to the requested site to avoid cross-site record access.

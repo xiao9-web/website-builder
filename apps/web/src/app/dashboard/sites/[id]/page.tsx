@@ -25,23 +25,39 @@ export default function SiteDetailPage() {
     isLoading,
     isSaving,
     fetchSite,
+    fetchBuilds,
     fetchLatestBuild,
     triggerBuild,
   } = useSiteStore();
   const [latestBuild, setLatestBuild] = useState<BuildRecord | null>(null);
+  const [builds, setBuilds] = useState<BuildRecord[]>([]);
   const [buildError, setBuildError] = useState("");
 
   useEffect(() => {
     async function load() {
       if (!siteId) return;
       await fetchSite(siteId);
-      const build = await fetchLatestBuild(siteId);
+      const [build, buildHistory] = await Promise.all([
+        fetchLatestBuild(siteId),
+        fetchBuilds(siteId),
+      ]);
       setLatestBuild(build);
+      setBuilds(buildHistory);
     }
     load().catch((error) => {
       setBuildError(error instanceof Error ? error.message : "构建记录加载失败。");
     });
-  }, [siteId, fetchSite, fetchLatestBuild]);
+  }, [siteId, fetchSite, fetchLatestBuild, fetchBuilds]);
+
+  const refreshBuildState = async (id: string) => {
+    const [build, buildHistory] = await Promise.all([
+      fetchLatestBuild(id),
+      fetchBuilds(id),
+      fetchSite(id),
+    ]);
+    setLatestBuild(build);
+    setBuilds(buildHistory);
+  };
 
   if (isLoading || !currentSite) {
     return <Loading fullScreen text="正在加载站点..." />;
@@ -56,8 +72,7 @@ export default function SiteDetailPage() {
     try {
       const build = await triggerBuild(currentSite.id);
       setLatestBuild(build);
-      const refreshedBuild = await fetchLatestBuild(currentSite.id);
-      setLatestBuild(refreshedBuild);
+      await refreshBuildState(currentSite.id);
     } catch (error) {
       setBuildError(error instanceof Error ? error.message : "触发构建失败。");
     }
@@ -250,6 +265,55 @@ export default function SiteDetailPage() {
                   暂无构建记录。点击发布或重新构建后，这里会显示最新结果。
                 </p>
               )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <h2 className="text-lg font-semibold text-gray-900">构建历史</h2>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {builds.slice(0, 5).map((build) => (
+                <div
+                  key={build.id}
+                  className="rounded-lg border border-gray-200 p-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">
+                        #{build.id}
+                      </span>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${buildStatusClass(build.status)}`}
+                      >
+                        {buildStatusLabel(build.status)}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {build.createdAt ? formatDate(build.createdAt) : "未知时间"}
+                    </span>
+                  </div>
+                  <div className="mt-2 grid gap-1 text-xs text-gray-500">
+                    <span>触发：{build.triggeredBy || "系统"}</span>
+                    <span>耗时：{build.durationMs} ms</span>
+                    {build.outputUrl ? (
+                      <a
+                        href={build.outputUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="break-all text-primary-700 hover:text-primary-800"
+                      >
+                        {build.outputUrl}
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+              {builds.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  暂无构建历史。首次发布或构建后会出现在这里。
+                </p>
+              ) : null}
             </CardContent>
           </Card>
 

@@ -382,11 +382,31 @@ Auth:
 
 Authenticated.
 
+### GET /api/sites/{siteId}/builds
+
+Purpose:
+
+List build history for a site.
+
+Auth:
+
+Authenticated.
+
 ### GET /api/sites/{siteId}/builds/latest
 
 Purpose:
 
 Get the latest build record for a site, regardless of success or failure.
+
+Auth:
+
+Authenticated.
+
+### GET /api/sites/{siteId}/builds/{buildId}
+
+Purpose:
+
+Get a single build record for a site.
 
 Auth:
 

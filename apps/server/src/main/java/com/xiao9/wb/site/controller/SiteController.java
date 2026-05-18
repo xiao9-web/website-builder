@@ -100,6 +100,18 @@ public class SiteController {
         return ApiResponse.success(build);
     }
 
+    @GetMapping("/{id}/builds")
+    public ApiResponse<PageResponse<BuildDTO>> listBuilds(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal User user
+    ) {
+        siteService.requireReadableSite(id, user);
+        PageResponse<BuildDTO> builds = buildService.listBuilds(id, page, size);
+        return ApiResponse.success(builds);
+    }
+
     @GetMapping("/{id}/builds/latest")
     public ApiResponse<BuildDTO> getLatestBuild(
             @PathVariable Long id,
@@ -107,6 +119,17 @@ public class SiteController {
     ) {
         siteService.requireReadableSite(id, user);
         BuildDTO build = buildService.getLatestBuild(id);
+        return ApiResponse.success(build);
+    }
+
+    @GetMapping("/{id}/builds/{buildId}")
+    public ApiResponse<BuildDTO> getBuild(
+            @PathVariable Long id,
+            @PathVariable Long buildId,
+            @AuthenticationPrincipal User user
+    ) {
+        siteService.requireReadableSite(id, user);
+        BuildDTO build = buildService.getBuild(id, buildId);
         return ApiResponse.success(build);
     }
 

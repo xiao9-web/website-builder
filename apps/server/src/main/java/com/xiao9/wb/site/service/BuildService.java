@@ -2,6 +2,7 @@ package com.xiao9.wb.site.service;
 
 import com.xiao9.wb.common.exception.BusinessException;
 import com.xiao9.wb.common.exception.ErrorCode;
+import com.xiao9.wb.common.response.PageResponse;
 import com.xiao9.wb.site.dto.BuildDTO;
 import com.xiao9.wb.site.entity.Build;
 import com.xiao9.wb.site.entity.Site;
@@ -9,6 +10,8 @@ import com.xiao9.wb.site.repository.BuildRepository;
 import com.xiao9.wb.site.repository.SiteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,5 +120,25 @@ public class BuildService {
         return buildRepository.findFirstBySiteIdOrderByCreatedAtDesc(siteId)
                 .map(BuildDTO::from)
                 .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<BuildDTO> listBuilds(Long siteId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(Math.max(page, 0), Math.max(size, 1));
+        Page<Build> builds = buildRepository.findBySiteIdOrderByCreatedAtDesc(siteId, pageRequest);
+        return PageResponse.of(
+                builds.getContent().stream().map(BuildDTO::from).toList(),
+                builds.getNumber(),
+                builds.getSize(),
+                builds.getTotalElements()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public BuildDTO getBuild(Long siteId, Long buildId) {
+        Build build = buildRepository.findById(buildId)
+                .filter(item -> item.getSite() != null && siteId.equals(item.getSite().getId()))
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Build not found"));
+        return BuildDTO.from(build);
     }
 }

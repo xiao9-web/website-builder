@@ -1278,3 +1278,31 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest,ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test` passed with `Tests run: 47, Failures: 0, Errors: 0, Skipped: 0`
 - Limitation:
   - Docker daemon is still unavailable, so live DB-backed build/publish smoke remains pending.
+
+## PUB-002 Build History
+
+- Continued toward the user's request to keep going until the product is complete.
+- TDD red step:
+  - added failing tests for paged build history and cross-site build lookup rejection
+  - verified failure because `BuildService.listBuilds` and `BuildService.getBuild` did not exist
+- Backend changes:
+  - added `BuildService.listBuilds(siteId, page, size)`
+  - added `BuildService.getBuild(siteId, buildId)`
+  - added `GET /api/sites/{siteId}/builds`
+  - added `GET /api/sites/{siteId}/builds/{buildId}`
+- Frontend changes:
+  - added `fetchBuilds` to the site store
+  - site detail now loads recent build history
+  - site detail shows a compact build history list under the latest build panel
+  - manual build refreshes both latest build and recent build history
+- Documentation updated:
+  - `docs/API_SPEC_MVP.md`
+  - `docs/REQUIREMENTS_PLATFORM_MVP.md`
+  - `findings.md`
+- Verification:
+  - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest test` first failed for the expected missing methods, then passed after implementation
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest,ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test` passed with `Tests run: 49, Failures: 0, Errors: 0, Skipped: 0`
+- Limitation:
+  - Docker daemon is still unavailable, so live DB-backed build-history smoke remains pending.

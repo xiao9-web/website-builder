@@ -4,6 +4,8 @@ import com.xiao9.wb.site.entity.Build;
 import com.xiao9.wb.site.entity.Site;
 import com.xiao9.wb.site.repository.BuildRepository;
 import com.xiao9.wb.site.repository.SiteRepository;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class BuildServiceTest {
@@ -77,6 +80,44 @@ class BuildServiceTest {
         verify(buildRepository).findFirstBySiteIdOrderByCreatedAtDesc(11L);
         verify(buildRepository, never())
                 .findFirstBySiteIdAndStatusOrderByCreatedAtDesc(anyLong(), any());
+    }
+
+    @Test
+    void listBuildsReturnsPagedBuildHistory() {
+        Build first = Build.builder()
+                .id(33L)
+                .site(site)
+                .status(Build.Status.SUCCESS)
+                .triggeredBy("user:7")
+                .build();
+        Build second = Build.builder()
+                .id(32L)
+                .site(site)
+                .status(Build.Status.FAILED)
+                .triggeredBy("user:7")
+                .build();
+        when(buildRepository.findBySiteIdOrderByCreatedAtDesc(11L, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(first, second), PageRequest.of(0, 10), 2));
+
+        var result = buildService.listBuilds(11L, 0, 10);
+
+        assertThat(result.getContent()).extracting("id").containsExactly(33L, 32L);
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        verify(buildRepository).findBySiteIdOrderByCreatedAtDesc(11L, PageRequest.of(0, 10));
+    }
+
+    @Test
+    void getBuildRejectsBuildOutsideSiteScope() {
+        Build build = Build.builder()
+                .id(34L)
+                .site(Site.builder().id(99L).build())
+                .status(Build.Status.SUCCESS)
+                .build();
+        when(buildRepository.findById(34L)).thenReturn(Optional.of(build));
+
+        assertThatThrownBy(() -> buildService.getBuild(11L, 34L))
+                .hasMessage("Build not found");
     }
 
     private static class SuccessfulCorporateBuildStrategy implements BuildStrategy {
