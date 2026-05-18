@@ -12,6 +12,8 @@ public interface SiteMenuRepository extends JpaRepository<SiteMenu, Long> {
 
     List<SiteMenu> findBySiteIdOrderBySortOrderAscCreatedAtAsc(Long siteId);
 
+    List<SiteMenu> findBySiteIdAndVisibleOrderBySortOrderAscCreatedAtAsc(Long siteId, Boolean visible);
+
     Optional<SiteMenu> findByIdAndSiteId(Long id, Long siteId);
 
     Optional<SiteMenu> findBySiteIdAndSlug(Long siteId, String slug);

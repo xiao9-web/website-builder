@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LeadForm } from "@/components/public-site/LeadForm";
+import { PublicSiteHeader } from "@/components/public-site/PublicSiteHeader";
 import { getPublicSiteData } from "@/lib/public-site/api";
 
 interface PublicSitePageProps {
@@ -9,18 +10,16 @@ interface PublicSitePageProps {
 }
 
 export default async function PublicSitePage({ params }: PublicSitePageProps) {
-  const { config, products, news, isFallback } = await getPublicSiteData(
+  const { config, menus, products, news, isFallback } = await getPublicSiteData(
     params.slug,
   );
 
   const brand = config.brandConfig;
   const content = config.contentConfig;
-  const navItems = config.navigationConfig.items ?? [];
   const hero = content.hero ?? {};
   const contact = content.contact ?? {};
   const cooperation = content.cooperation ?? {};
   const companyName = brand.companyName || config.name;
-  const shortName = brand.shortName || companyName;
   const brandWords = brand.brandWords ?? ["绿色", "健康", "专业", "稳重"];
   const cooperationItems =
     cooperation.items ?? ["企业采购", "经销批发", "渠道合作", "产品咨询"];
@@ -36,35 +35,7 @@ export default async function PublicSitePage({ params }: PublicSitePageProps) {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b border-emerald-900/10 bg-[#f7f5ee]/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="#top" className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-emerald-800 text-sm font-bold text-white">
-              春昌
-            </span>
-            <span className="text-base font-semibold text-stone-950">
-              {shortName}
-            </span>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-stone-700 md:flex">
-            {navItems.map((item) => (
-              <Link
-                key={`${item.label}-${item.href}`}
-                href={item.href}
-                className="transition hover:text-emerald-800"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <Link
-            href="#contact"
-            className="rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900"
-          >
-            联系咨询
-          </Link>
-        </div>
-      </header>
+      <PublicSiteHeader config={config} menus={menus} />
 
       <section className="relative overflow-hidden border-b border-emerald-900/10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(217,164,65,0.18),transparent_28%),linear-gradient(135deg,rgba(47,125,74,0.18),rgba(255,248,231,0.55))]" />
@@ -251,7 +222,12 @@ export default async function PublicSitePage({ params }: PublicSitePageProps) {
                   ) : null}
                 </div>
                 <h3 className="mt-3 text-xl font-semibold text-stone-950">
-                  {item.title}
+                  <Link
+                    href={`/sites/${config.slug}/articles/${item.slug}`}
+                    className="transition hover:text-emerald-800"
+                  >
+                    {item.title}
+                  </Link>
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-stone-600">
                   {item.summary}

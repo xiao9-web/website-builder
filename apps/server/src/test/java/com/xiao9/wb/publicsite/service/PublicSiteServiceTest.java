@@ -1,6 +1,8 @@
 package com.xiao9.wb.publicsite.service;
 
 import com.xiao9.wb.common.exception.BusinessException;
+import com.xiao9.wb.menu.entity.SiteMenu;
+import com.xiao9.wb.menu.repository.SiteMenuRepository;
 import com.xiao9.wb.news.entity.News;
 import com.xiao9.wb.news.repository.NewsRepository;
 import com.xiao9.wb.product.entity.ProductService;
@@ -27,6 +29,7 @@ class PublicSiteServiceTest {
     private SiteConfigRepository siteConfigRepository;
     private ProductServiceRepository productServiceRepository;
     private NewsRepository newsRepository;
+    private SiteMenuRepository siteMenuRepository;
     private PublicSiteService publicSiteService;
     private Site site;
 
@@ -36,7 +39,14 @@ class PublicSiteServiceTest {
         siteConfigRepository = mock(SiteConfigRepository.class);
         productServiceRepository = mock(ProductServiceRepository.class);
         newsRepository = mock(NewsRepository.class);
-        publicSiteService = new PublicSiteService(siteRepository, siteConfigRepository, productServiceRepository, newsRepository);
+        siteMenuRepository = mock(SiteMenuRepository.class);
+        publicSiteService = new PublicSiteService(
+                siteRepository,
+                siteConfigRepository,
+                productServiceRepository,
+                newsRepository,
+                siteMenuRepository
+        );
         site = Site.builder()
                 .id(11L)
                 .slug("chunchang")
@@ -72,6 +82,31 @@ class PublicSiteServiceTest {
     }
 
     @Test
+    void listMenusReturnsVisibleMenusOnly() {
+        SiteMenu home = menu(1L, null, "首页", "home", SiteMenu.MenuType.HOME, true);
+        SiteMenu news = menu(2L, null, "最近动态", "news", SiteMenu.MenuType.CUSTOM, true);
+        when(siteRepository.findBySlug("chunchang")).thenReturn(Optional.of(site));
+        when(siteMenuRepository.findBySiteIdAndVisibleOrderBySortOrderAscCreatedAtAsc(11L, true))
+                .thenReturn(List.of(home, news));
+
+        var result = publicSiteService.listMenus("chunchang");
+
+        assertThat(result).extracting("slug").containsExactly("home", "news");
+        verify(siteMenuRepository).findBySiteIdAndVisibleOrderBySortOrderAscCreatedAtAsc(11L, true);
+    }
+
+    @Test
+    void getMenuBySlugRejectsHiddenMenu() {
+        SiteMenu hidden = menu(3L, null, "隐藏栏目", "hidden", SiteMenu.MenuType.CUSTOM, false);
+        when(siteRepository.findBySlug("chunchang")).thenReturn(Optional.of(site));
+        when(siteMenuRepository.findBySiteIdAndSlug(11L, "hidden")).thenReturn(Optional.of(hidden));
+
+        assertThatThrownBy(() -> publicSiteService.getMenuBySlug("chunchang", "hidden"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Menu not found");
+    }
+
+    @Test
     void listNewsReturnsPublishedNewsOnly() {
         when(siteRepository.findBySlug("chunchang")).thenReturn(Optional.of(site));
         when(newsRepository.findBySiteIdAndStatusOrderByCreatedAtDesc(11L, News.Status.PUBLISHED))
@@ -81,6 +116,20 @@ class PublicSiteServiceTest {
 
         assertThat(result).extracting("slug").containsExactly("company-news");
         verify(newsRepository).findBySiteIdAndStatusOrderByCreatedAtDesc(11L, News.Status.PUBLISHED);
+    }
+
+    @Test
+    void listNewsByMenuSlugReturnsPublishedNewsUnderVisibleMenu() {
+        SiteMenu menu = menu(2L, null, "最近动态", "news", SiteMenu.MenuType.CUSTOM, true);
+        when(siteRepository.findBySlug("chunchang")).thenReturn(Optional.of(site));
+        when(siteMenuRepository.findBySiteIdAndSlug(11L, "news")).thenReturn(Optional.of(menu));
+        when(newsRepository.findBySiteIdAndMenuIdAndStatusOrderByCreatedAtDesc(11L, 2L, News.Status.PUBLISHED))
+                .thenReturn(List.of(news(1L, site, "company-news", News.Status.PUBLISHED)));
+
+        var result = publicSiteService.listNewsByMenuSlug("chunchang", "news");
+
+        assertThat(result).extracting("slug").containsExactly("company-news");
+        verify(newsRepository).findBySiteIdAndMenuIdAndStatusOrderByCreatedAtDesc(11L, 2L, News.Status.PUBLISHED);
     }
 
     @Test
@@ -139,6 +188,19 @@ class PublicSiteServiceTest {
                 .description(name + " description")
                 .sortOrder(0)
                 .enabled(true)
+                .build();
+    }
+
+    private SiteMenu menu(Long id, SiteMenu parent, String label, String slug, SiteMenu.MenuType menuType, boolean visible) {
+        return SiteMenu.builder()
+                .id(id)
+                .site(site)
+                .parent(parent)
+                .label(label)
+                .slug(slug)
+                .menuType(menuType)
+                .sortOrder(0)
+                .visible(visible)
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.xiao9.wb.publicsite.controller;
 
 import com.xiao9.wb.common.response.ApiResponse;
+import com.xiao9.wb.publicsite.dto.PublicMenuDTO;
 import com.xiao9.wb.publicsite.dto.PublicNewsDTO;
 import com.xiao9.wb.publicsite.dto.PublicProductDTO;
 import com.xiao9.wb.publicsite.dto.PublicSiteConfigDTO;
@@ -25,6 +26,27 @@ public class PublicSiteController {
     @GetMapping("/products")
     public ApiResponse<List<PublicProductDTO>> listProducts(@PathVariable String slug) {
         return ApiResponse.success(publicSiteService.listProducts(slug));
+    }
+
+    @GetMapping("/menus")
+    public ApiResponse<List<PublicMenuDTO>> listMenus(@PathVariable String slug) {
+        return ApiResponse.success(publicSiteService.listMenus(slug));
+    }
+
+    @GetMapping("/menus/{menuSlug}")
+    public ApiResponse<PublicMenuDTO> getMenu(
+            @PathVariable String slug,
+            @PathVariable String menuSlug
+    ) {
+        return ApiResponse.success(publicSiteService.getMenuBySlug(slug, menuSlug));
+    }
+
+    @GetMapping("/menus/{menuSlug}/news")
+    public ApiResponse<List<PublicNewsDTO>> listNewsByMenu(
+            @PathVariable String slug,
+            @PathVariable String menuSlug
+    ) {
+        return ApiResponse.success(publicSiteService.listNewsByMenuSlug(slug, menuSlug));
     }
 
     @GetMapping("/news")

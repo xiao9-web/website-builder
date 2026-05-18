@@ -1,4 +1,9 @@
-import type { PublicNews, PublicProduct, PublicSiteConfig } from "./types";
+import type {
+  PublicMenu,
+  PublicNews,
+  PublicProduct,
+  PublicSiteConfig,
+} from "./types";
 
 export const fallbackSiteConfig: PublicSiteConfig = {
   siteId: 1,
@@ -66,6 +71,63 @@ export const fallbackSiteConfig: PublicSiteConfig = {
     },
   },
 };
+
+export const fallbackMenus: PublicMenu[] = [
+  {
+    id: 1,
+    parentId: null,
+    label: "首页",
+    slug: "home",
+    menuType: "HOME",
+    level: 1,
+    sortOrder: 0,
+  },
+  {
+    id: 2,
+    parentId: null,
+    label: "产品服务",
+    slug: "products",
+    menuType: "CUSTOM",
+    level: 1,
+    sortOrder: 10,
+  },
+  {
+    id: 3,
+    parentId: null,
+    label: "关于我们",
+    slug: "about",
+    menuType: "CUSTOM",
+    level: 1,
+    sortOrder: 20,
+  },
+  {
+    id: 4,
+    parentId: null,
+    label: "最近动态",
+    slug: "news",
+    menuType: "CUSTOM",
+    level: 1,
+    sortOrder: 30,
+  },
+  {
+    id: 5,
+    parentId: null,
+    label: "合作机会",
+    slug: "cooperation",
+    menuType: "CUSTOM",
+    level: 1,
+    sortOrder: 40,
+  },
+  {
+    id: 6,
+    parentId: null,
+    label: "联系我们",
+    slug: "contact",
+    menuType: "CUSTOM",
+    level: 1,
+    sortOrder: 50,
+  },
+];
 
 export const fallbackProducts: PublicProduct[] = [
   {

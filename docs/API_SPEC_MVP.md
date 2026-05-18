@@ -553,6 +553,9 @@ Public endpoints:
 
 ```text
 GET /api/public/sites/{slug}/config
+GET /api/public/sites/{slug}/menus
+GET /api/public/sites/{slug}/menus/{menuSlug}
+GET /api/public/sites/{slug}/menus/{menuSlug}/news
 GET /api/public/sites/{slug}/products
 GET /api/public/sites/{slug}/news
 GET /api/public/sites/{slug}/news/{newsSlug}
@@ -562,8 +565,10 @@ POST /api/public/sites/{slug}/leads
 Rules:
 
 - Return only public-safe fields.
+- Menus return visible records only.
 - Products return enabled records only.
 - News returns published records only.
+- Menu-scoped news returns published records under a visible menu only.
 - Offline and error sites return not found.
 - Leads can be submitted without login.
 

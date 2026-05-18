@@ -2,9 +2,12 @@ package com.xiao9.wb.publicsite.service;
 
 import com.xiao9.wb.common.exception.BusinessException;
 import com.xiao9.wb.common.exception.ErrorCode;
+import com.xiao9.wb.menu.entity.SiteMenu;
+import com.xiao9.wb.menu.repository.SiteMenuRepository;
 import com.xiao9.wb.news.entity.News;
 import com.xiao9.wb.news.repository.NewsRepository;
 import com.xiao9.wb.product.repository.ProductServiceRepository;
+import com.xiao9.wb.publicsite.dto.PublicMenuDTO;
 import com.xiao9.wb.publicsite.dto.PublicNewsDTO;
 import com.xiao9.wb.publicsite.dto.PublicProductDTO;
 import com.xiao9.wb.publicsite.dto.PublicSiteConfigDTO;
@@ -26,6 +29,7 @@ public class PublicSiteService {
     private final SiteConfigRepository siteConfigRepository;
     private final ProductServiceRepository productServiceRepository;
     private final NewsRepository newsRepository;
+    private final SiteMenuRepository siteMenuRepository;
 
     @Transactional(readOnly = true)
     public PublicSiteConfigDTO getConfig(String slug) {
@@ -45,9 +49,32 @@ public class PublicSiteService {
     }
 
     @Transactional(readOnly = true)
+    public List<PublicMenuDTO> listMenus(String slug) {
+        Site site = requirePublicSite(slug);
+        return siteMenuRepository.findBySiteIdAndVisibleOrderBySortOrderAscCreatedAtAsc(site.getId(), true)
+                .stream()
+                .map(PublicMenuDTO::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<PublicNewsDTO> listNews(String slug) {
         Site site = requirePublicSite(slug);
         return newsRepository.findBySiteIdAndStatusOrderByCreatedAtDesc(site.getId(), News.Status.PUBLISHED)
+                .stream()
+                .map(PublicNewsDTO::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PublicNewsDTO> listNewsByMenuSlug(String slug, String menuSlug) {
+        Site site = requirePublicSite(slug);
+        SiteMenu menu = requireVisibleMenu(site.getId(), menuSlug);
+        return newsRepository.findBySiteIdAndMenuIdAndStatusOrderByCreatedAtDesc(
+                        site.getId(),
+                        menu.getId(),
+                        News.Status.PUBLISHED
+                )
                 .stream()
                 .map(PublicNewsDTO::from)
                 .toList();
@@ -61,6 +88,12 @@ public class PublicSiteService {
         return PublicNewsDTO.from(news);
     }
 
+    @Transactional(readOnly = true)
+    public PublicMenuDTO getMenuBySlug(String slug, String menuSlug) {
+        Site site = requirePublicSite(slug);
+        return PublicMenuDTO.from(requireVisibleMenu(site.getId(), menuSlug));
+    }
+
     private Site requirePublicSite(String slug) {
         Site site = siteRepository.findBySlug(normalizeSlug(slug))
                 .orElseThrow(() -> new BusinessException(ErrorCode.SITE_NOT_FOUND));
@@ -68,6 +101,15 @@ public class PublicSiteService {
             throw new BusinessException(ErrorCode.SITE_NOT_FOUND);
         }
         return site;
+    }
+
+    private SiteMenu requireVisibleMenu(Long siteId, String menuSlug) {
+        SiteMenu menu = siteMenuRepository.findBySiteIdAndSlug(siteId, normalizeSlug(menuSlug))
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Menu not found"));
+        if (!Boolean.TRUE.equals(menu.getVisible())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Menu not found");
+        }
+        return menu;
     }
 
     private String normalizeSlug(String slug) {

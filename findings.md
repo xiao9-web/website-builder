@@ -276,3 +276,20 @@
 - A menu with child menus should not be deleted before children are removed; this keeps the hierarchy explicit and avoids surprising cascade deletions in the admin UI.
 - A menu without child menus can be deleted even if articles are assigned to it; database `ON DELETE SET NULL` keeps articles and clears their menu assignment.
 - This slice adds admin-side menu/article maintenance; public route rendering for arbitrary menu slugs is still a separate required slice.
+
+## FEA-005 Public Menu Rendering Findings
+
+- Admin menu management is only useful to customers once the public site reads from `site_menus`; homepage navigation should prefer visible menu records over static `navigationConfig.items`.
+- Public menu APIs must hide non-visible menus and reject hidden menu detail/list requests as not found.
+- Built-in menu slugs that already correspond to homepage sections can keep anchor behavior:
+  - `products`
+  - `about`
+  - `cooperation`
+  - `contact`
+- Content-column menus need stable public routes:
+  - `/sites/{slug}/{menuSlug}`
+  - `/sites/{slug}/articles/{newsSlug}`
+- Public menu pages should show only published articles assigned to the visible menu.
+- Article detail pages can reuse the existing published-news lookup and should keep a clear contact call-to-action for business conversion.
+- Because `V4` seeded news before `V5` introduced `site_menus`, existing rows can have `menu_id = null`; a follow-up migration is needed so old/seeded articles appear under the default `news` menu once published.
+- Public fallback should only cover backend unavailability; explicit backend business errors such as hidden menu, missing menu, or unpublished article must surface as 404 instead of being masked by fallback placeholder content.

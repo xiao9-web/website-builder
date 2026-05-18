@@ -53,6 +53,16 @@ export interface PublicProduct {
   sortOrder: number;
 }
 
+export interface PublicMenu {
+  id: number;
+  parentId?: number | null;
+  label: string;
+  slug: string;
+  menuType: "HOME" | "CUSTOM" | string;
+  level: number;
+  sortOrder: number;
+}
+
 export interface PublicNews {
   id: number;
   title: string;
@@ -66,6 +76,7 @@ export interface PublicNews {
 
 export interface PublicSiteData {
   config: PublicSiteConfig;
+  menus: PublicMenu[];
   products: PublicProduct[];
   news: PublicNews[];
   isFallback: boolean;

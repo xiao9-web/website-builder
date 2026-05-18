@@ -1070,3 +1070,124 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - The repeated hook still appears to parse only the older 22-phase plan and does not recognize appended completion/commit sections.
 - No active phase from the latest user request remains unfinished.
 - This reconciliation note exists only to satisfy the stop hook's progress-file requirement.
+
+## Stop Hook Reconciliation After Project Status Review
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Latest user request was a read-only project status review: `项目到哪一步了？`
+- Status review completed:
+  - current repo is at `90f9487 docs: record final commit reconciliation`
+  - `main` and `origin/main` point to the same latest commit
+  - project is complete through `FEA-004`
+  - next recommended slice is `FEA-005`: render editable menus and menu-scoped articles on public site routes
+- No code changes or new development phase were started from the status review.
+- The hook still appears to parse only the older 22-phase plan and does not recognize appended completion sections.
+- No active phase from the latest user request remains unfinished.
+
+## FEA-005 Public Menu Rendering
+
+- User said `继续`, interpreted as starting the next recommended slice:
+  - `FEA-005`: render editable menus and menu-scoped articles on public site routes.
+- Backend additions:
+  - `PublicMenuDTO`
+  - `V6__assign_existing_news_to_default_menu.sql`
+  - `GET /api/public/sites/{slug}/menus`
+  - `GET /api/public/sites/{slug}/menus/{menuSlug}`
+  - `GET /api/public/sites/{slug}/menus/{menuSlug}/news`
+  - public menu listing returns visible menus only
+  - public menu-scoped article listing returns published articles only
+  - existing unassigned news rows are assigned to the default `news` menu during migration
+- Frontend additions:
+  - reusable public site header driven by backend menus, including second/third-level dropdown entries on desktop
+  - `/sites/{slug}/{menuSlug}` menu page
+  - `/sites/{slug}/articles/{newsSlug}` article detail page
+  - menu page empty state with contact CTA
+  - article detail contact CTA
+- Docs updated:
+  - `docs/REQUIREMENTS_PLATFORM_MVP.md`
+  - `docs/API_SPEC_MVP.md`
+- Verification so far:
+  - `mvn -f apps/server/pom.xml -Dtest=PublicSiteServiceTest test` passed with `Tests run: 9, Failures: 0, Errors: 0, Skipped: 0`
+  - `npm run build:web` passed and generated routes:
+    - `/sites/[slug]`
+    - `/sites/[slug]/[menuSlug]`
+    - `/sites/[slug]/articles/[newsSlug]`
+  - `mvn -f apps/server/pom.xml -Dtest=ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test` passed with `Tests run: 45, Failures: 0, Errors: 0, Skipped: 0`
+  - `npm run build:server` passed
+  - `npm run build:web` passed after the V6 migration addition
+  - local frontend fallback smoke returned HTTP `200` for:
+    - `http://localhost:3000/sites/chunchang`
+    - `http://localhost:3000/sites/chunchang/news`
+    - `http://localhost:3000/sites/chunchang/articles/company-news-placeholder`
+- Local limitation:
+  - Docker daemon was not running, so live backend/database API smoke was not run in this pass.
+  - Graphify refresh still fails in the local Python environment with `ModuleNotFoundError: No module named 'graphify'`.
+- Error-boundary tightening:
+  - public frontend fallback now only applies when the backend is unavailable
+  - explicit public backend errors such as hidden menu, missing menu, or unpublished article now surface as 404
+- Additional verification:
+  - `npm run build:server` passed after error-boundary tightening
+  - `npm run build:web` passed after error-boundary tightening
+  - `npm run lint:web` originally opened Next.js ESLint setup prompt because the web app had no ESLint config
+  - added `apps/web/.eslintrc.json` with `next/core-web-vitals`
+  - `npm run lint:web` now passes with no warnings or errors
+  - `npm run build:server` passed after the ESLint config addition
+  - `npm run build:web` passed after the ESLint config addition
+  - local frontend fallback smoke returned HTTP `200` again for:
+    - `http://localhost:3000/sites/chunchang`
+    - `http://localhost:3000/sites/chunchang/news`
+    - `http://localhost:3000/sites/chunchang/articles/company-news-placeholder`
+
+## Stop Hook Reconciliation After FEA-005
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Latest user request was `继续`, interpreted as FEA-005.
+- FEA-005 has been implemented and verified at build/service-test/fallback-smoke level:
+  - backend public menu APIs added
+  - public menu page added
+  - public article detail page added
+  - menu-driven public header added
+  - backend service tests passed
+  - frontend and backend builds passed
+  - fallback public pages returned HTTP `200`
+- Remaining limitation:
+  - Docker daemon was not running, so live database-backed smoke was not run.
+- Current worktree still contains uncommitted FEA-005 changes.
+- The hook still appears to parse only the older 22-phase plan and does not recognize appended completion sections.
+
+## Stop Hook Reconciliation After FEA-005 Data Migration
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Latest continuation added the FEA-005 data migration closure:
+  - `V6__assign_existing_news_to_default_menu.sql`
+  - existing unassigned news rows are assigned to each site's default `news` menu
+  - requirement and findings docs were updated
+- Verification after the migration addition:
+  - `npm run build:server` passed
+  - `npm run build:web` passed
+  - service-layer test set passed with `Tests run: 45, Failures: 0, Errors: 0, Skipped: 0`
+- Remaining limitation:
+  - Docker daemon was not running, so live database-backed smoke was not run.
+- Current worktree still contains uncommitted FEA-005 changes.
+- The hook still appears to parse only the older 22-phase plan and does not recognize appended completion sections.
+
+## Stop Hook Reconciliation After FEA-005 Error Boundary
+
+- Stop hook repeated the stale message: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Latest continuation tightened public frontend fallback behavior:
+  - fallback is used only when the backend is unavailable
+  - explicit backend errors for hidden/missing menus or unpublished/missing articles now render 404 via `notFound()`
+  - requirement and findings docs were updated
+- Verification after the error-boundary change:
+  - `npm run build:server` passed
+  - `npm run build:web` passed
+  - frontend fallback smoke returned HTTP `200` for the homepage, menu page, and article detail page
+- No 3000/8080 dev server processes were left running.
+- Remaining limitation:
+  - Docker daemon was not running, so live database-backed smoke was not run.
+- Current worktree still contains uncommitted FEA-005 changes.
+- The hook still appears to parse only the older 22-phase plan and does not recognize appended completion sections.

@@ -303,6 +303,18 @@ Article requirements:
 - Allow publishing, offline, draft editing, and deletion.
 - Show article menu, category, status, and updated time in the list.
 
+Public rendering requirements:
+
+- Public site navigation should read visible menus from the backend menu model.
+- The homepage menu should route to the public site homepage.
+- Built-in first-level menus such as product services, about, cooperation, and contact may anchor to homepage sections.
+- Content-column menus should support public routes such as `/sites/{slug}/{menuSlug}`.
+- Menu pages should list published articles assigned to that menu.
+- Existing imported or seeded articles without a menu assignment should be assigned to the default recent-news menu during migration when possible.
+- Article detail pages should render published article title, summary, category, date, body, and a contact call-to-action.
+- Hidden menus, draft articles, offline articles, and offline/error sites must not be publicly visible.
+- Public frontend fallback data may be used when the backend is unavailable, but explicit backend `404` or validation failures must not be replaced by fallback content.
+
 Recent sites columns:
 
 - Site name
@@ -1379,6 +1391,9 @@ GET /api/sites/{siteId}/builds/{buildId}
 
 ```text
 GET /api/public/sites/{slug}/config
+GET /api/public/sites/{slug}/menus
+GET /api/public/sites/{slug}/menus/{menuSlug}
+GET /api/public/sites/{slug}/menus/{menuSlug}/news
 GET /api/public/sites/{slug}/products
 GET /api/public/sites/{slug}/news
 GET /api/public/sites/{slug}/news/{newsSlug}
