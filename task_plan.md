@@ -57,6 +57,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 34. [complete] FEP-001: Public Chunchang corporate-site polish for Chinese local demo.
 35. [complete] UX-ADMIN-002: Article editing publish-readiness hints.
 36. [complete] DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
+37. [complete] DOC-ACCEPT-001: Local demo and acceptance guide.
 
 ## Backlog
 

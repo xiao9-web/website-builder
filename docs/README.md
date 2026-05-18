@@ -14,6 +14,7 @@ Read these documents first:
 | [DATA_MODEL_MVP.md](./DATA_MODEL_MVP.md) | Data model and migration baseline |
 | [API_SPEC_MVP.md](./API_SPEC_MVP.md) | API contract baseline |
 | [SITE_CONFIG_SCHEMA_MVP.md](./SITE_CONFIG_SCHEMA_MVP.md) | SiteConfig JSON schema baseline |
+| [LOCAL_DEMO_ACCEPTANCE.md](./LOCAL_DEMO_ACCEPTANCE.md) | Local demo URLs, login, and acceptance checks |
 | [DEV_STANDARDS.md](./DEV_STANDARDS.md) | General development standards |
 | [AI_PIPELINE_GUIDE.md](./AI_PIPELINE_GUIDE.md) | AI-assisted workflow reference |
 
@@ -71,12 +72,13 @@ make db-status
 
 | Milestone | Goal | Status |
 | --- | --- | --- |
-| M1 | Platform skeleton and corporate preview | In progress |
-| M2 | Lead generation | Pending |
-| M3 | Product service management and display | Pending |
-| M4 | News management and display | Pending |
-| M5 | Build records | Pending |
-| M6 | Personal blog planning | Later |
+| M1 | Platform skeleton and corporate preview | Complete |
+| M2 | Lead generation | Complete |
+| M3 | Product service management and display | Complete |
+| M4 | News/menu management and public display | Complete |
+| M5 | Publish/build records | Complete |
+| M6 | Local demo acceptance package | Current |
+| M7 | Personal blog planning | Later |
 
 ## Completed Implementation Notes
 
@@ -84,19 +86,18 @@ make db-status
 - `BE-002`: Corporate-site template and Chunchang default seed through `V4__seed_corporate_site.sql`.
 - `BE-003`: Site API alignment with slug, template code, default SiteConfig creation, and site access boundaries.
 - `DOC-001`: Current MVP technical documentation baseline.
+- `BE-004` through `BE-008`: SiteConfig, product service, news, lead, and public-site APIs.
+- `FEA-004` through `FEA-006`: editable menus, menu-scoped articles, public menu pages, and admin preview links.
+- `PUB-001` through `PUB-002`: publish/build visibility and build-history API.
+- `UX-ADMIN-001`: dedicated build-history page.
+- `UX-ADMIN-002`: article publish-readiness hints.
+- `DATA-REAL-001`: logo, QR code, product image, and article cover URL entry points.
 
-## Next Backlog Item
+## Next Backlog Items
 
-```text
-BE-004: SiteConfig API
-```
-
-Required endpoints:
-
-```text
-GET /api/sites/{siteId}/config
-PUT /api/sites/{siteId}/config
-```
+- Real company materials: logo, phone, WeChat, address, product photos, product specs, certificates, cases, and real news.
+- Optional richer article editing controls: cover preview, preview pane, and richer formatting.
+- Personal blog planning after the corporate-site flow is stable.
 
 ## Redundant Documents Policy
 

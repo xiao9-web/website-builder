@@ -30,6 +30,10 @@ website-builder/
 
 ## 快速开始
 
+当前本地演示、验收地址、账号和 smoke check 见：
+
+- [docs/LOCAL_DEMO_ACCEPTANCE.md](docs/LOCAL_DEMO_ACCEPTANCE.md)
+
 ### 环境要求
 
 - Docker Desktop (含 Docker Compose v2)
@@ -91,6 +95,24 @@ make db-status     # 查看迁移状态
 make clean         # 清理所有构建产物
 make logs-db       # 查看 PostgreSQL 日志
 make logs-redis    # 查看 Redis 日志
+```
+
+## 当前本地演示入口
+
+| 入口 | 地址 |
+| --- | --- |
+| 前端 | `http://localhost:3000` |
+| 后端 API | `http://localhost:8080` |
+| 后台登录 | `http://localhost:3000/login` |
+| 春昌公开站 | `http://localhost:3000/sites/chunchang` |
+| 内容管理 | `http://localhost:3000/dashboard/sites/1/content` |
+| 构建历史 | `http://localhost:3000/dashboard/sites/1/builds` |
+
+默认管理员账号：
+
+```text
+email: admin@xiao9.com
+password: admin123
 ```
 
 ## 数据库

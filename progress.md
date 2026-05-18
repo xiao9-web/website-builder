@@ -1509,3 +1509,30 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - The hook is treating completed ledger count as unfinished phase count.
   - No current run step is open.
   - Continue with the next backlog slice.
+
+## DOC-ACCEPT-001 Local Demo And Acceptance Guide
+
+- Added `docs/LOCAL_DEMO_ACCEPTANCE.md` as the current local demo handoff and acceptance guide.
+- Updated `README.md` to link the demo guide and list the current local demo URLs.
+- Updated `docs/README.md` to include the demo guide and current completed milestone status.
+- Verified documented commands:
+  - `make -n dev-up`
+  - `make -n db-migrate`
+  - `make -n server-start`
+  - `make -n web-start`
+- Verified database status with Docker running:
+  - `make db-status` passed
+  - Flyway schema version is `6`
+  - migrations V1 through V6 are all `Success`
+- Verified page smoke checks:
+  - `/` returned HTTP `200`
+  - `/login` returned HTTP `200`
+  - `/sites/chunchang` returned HTTP `200`
+  - `/sites/chunchang/news` returned HTTP `200`
+  - `/dashboard/sites/1/content` returned HTTP `200`
+  - `/dashboard/sites/1/builds` returned HTTP `200`
+  - `/api/public/sites/chunchang/config` returned HTTP `200`
+- Verified authenticated API smoke:
+  - login returned token length `208`
+  - `GET /api/sites` returned HTTP `200`
+  - `POST /api/sites/1/build` returned HTTP `200`
