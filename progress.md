@@ -1569,3 +1569,17 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Updated `README.md` to link the final launch checklist.
 - Updated `docs/README.md` to include the final launch checklist and mark local demo acceptance as complete.
 - Updated `task_plan.md` with current run step 38.
+
+## Stop Hook Reconciliation After 38-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (38/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Current visible run ledger has 38 current steps and all 38 are marked `[complete]`.
+- Latest completed commits:
+  - `8b3562d docs: add final launch checklist`
+  - `222cfb6 docs: reconcile 37-step ledger`
+  - `c92e5c2 docs: add local demo acceptance guide`
+- Current local demo remains healthy after repeated smoke checks.
+- Conclusion:
+  - No current run step is open.
+  - The real remaining work is either optional UX polish or real-material entry after company materials arrive.
