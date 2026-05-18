@@ -58,6 +58,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 35. [complete] UX-ADMIN-002: Article editing publish-readiness hints.
 36. [complete] DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
 37. [complete] DOC-ACCEPT-001: Local demo and acceptance guide.
+38. [complete] DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
 
 ## Backlog
 

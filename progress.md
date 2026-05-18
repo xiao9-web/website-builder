@@ -1554,3 +1554,18 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Conclusion:
   - No current run step is open.
   - Remaining work should be tracked as final acceptance and real-material backlog, not unfinished implementation phases.
+
+## DOC-LAUNCH-001 Final Launch Checklist
+
+- Added `docs/FINAL_LAUNCH_CHECKLIST.md`.
+- The checklist separates:
+  - locally accepted MVP code/demo
+  - real company materials required before public launch
+  - admin data-entry checks
+  - public-site review checks
+  - final human approval checks
+  - remaining technical backlog
+  - remaining material backlog
+- Updated `README.md` to link the final launch checklist.
+- Updated `docs/README.md` to include the final launch checklist and mark local demo acceptance as complete.
+- Updated `task_plan.md` with current run step 38.

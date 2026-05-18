@@ -15,6 +15,7 @@ Read these documents first:
 | [API_SPEC_MVP.md](./API_SPEC_MVP.md) | API contract baseline |
 | [SITE_CONFIG_SCHEMA_MVP.md](./SITE_CONFIG_SCHEMA_MVP.md) | SiteConfig JSON schema baseline |
 | [LOCAL_DEMO_ACCEPTANCE.md](./LOCAL_DEMO_ACCEPTANCE.md) | Local demo URLs, login, and acceptance checks |
+| [FINAL_LAUNCH_CHECKLIST.md](./FINAL_LAUNCH_CHECKLIST.md) | Final company-material and launch approval checklist |
 | [DEV_STANDARDS.md](./DEV_STANDARDS.md) | General development standards |
 | [AI_PIPELINE_GUIDE.md](./AI_PIPELINE_GUIDE.md) | AI-assisted workflow reference |
 
@@ -77,7 +78,7 @@ make db-status
 | M3 | Product service management and display | Complete |
 | M4 | News/menu management and public display | Complete |
 | M5 | Publish/build records | Complete |
-| M6 | Local demo acceptance package | Current |
+| M6 | Local demo acceptance package | Complete |
 | M7 | Personal blog planning | Later |
 
 ## Completed Implementation Notes
@@ -92,6 +93,7 @@ make db-status
 - `UX-ADMIN-001`: dedicated build-history page.
 - `UX-ADMIN-002`: article publish-readiness hints.
 - `DATA-REAL-001`: logo, QR code, product image, and article cover URL entry points.
+- `DOC-LAUNCH-001`: final launch checklist for real company materials and approval.
 
 ## Next Backlog Items
 

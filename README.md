@@ -34,6 +34,10 @@ website-builder/
 
 - [docs/LOCAL_DEMO_ACCEPTANCE.md](docs/LOCAL_DEMO_ACCEPTANCE.md)
 
+真实公司资料和最终上线确认清单见：
+
+- [docs/FINAL_LAUNCH_CHECKLIST.md](docs/FINAL_LAUNCH_CHECKLIST.md)
+
 ### 环境要求
 
 - Docker Desktop (含 Docker Compose v2)
