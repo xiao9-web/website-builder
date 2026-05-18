@@ -1191,3 +1191,28 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - Docker daemon was not running, so live database-backed smoke was not run.
 - Current worktree still contains uncommitted FEA-005 changes.
 - The hook still appears to parse only the older 22-phase plan and does not recognize appended completion sections.
+
+## FEA-006 Content Management UX
+
+- Started after committing FEA-005 as `67d53af feat: render public menus and articles`.
+- Scope:
+  - improve the admin content-management page for menu and article maintenance
+  - keep this as a frontend UX slice; backend rules from FEA-004 remain the source of truth
+- Implemented in `apps/web/src/app/dashboard/sites/[id]/content/page.tsx`:
+  - menu list now renders in hierarchy order instead of a flat sort-only list
+  - menu rows show full path, level, visibility, child count, and article count
+  - hidden menus get a quieter row treatment
+  - deleting a menu with child menus is disabled in the UI
+  - edit-parent selector hides the current menu and descendants
+  - article menu selects reuse the hierarchy order
+  - article list can be filtered by menu and status
+  - article rows show full menu path
+  - article list shows current filtered count
+- Documentation updated:
+  - `docs/REQUIREMENTS_PLATFORM_MVP.md`
+  - `findings.md`
+- Verification:
+  - `npm run lint:web` passed with no warnings or errors
+  - `npm run build:web` passed
+- Limitation:
+  - Docker daemon is still unavailable, so DB-backed browser smoke remains pending.

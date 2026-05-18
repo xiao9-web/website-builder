@@ -293,3 +293,15 @@
 - Article detail pages can reuse the existing published-news lookup and should keep a clear contact call-to-action for business conversion.
 - Because `V4` seeded news before `V5` introduced `site_menus`, existing rows can have `menu_id = null`; a follow-up migration is needed so old/seeded articles appear under the default `news` menu once published.
 - Public fallback should only cover backend unavailability; explicit backend business errors such as hidden menu, missing menu, or unpublished article must surface as 404 instead of being masked by fallback placeholder content.
+
+## FEA-006 Content Management UX Findings
+
+- A flat menu list is difficult to operate once second- and third-level menus exist; the admin page should present menus in hierarchy order and show each menu's full path.
+- Operators need lightweight safety signals before deleting or moving menus:
+  - child count
+  - article count
+  - visibility
+  - level
+- The frontend should not offer invalid parent choices when editing a menu; hiding the current menu and its descendants reduces avoidable backend validation errors.
+- Article lists become noisy once menu-scoped content grows; filtering by menu and status is required for day-to-day maintenance.
+- Article rows should show the full menu path because duplicated leaf names can exist in different branches.

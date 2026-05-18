@@ -286,13 +286,17 @@ Required modules:
 Menu requirements:
 
 - Show all site menus in sort order.
+- Show menus as a hierarchy, not only as a flat list.
+- Show each menu's full path, level, visibility, child count, and article count.
 - Allow creating a first-level menu.
 - Allow creating second-level and third-level child menus.
 - Reject fourth-level menus.
 - Allow editing menu label, slug, parent, sort order, and visibility.
+- When editing a menu parent, hide the menu itself and its descendants from the parent selector.
 - Reject moving a menu under itself or under any of its descendants.
 - Reject moving a menu if any existing descendant would become fourth-level or deeper.
 - Do not allow deleting the homepage menu.
+- Do not allow deleting a menu that still has child menus.
 - Do not allow assigning the homepage menu as a normal article column.
 
 Article requirements:
@@ -302,6 +306,8 @@ Article requirements:
 - Allow creating articles without a menu when needed.
 - Allow publishing, offline, draft editing, and deletion.
 - Show article menu, category, status, and updated time in the list.
+- Show the full menu path for an article, not only the leaf menu label.
+- Allow filtering articles by menu and by status.
 
 Public rendering requirements:
 

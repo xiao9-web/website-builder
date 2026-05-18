@@ -80,6 +80,68 @@ function menuLabel(menus: SiteMenuDTO[], menuId?: number | null): string {
   return menus.find((menu) => menu.id === menuId)?.label ?? "未知栏目";
 }
 
+function sortMenusForDisplay(menus: SiteMenuDTO[]): SiteMenuDTO[] {
+  const byParent = new Map<number | null, SiteMenuDTO[]>();
+  menus.forEach((menu) => {
+    const parentId = menu.parentId ?? null;
+    byParent.set(parentId, [...(byParent.get(parentId) ?? []), menu]);
+  });
+
+  byParent.forEach((items) => {
+    items.sort(
+      (a, b) =>
+        a.sortOrder - b.sortOrder ||
+        a.createdAt.localeCompare(b.createdAt) ||
+        a.id - b.id,
+    );
+  });
+
+  const result: SiteMenuDTO[] = [];
+  const appendChildren = (parentId: number | null) => {
+    (byParent.get(parentId) ?? []).forEach((menu) => {
+      result.push(menu);
+      appendChildren(menu.id);
+    });
+  };
+
+  appendChildren(null);
+  return result;
+}
+
+function menuPath(menus: SiteMenuDTO[], menuId?: number | null): string {
+  if (!menuId) return "未选择栏目";
+  const byId = new Map(menus.map((menu) => [menu.id, menu]));
+  const labels: string[] = [];
+  let current = byId.get(menuId);
+  while (current) {
+    labels.unshift(current.label);
+    current = current.parentId ? byId.get(current.parentId) : undefined;
+  }
+  return labels.length ? labels.join(" / ") : "未知栏目";
+}
+
+function countChildren(menus: SiteMenuDTO[], menuId: number): number {
+  return menus.filter((menu) => menu.parentId === menuId).length;
+}
+
+function countMenuNews(news: NewsDTO[], menuId: number): number {
+  return news.filter((item) => item.menuId === menuId).length;
+}
+
+function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
+  const result = new Set<number>();
+  const collect = (parentId: number) => {
+    menus
+      .filter((menu) => menu.parentId === parentId)
+      .forEach((menu) => {
+        result.add(menu.id);
+        collect(menu.id);
+      });
+  };
+  collect(menuId);
+  return result;
+}
+
 function heroFrom(config: SiteConfigDTO | null) {
   const content = config?.contentConfig ?? {};
   const hero =
@@ -199,6 +261,31 @@ export default function SiteContentPage() {
     content: "",
     category: "",
   });
+  const [newsMenuFilter, setNewsMenuFilter] = useState("all");
+  const [newsStatusFilter, setNewsStatusFilter] = useState<
+    "ALL" | NewsDTO["status"]
+  >("ALL");
+
+  const orderedMenus = useMemo(() => sortMenusForDisplay(menus), [menus]);
+  const articleMenus = useMemo(
+    () => orderedMenus.filter((menu) => menu.menuType !== "HOME"),
+    [orderedMenus],
+  );
+  const filteredNews = useMemo(
+    () =>
+      news.filter((item) => {
+        const menuMatched =
+          newsMenuFilter === "all"
+            ? true
+            : newsMenuFilter === "none"
+              ? !item.menuId
+              : item.menuId === Number(newsMenuFilter);
+        const statusMatched =
+          newsStatusFilter === "ALL" ? true : item.status === newsStatusFilter;
+        return menuMatched && statusMatched;
+      }),
+    [news, newsMenuFilter, newsStatusFilter],
+  );
 
   const stats = useMemo(
     () => ({
@@ -447,7 +534,7 @@ export default function SiteContentPage() {
         sortOrder: menuForm.sortOrder ? Number(menuForm.sortOrder) : menus.length + 1,
         visible: menuForm.visible,
       });
-      setMenus((items) => [...items, created].sort((a, b) => a.sortOrder - b.sortOrder));
+      setMenus((items) => sortMenusForDisplay([...items, created]));
       setMenuForm({
         parentId: "",
         label: "",
@@ -506,7 +593,12 @@ export default function SiteContentPage() {
       setMenus((items) =>
         items
           .map((item) => (item.id === updated.id ? updated : item))
-          .sort((a, b) => a.sortOrder - b.sortOrder),
+          .sort(
+            (a, b) =>
+              a.sortOrder - b.sortOrder ||
+              a.createdAt.localeCompare(b.createdAt) ||
+              a.id - b.id,
+          ),
       );
       cancelEditMenu();
       setSuccess("菜单栏目已更新。");
@@ -1150,7 +1242,7 @@ export default function SiteContentPage() {
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm"
                 >
                   <option value="">一级菜单</option>
-                  {menus
+                  {orderedMenus
                     .filter((menu) => menu.level < 3)
                     .map((menu) => (
                       <option key={menu.id} value={menu.id}>
@@ -1212,10 +1304,24 @@ export default function SiteContentPage() {
           <Card>
             <CardHeader>
               <h2 className="text-lg font-semibold">菜单栏目列表</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                按前台导航层级展示。删除栏目不会删除文章，但会清空文章归属。
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {menus.map((menu) => (
-                <div key={menu.id} className="rounded-lg border border-gray-200 p-4">
+              {orderedMenus.map((menu) => {
+                const childCount = countChildren(menus, menu.id);
+                const articleCount = countMenuNews(news, menu.id);
+                const blockedParentIds = descendantIds(menus, menu.id);
+                return (
+                <div
+                  key={menu.id}
+                  className={`rounded-lg border p-4 ${
+                    menu.visible
+                      ? "border-gray-200 bg-white"
+                      : "border-gray-200 bg-gray-50"
+                  }`}
+                >
                   {editingMenuId === menu.id ? (
                     <div className="space-y-4">
                       <div>
@@ -1234,8 +1340,13 @@ export default function SiteContentPage() {
                           className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm disabled:bg-gray-100"
                         >
                           <option value="">一级菜单</option>
-                          {menus
-                            .filter((item) => item.level < 3 && item.id !== menu.id)
+                          {orderedMenus
+                            .filter(
+                              (item) =>
+                                item.level < 3 &&
+                                item.id !== menu.id &&
+                                !blockedParentIds.has(item.id),
+                            )
                             .map((item) => (
                               <option key={item.id} value={item.id}>
                                 {"　".repeat(Math.max(0, item.level - 1))}
@@ -1313,12 +1424,17 @@ export default function SiteContentPage() {
                           <span>{menu.visible ? "前台显示" : "已隐藏"}</span>
                           <span>/{menu.slug}</span>
                         </div>
-                        <h3 className="mt-2 font-semibold text-gray-900">
-                          {"　".repeat(Math.max(0, menu.level - 1))}
+                        <h3
+                          className="mt-2 font-semibold text-gray-900"
+                          style={{ paddingLeft: `${(menu.level - 1) * 18}px` }}
+                        >
                           {menu.label}
                         </h3>
                         <p className="mt-1 text-sm text-gray-500">
-                          上级：{menuLabel(menus, menu.parentId)}
+                          路径：{menuPath(menus, menu.id)}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          子栏目 {childCount} 个 · 文章 {articleCount} 篇
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -1333,6 +1449,7 @@ export default function SiteContentPage() {
                           <Button
                             size="sm"
                             variant="danger"
+                            disabled={childCount > 0}
                             onClick={() => handleDeleteMenu(menu)}
                           >
                             删除
@@ -1342,7 +1459,13 @@ export default function SiteContentPage() {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
+              {orderedMenus.length === 0 ? (
+                <p className="py-8 text-center text-sm text-gray-500">
+                  暂无菜单栏目。
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         </div>
@@ -1389,8 +1512,7 @@ export default function SiteContentPage() {
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm"
                 >
                   <option value="">不归属菜单</option>
-                  {menus
-                    .filter((menu) => menu.menuType !== "HOME")
+                  {articleMenus
                     .map((menu) => (
                       <option key={menu.id} value={menu.id}>
                         {"　".repeat(Math.max(0, menu.level - 1))}
@@ -1442,10 +1564,49 @@ export default function SiteContentPage() {
 
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold">动态列表</h2>
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold">动态列表</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    当前显示 {filteredNews.length} / {news.length} 篇。
+                  </p>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <select
+                    value={newsMenuFilter}
+                    onChange={(event) => setNewsMenuFilter(event.target.value)}
+                    className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm"
+                  >
+                    <option value="all">全部栏目</option>
+                    <option value="none">未归属栏目</option>
+                    {articleMenus.map((menu) => (
+                      <option key={menu.id} value={menu.id}>
+                        {"　".repeat(Math.max(0, menu.level - 1))}
+                        {menu.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={newsStatusFilter}
+                    onChange={(event) =>
+                      setNewsStatusFilter(
+                        event.target.value as "ALL" | NewsDTO["status"],
+                      )
+                    }
+                    className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm"
+                  >
+                    <option value="ALL">全部状态</option>
+                    {Object.entries(newsStatusLabels).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {news.map((item) => (
+              {filteredNews.map((item) => (
                 <div key={item.id} className="rounded-lg border p-4">
                   {editingNewsId === item.id ? (
                     <div className="space-y-4">
@@ -1487,8 +1648,7 @@ export default function SiteContentPage() {
                             className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm"
                           >
                             <option value="">不归属菜单</option>
-                            {menus
-                              .filter((menu) => menu.menuType !== "HOME")
+                            {articleMenus
                               .map((menu) => (
                                 <option key={menu.id} value={menu.id}>
                                   {"　".repeat(Math.max(0, menu.level - 1))}
@@ -1550,7 +1710,7 @@ export default function SiteContentPage() {
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
                         <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                          <span>{menuLabel(menus, item.menuId)}</span>
+                          <span>{menuPath(menus, item.menuId)}</span>
                           <span>{item.category || "未分类"}</span>
                           <span>{newsStatusLabels[item.status]}</span>
                           <span>{formatDate(item.updatedAt)}</span>
@@ -1597,6 +1757,11 @@ export default function SiteContentPage() {
               {news.length === 0 ? (
                 <p className="py-8 text-center text-sm text-gray-500">
                   暂无最近动态。
+                </p>
+              ) : null}
+              {news.length > 0 && filteredNews.length === 0 ? (
+                <p className="py-8 text-center text-sm text-gray-500">
+                  当前筛选条件下没有动态。
                 </p>
               ) : null}
             </CardContent>
