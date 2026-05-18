@@ -278,10 +278,19 @@ Manage the editable content behind a site.
 Required modules:
 
 - Site configuration.
+- Launch material readiness check.
 - Editable menu columns.
 - Product/service entries.
 - Menu-scoped articles.
 - Leads.
+
+Launch material readiness requirements:
+
+- Show a non-blocking readiness checklist in content management.
+- Do not fabricate missing company facts.
+- Check at least company name, business direction, phone, WeChat, address, enabled products, and published articles.
+- Show ready/pending status for each item.
+- Show an overall readiness percentage.
 
 Menu requirements:
 

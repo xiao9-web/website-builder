@@ -318,3 +318,9 @@
 - A latest-build panel is not enough once users publish repeatedly; site detail needs at least a compact recent-history list.
 - Build history should be paged at API level even if the first UI only shows the first few rows.
 - Single-build reads must verify the build belongs to the requested site to avoid cross-site record access.
+
+## READY-001 Launch Readiness Findings
+
+- The project is intentionally avoiding invented company facts, so the admin UI needs a visible material-readiness checklist instead of burying missing fields inside copy.
+- Readiness should be advisory, not blocking; the user may still preview and build while collecting real materials.
+- Minimum readiness signals for the Chunchang corporate site are company name, business direction, phone, WeChat, address, enabled products, and published articles.

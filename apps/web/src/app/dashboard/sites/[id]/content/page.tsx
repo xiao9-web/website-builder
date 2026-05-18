@@ -192,6 +192,59 @@ function cooperationFrom(config: SiteConfigDTO | null) {
   return cooperation;
 }
 
+function materialReadinessItems(
+  config: SiteConfigDTO | null,
+  products: ProductServiceDTO[],
+  news: NewsDTO[],
+): Array<{ label: string; ready: boolean; detail: string }> {
+  const brand = config?.brandConfig ?? {};
+  const contact = contactFrom(config);
+  const enabledProducts = products.filter((item) => item.enabled);
+  const publishedNews = news.filter((item) => item.status === "PUBLISHED");
+
+  return [
+    {
+      label: "公司名称",
+      ready: Boolean(textValue(brand.companyName)),
+      detail: textValue(brand.companyName) || "缺少公司全称",
+    },
+    {
+      label: "业务方向",
+      ready: Boolean(textValue(brand.businessDirection)),
+      detail: textValue(brand.businessDirection) || "缺少主营业务说明",
+    },
+    {
+      label: "联系电话",
+      ready: Boolean(textValue(contact.phone)),
+      detail: textValue(contact.phone) || "缺少真实电话",
+    },
+    {
+      label: "微信",
+      ready: Boolean(textValue(contact.wechat)),
+      detail: textValue(contact.wechat) || "缺少微信或企业微信",
+    },
+    {
+      label: "地址",
+      ready: Boolean(textValue(contact.address)),
+      detail: textValue(contact.address) || "缺少企业地址",
+    },
+    {
+      label: "前台产品",
+      ready: enabledProducts.length > 0,
+      detail: enabledProducts.length
+        ? `${enabledProducts.length} 个产品服务已展示`
+        : "缺少可展示产品服务",
+    },
+    {
+      label: "已发布动态",
+      ready: publishedNews.length > 0,
+      detail: publishedNews.length
+        ? `${publishedNews.length} 篇动态已发布`
+        : "缺少已发布动态或案例内容",
+    },
+  ];
+}
+
 export default function SiteContentPage() {
   const params = useParams();
   const siteId = params.id as string;
@@ -312,6 +365,15 @@ export default function SiteContentPage() {
     }),
     [menus, products, news, leads],
   );
+  const readinessItems = useMemo(
+    () => materialReadinessItems(config, products, news),
+    [config, products, news],
+  );
+  const readinessReadyCount = readinessItems.filter((item) => item.ready).length;
+  const readinessPercent =
+    readinessItems.length > 0
+      ? Math.round((readinessReadyCount / readinessItems.length) * 100)
+      : 0;
 
   useEffect(() => {
     async function load() {
@@ -789,7 +851,60 @@ export default function SiteContentPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-5">
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                上线资料检查
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                不编造企业事实；缺少真实资料时先明确标记，补齐后再正式对外使用。
+              </p>
+            </div>
+            <div className="text-left md:text-right">
+              <p className="text-2xl font-bold text-gray-900">
+                {readinessPercent}%
+              </p>
+              <p className="text-sm text-gray-500">
+                {readinessReadyCount}/{readinessItems.length} 项已就绪
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {readinessItems.map((item) => (
+              <div
+                key={item.label}
+                className={`rounded-lg border p-3 ${
+                  item.ready
+                    ? "border-emerald-200 bg-emerald-50"
+                    : "border-amber-200 bg-amber-50"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-gray-900">
+                    {item.label}
+                  </p>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      item.ready
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-amber-100 text-amber-700"
+                    }`}
+                  >
+                    {item.ready ? "已就绪" : "待补充"}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-gray-600">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         <Card>
           <CardContent>
             <p className="text-sm text-gray-500">菜单栏目</p>

@@ -1306,3 +1306,26 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `mvn -f apps/server/pom.xml -Dtest=BuildServiceTest,ProductServiceManagerTest,PublicSiteServiceTest,LeadServiceTest,NewsServiceTest,SiteMenuServiceTest test` passed with `Tests run: 49, Failures: 0, Errors: 0, Skipped: 0`
 - Limitation:
   - Docker daemon is still unavailable, so live DB-backed build-history smoke remains pending.
+
+## READY-001 Launch Material Readiness
+
+- Continued non-Docker-dependent completion work after `PUB-002`.
+- Added a content-management launch-readiness panel.
+- The panel calculates:
+  - company name present
+  - business direction present
+  - real phone present
+  - WeChat present
+  - address present
+  - at least one enabled product service
+  - at least one published article
+- The panel shows:
+  - overall readiness percentage
+  - ready/pending status per item
+  - the current value or missing-material prompt
+- Requirement and findings docs updated.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+- Limitation:
+  - This is a frontend advisory check; real company materials are still needed before public launch.
