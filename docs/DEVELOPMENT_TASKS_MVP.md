@@ -385,8 +385,9 @@ BE-003
 Endpoints:
 
 ```text
-POST /api/sites/{siteId}/builds
+POST /api/sites/{siteId}/build
 GET /api/sites/{siteId}/builds
+GET /api/sites/{siteId}/builds/latest
 GET /api/sites/{siteId}/builds/{buildId}
 ```
 
@@ -848,7 +849,7 @@ BE-008, FEP-002
 Route:
 
 ```text
-/sites/{siteSlug}/products
+/sites/{siteSlug}/{menuSlug}
 ```
 
 Work:
@@ -875,7 +876,7 @@ FEP-002
 Route:
 
 ```text
-/sites/{siteSlug}/about
+/sites/{siteSlug}/{menuSlug}
 ```
 
 Work:
@@ -902,8 +903,8 @@ BE-008, FEP-002
 Routes:
 
 ```text
-/sites/{siteSlug}/news
-/sites/{siteSlug}/news/{newsSlug}
+/sites/{siteSlug}/{menuSlug}
+/sites/{siteSlug}/articles/{newsSlug}
 ```
 
 Work:
@@ -931,7 +932,7 @@ FEP-002, BE-008
 Route:
 
 ```text
-/sites/{siteSlug}/cooperation
+/sites/{siteSlug}/{menuSlug}
 ```
 
 Work:
@@ -959,7 +960,7 @@ BE-007, FEP-002
 Route:
 
 ```text
-/sites/{siteSlug}/contact
+/sites/{siteSlug}/{menuSlug}
 ```
 
 Work:
@@ -1133,4 +1134,3 @@ BE-001: Align Database Migrations With MVP Schema
 Reason:
 
 The platform needs stable tables before the admin screens and public APIs can be implemented without rework.
-

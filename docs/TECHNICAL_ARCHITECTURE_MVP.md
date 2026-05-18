@@ -186,22 +186,16 @@ Dashboard routes:
 /dashboard/sites/new
 /dashboard/sites/[id]
 /dashboard/sites/[id]/edit
-/dashboard/sites/[id]/preview
-/dashboard/sites/[id]/builds
+/dashboard/sites/[id]/content
 /dashboard/templates
-/dashboard/leads
 ```
 
 Public site routes:
 
 ```text
 /sites/{siteSlug}
-/sites/{siteSlug}/products
-/sites/{siteSlug}/about
-/sites/{siteSlug}/news
-/sites/{siteSlug}/news/{newsSlug}
-/sites/{siteSlug}/cooperation
-/sites/{siteSlug}/contact
+/sites/{siteSlug}/{menuSlug}
+/sites/{siteSlug}/articles/{newsSlug}
 ```
 
 Frontend principles:

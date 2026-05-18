@@ -185,6 +185,7 @@ Used for logos, QR codes, hero images, product images, company images, and news 
 /dashboard/sites/[id]/edit
 /dashboard/sites/[id]/preview
 /dashboard/sites/[id]/builds
+/dashboard/sites/[id]/content
 /dashboard/templates
 /dashboard/leads
 ```
@@ -195,12 +196,8 @@ The public site should be rendered through a site slug so the platform can suppo
 
 ```text
 /sites/{siteSlug}
-/sites/{siteSlug}/products
-/sites/{siteSlug}/about
-/sites/{siteSlug}/news
-/sites/{siteSlug}/news/{newsSlug}
-/sites/{siteSlug}/cooperation
-/sites/{siteSlug}/contact
+/sites/{siteSlug}/{menuSlug}
+/sites/{siteSlug}/articles/{newsSlug}
 ```
 
 ## 7. Admin UI Requirements
@@ -1403,8 +1400,9 @@ PATCH /api/sites/{siteId}/leads/{leadId}/status
 ### Admin Builds
 
 ```text
-POST /api/sites/{siteId}/builds
+POST /api/sites/{siteId}/build
 GET /api/sites/{siteId}/builds
+GET /api/sites/{siteId}/builds/latest
 GET /api/sites/{siteId}/builds/{buildId}
 ```
 
