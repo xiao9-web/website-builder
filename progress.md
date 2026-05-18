@@ -1486,3 +1486,26 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
   - `http://localhost:3000/sites/chunchang` returned HTTP `200`
   - `http://localhost:3000/sites/chunchang/news` returned HTTP `200`
+
+## Stop Hook Reconciliation After 36-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (36/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Current visible run ledger has 36 current steps and all 36 are marked `[complete]`.
+- Latest completed commits:
+  - `8c8440b feat: add real material image fields`
+  - `5f772ff feat: add article publish readiness hints`
+  - `c05678f feat: polish Chunchang public site`
+- Current local services remain available:
+  - frontend `http://localhost:3000`
+  - backend `http://localhost:8080`
+  - `wb-postgres`
+  - `wb-redis`
+- Real remaining work is backlog and final polish, not unfinished current phases:
+  - real company materials
+  - optional richer article editing controls
+  - final local/Docker acceptance package
+- Conclusion:
+  - The hook is treating completed ledger count as unfinished phase count.
+  - No current run step is open.
+  - Continue with the next backlog slice.
