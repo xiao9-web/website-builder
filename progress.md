@@ -1536,3 +1536,21 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - login returned token length `208`
   - `GET /api/sites` returned HTTP `200`
   - `POST /api/sites/1/build` returned HTTP `200`
+
+## Stop Hook Reconciliation After 37-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (37/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Current visible run ledger has 37 current steps and all 37 are marked `[complete]`.
+- Latest completed commits:
+  - `c92e5c2 docs: add local demo acceptance guide`
+  - `2688b16 docs: reconcile 36-step ledger`
+  - `8c8440b feat: add real material image fields`
+- Current local demo is healthy:
+  - frontend `http://localhost:3000`
+  - backend `http://localhost:8080`
+  - `wb-postgres`
+  - `wb-redis`
+- Conclusion:
+  - No current run step is open.
+  - Remaining work should be tracked as final acceptance and real-material backlog, not unfinished implementation phases.
