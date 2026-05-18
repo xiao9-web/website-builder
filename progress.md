@@ -1231,3 +1231,20 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `npm run build:web` passed
 - Environment:
   - Docker daemon is still unavailable, so full DB-backed browser smoke remains blocked.
+
+## Stop Hook Reconciliation After 28-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (28/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Current visible run ledger now has 28 current steps and all 28 are marked `[complete]`.
+- Latest completed commit is `42c1d9c feat: link admin content to public pages`.
+- Current real backlog is not part of the 28 completed steps:
+  - `E2E-REFRESH`: rerun full authenticated browser smoke after Docker Desktop is available
+  - `PUB-001`: publish/build records workflow and public publish-state polish
+  - `FEP`: public corporate-site polish after real company materials are available
+- Docker check still fails with:
+  - `Cannot connect to the Docker daemon at unix:///Users/xiao9/.docker/run/docker.sock. Is the docker daemon running?`
+- Conclusion:
+  - The hook is treating future backlog as unfinished current phases.
+  - No completed current run step is actually open.
+  - Next executable work without Docker should be `PUB-001` or another frontend/backend slice that can be build-tested without live database services.
