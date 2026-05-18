@@ -26,6 +26,7 @@ export default async function PublicMenuPage({ params }: PublicMenuPageProps) {
 
   const { config, menus, menu, news, isFallback } = data;
   const companyName = config.brandConfig.companyName || config.name;
+  const childMenus = menus.filter((item) => item.parentId === menu.id);
 
   return (
     <main className="min-h-screen bg-[#f7f5ee] text-stone-900">
@@ -52,13 +53,36 @@ export default async function PublicMenuPage({ params }: PublicMenuPageProps) {
             {menu.label}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-stone-600">
-            这里展示该栏目下已发布的内容。后台编辑菜单和文章后，公开站会同步读取最新数据。
+            {childMenus.length
+              ? "这里展示该栏目下的子栏目入口。文章发布到最后一级栏目后，公开站会同步读取最新数据。"
+              : "这里展示该栏目下已发布的内容。后台编辑菜单和文章后，公开站会同步读取最新数据。"}
           </p>
         </div>
       </section>
 
       <section className="py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {childMenus.length ? (
+            <div className="mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {childMenus.map((child) => (
+                <Link
+                  key={child.id}
+                  href={`/sites/${config.slug}/${child.slug}`}
+                  className="rounded-md border border-emerald-900/15 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-800 hover:shadow-md"
+                >
+                  <p className="text-xs font-semibold text-emerald-800">
+                    {child.level} 级栏目
+                  </p>
+                  <h2 className="mt-3 text-xl font-semibold text-stone-950">
+                    {child.label}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-stone-600">
+                    查看该子栏目下的文章、案例和业务说明。
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : null}
           {news.length ? (
             <div className="grid gap-5 md:grid-cols-2">
               {news.map((item) => (
@@ -94,7 +118,7 @@ export default async function PublicMenuPage({ params }: PublicMenuPageProps) {
                 </article>
               ))}
             </div>
-          ) : (
+          ) : childMenus.length ? null : (
             <div className="rounded-md border border-dashed border-emerald-900/20 bg-white p-8">
               <h2 className="text-xl font-semibold text-stone-950">
                 栏目内容待发布

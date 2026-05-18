@@ -347,11 +347,11 @@ Rules:
 - Menus with child menus cannot be deleted until children are deleted.
 - Articles under a deleted menu are kept and their menu assignment is cleared.
 
-### DELETE /api/sites/{siteId}
+### POST /api/sites/{siteId}/offline
 
 Purpose:
 
-Delete site.
+Take a site offline without deleting data.
 
 Auth:
 
@@ -361,6 +361,52 @@ Access:
 
 - ADMIN: any site.
 - USER: owned site only.
+
+Rules:
+
+- This is a soft offline action, not physical deletion.
+- Site content, configuration, build records, leads, menus, products, and articles remain in the database.
+- Offline sites are hidden from public site APIs.
+- Offline sites can be republished later through the publish/build flow.
+
+### PATCH /api/sites/{siteId}/status
+
+Purpose:
+
+Update site status for controlled lifecycle transitions.
+
+Auth:
+
+Authenticated.
+
+Access:
+
+- ADMIN: any site.
+- USER: owned site only.
+
+Request:
+
+```json
+{
+  "status": "DRAFT"
+}
+```
+
+Rules:
+
+- Valid statuses are `DRAFT`, `BUILDING`, `PUBLISHED`, `OFFLINE`, and `ERROR`.
+- Moving to `OFFLINE` or `DRAFT` clears `publishedAt`.
+- Normal user-facing re-online flow should use publish/build rather than directly forcing `PUBLISHED`.
+
+### DELETE /api/sites/{siteId}
+
+Status:
+
+Deprecated compatibility endpoint.
+
+Purpose:
+
+Takes the site offline. It must not physically delete the site.
 
 ### POST /api/sites/{siteId}/publish
 
@@ -513,10 +559,10 @@ PATCH /api/sites/{siteId}/news/{newsId}/status
 Rules:
 
 - Slug unique within site.
-- News can be assigned to a non-homepage menu through `menuId`.
+- News can be assigned to a leaf, non-homepage menu through `menuId`.
 - `GET` supports optional `status=DRAFT|PUBLISHED|OFFLINE` and optional `menuId`; omitting filters returns all records for dashboard management.
 - Creating news defaults to `DRAFT` when status is omitted.
-- Publishing requires a non-homepage `menuId`; unassigned articles may remain draft only.
+- Publishing requires a leaf, non-homepage `menuId`; unassigned articles may remain draft only.
 - Publishing sets `publishedAt`; moving to `DRAFT` or `OFFLINE` clears `publishedAt`.
 - Draft is hidden from public APIs.
 - Published is visible.
@@ -592,7 +638,7 @@ Rules:
 - Products return enabled records only.
 - News returns published records only.
 - Menu-scoped news returns published records under a visible menu only.
-- Every visible non-homepage menu can serve as a public article column through `/api/public/sites/{slug}/menus/{menuSlug}` and `/api/public/sites/{slug}/menus/{menuSlug}/news`.
+- Every visible non-homepage menu has a public column route through `/api/public/sites/{slug}/menus/{menuSlug}`. Menus with children are grouping/navigation columns; articles are owned only by leaf, non-homepage menus and listed through `/api/public/sites/{slug}/menus/{menuSlug}/news`.
 - Offline and error sites return not found.
 - Leads can be submitted without login.
 

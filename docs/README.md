@@ -16,6 +16,9 @@ Read these documents first:
 | [SITE_CONFIG_SCHEMA_MVP.md](./SITE_CONFIG_SCHEMA_MVP.md) | SiteConfig JSON schema baseline |
 | [LOCAL_DEMO_ACCEPTANCE.md](./LOCAL_DEMO_ACCEPTANCE.md) | Local demo URLs, login, and acceptance checks |
 | [FINAL_LAUNCH_CHECKLIST.md](./FINAL_LAUNCH_CHECKLIST.md) | Final company-material and launch approval checklist |
+| [ENGINEERING_PORTFOLIO_ROADMAP.md](./ENGINEERING_PORTFOLIO_ROADMAP.md) | Interview-oriented engineering expansion roadmap |
+| [DOCKER_LOCAL_DEMO.md](./DOCKER_LOCAL_DEMO.md) | Full Docker local demo startup and troubleshooting |
+| [JENKINS_CI.md](./JENKINS_CI.md) | Jenkins CI pipeline stages, parameters, and troubleshooting |
 | [DEV_STANDARDS.md](./DEV_STANDARDS.md) | General development standards |
 | [AI_PIPELINE_GUIDE.md](./AI_PIPELINE_GUIDE.md) | AI-assisted workflow reference |
 
@@ -57,6 +60,7 @@ Do not treat old `admin`, `server`, `frontend`, `blog-server`, or `blog-web` tra
 npm run build:server
 npm run build:web
 npm run build:all
+make docker-demo-up
 make -n start
 make -n db-migrate
 make -n db-status
@@ -98,7 +102,7 @@ make db-status
 ## Next Backlog Items
 
 - Real company materials: logo, phone, WeChat, address, product photos, product specs, certificates, cases, and real news.
-- Optional richer article editing controls: cover preview, preview pane, and richer formatting.
+- Interview-oriented engineering expansion: Dockerized full stack, Jenkins CI/CD, Apollo config center, XXL-JOB scheduled tasks, Kubernetes manifests, and observability.
 - Personal blog planning after the corporate-site flow is stable.
 
 ## Redundant Documents Policy

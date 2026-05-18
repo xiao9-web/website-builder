@@ -61,7 +61,7 @@ public class MediaService {
         String storageKey = "media/" + storedFilename;
 
         try {
-            Path uploadPath = Paths.get(uploadDir);
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
             Path filePath = uploadPath.resolve(storedFilename);
             file.transferTo(filePath.toFile());
@@ -117,7 +117,7 @@ public class MediaService {
 
         // Delete physical file
         try {
-            Path filePath = Paths.get(uploadDir).resolve(media.getFilename());
+            Path filePath = Paths.get(uploadDir).toAbsolutePath().normalize().resolve(media.getFilename());
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
             log.warn("Failed to delete file: {}", media.getFilename(), e);

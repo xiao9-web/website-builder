@@ -8,6 +8,7 @@ import com.xiao9.wb.site.dto.SiteConfigDTO;
 import com.xiao9.wb.site.dto.SiteDTO;
 import com.xiao9.wb.site.dto.UpdateSiteConfigRequest;
 import com.xiao9.wb.site.dto.UpdateSiteRequest;
+import com.xiao9.wb.site.dto.UpdateSiteStatusRequest;
 import com.xiao9.wb.site.service.BuildService;
 import com.xiao9.wb.site.service.SiteService;
 import com.xiao9.wb.user.entity.User;
@@ -90,6 +91,25 @@ public class SiteController {
         return ApiResponse.success(site);
     }
 
+    @PatchMapping("/{id}/status")
+    public ApiResponse<SiteDTO> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateSiteStatusRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        SiteDTO site = siteService.updateStatus(id, request.status(), user);
+        return ApiResponse.success(site);
+    }
+
+    @PostMapping("/{id}/offline")
+    public ApiResponse<SiteDTO> offline(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user
+    ) {
+        SiteDTO site = siteService.offline(id, user);
+        return ApiResponse.success(site);
+    }
+
     @PostMapping("/{id}/build")
     public ApiResponse<BuildDTO> triggerBuild(
             @PathVariable Long id,
@@ -134,11 +154,11 @@ public class SiteController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(
+    public ApiResponse<SiteDTO> delete(
             @PathVariable Long id,
             @AuthenticationPrincipal User user
     ) {
-        siteService.delete(id, user);
-        return ApiResponse.success();
+        SiteDTO site = siteService.offline(id, user);
+        return ApiResponse.success(site);
     }
 }

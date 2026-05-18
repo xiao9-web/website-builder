@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -28,6 +28,7 @@ import {
   updateProductService,
   updateSiteMenu,
   updateSiteConfig,
+  uploadMedia,
 } from "@/lib/content-management/api";
 import type {
   LeadDTO,
@@ -43,7 +44,7 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "config", label: "站点配置" },
   { key: "menus", label: "菜单栏目" },
   { key: "products", label: "产品服务" },
-  { key: "news", label: "最近动态" },
+  { key: "news", label: "栏目文章" },
   { key: "leads", label: "留言线索" },
 ];
 
@@ -128,13 +129,42 @@ function countMenuNews(news: NewsDTO[], menuId: number): number {
   return news.filter((item) => item.menuId === menuId).length;
 }
 
-function charCount(value?: string | null): number {
-  return (value ?? "").trim().length;
+function plainTextFromHtml(value?: string | null): string {
+  return (value ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function newsReadinessWarnings(item: Pick<NewsDTO, "menuId" | "summary" | "content">): string[] {
+function charCount(value?: string | null): number {
+  return plainTextFromHtml(value).length;
+}
+
+function isLeafMenu(menus: SiteMenuDTO[], menuId?: number | null): boolean {
+  if (!menuId) return false;
+  return !menus.some((menu) => menu.parentId === menuId);
+}
+
+function articleMenuWarning(
+  menus: SiteMenuDTO[],
+  menuId?: number | null,
+): string | null {
+  if (!menuId) return "未选择最后一级栏目";
+  const menu = menus.find((item) => item.id === menuId);
+  if (!menu) return "栏目不存在";
+  if (menu.menuType === "HOME") return "首页不能挂文章";
+  if (!isLeafMenu(menus, menu.id)) return "请选择最后一级栏目";
+  return null;
+}
+
+function newsReadinessWarnings(
+  menus: SiteMenuDTO[],
+  item: Pick<NewsDTO, "menuId" | "summary" | "content">,
+): string[] {
   const warnings: string[] = [];
-  if (!item.menuId) warnings.push("未选择栏目");
+  const menuWarning = articleMenuWarning(menus, item.menuId);
+  if (menuWarning) warnings.push(menuWarning);
   if (charCount(item.summary) < 20) warnings.push("摘要偏短");
   if (charCount(item.content) < 80) warnings.push("正文偏短");
   return warnings;
@@ -169,6 +199,324 @@ function ImagePreview({
   );
 }
 
+function safeUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^(https?:|\/uploads\/|data:image\/)/i.test(trimmed)) return trimmed;
+  return "";
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function MediaUploadButton({
+  accept,
+  label,
+  onUploaded,
+  onError,
+}: {
+  accept: string;
+  label: string;
+  onUploaded: (url: string) => void;
+  onError?: (message: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async (file?: File) => {
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const media = await uploadMedia(file);
+      onUploaded(media.url);
+    } catch (err) {
+      onError?.(err instanceof Error ? err.message : "文件上传失败。");
+    } finally {
+      setIsUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(event) => handleUpload(event.target.files?.[0])}
+      />
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={() => inputRef.current?.click()}
+        isLoading={isUploading}
+      >
+        {label}
+      </Button>
+    </>
+  );
+}
+
+function RichTextEditor({
+  value,
+  onChange,
+  label,
+  onError,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label: string;
+  onError?: (message: string) => void;
+}) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const savedRangeRef = useRef<Range | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor || isFocused || editor.innerHTML === value) return;
+    editor.innerHTML = value;
+  }, [isFocused, value]);
+
+  const syncValue = () => {
+    onChange(editorRef.current?.innerHTML ?? "");
+  };
+
+  const saveSelection = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const editor = editorRef.current;
+    const range = selection.getRangeAt(0);
+    if (editor?.contains(range.commonAncestorContainer)) {
+      savedRangeRef.current = range.cloneRange();
+    }
+  };
+
+  const restoreSelection = () => {
+    const editor = editorRef.current;
+    editor?.focus();
+    const selection = window.getSelection();
+    const range = savedRangeRef.current;
+    if (!selection || !range) return;
+    selection.removeAllRanges();
+    selection.addRange(range);
+  };
+
+  const runCommand = (command: string, argument?: string) => {
+    restoreSelection();
+    document.execCommand(command, false, argument);
+    syncValue();
+    saveSelection();
+  };
+
+  const insertHtml = (html: string) => {
+    restoreSelection();
+    document.execCommand("insertHTML", false, html);
+    syncValue();
+    saveSelection();
+  };
+
+  const insertLink = () => {
+    const url = safeUrl(window.prompt("请输入链接 URL，例如 https://example.com") ?? "");
+    if (!url) return;
+    restoreSelection();
+    const selection = window.getSelection();
+    const selectedText = selection?.toString().trim();
+    const text =
+      selectedText || window.prompt("请输入链接文字", url) || url;
+    insertHtml(
+      `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`,
+    );
+  };
+
+  const insertImageUrl = () => {
+    const url = safeUrl(window.prompt("请输入图片 URL，或先点击上传图片获取 URL") ?? "");
+    if (!url) return;
+    const alt = window.prompt("请输入图片说明", "") ?? "";
+    insertHtml(
+      `<figure><img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" /></figure>`,
+    );
+  };
+
+  const insertVideoUrl = () => {
+    const url = safeUrl(window.prompt("请输入视频 URL，或先点击上传视频获取 URL") ?? "");
+    if (!url) return;
+    insertHtml(`<video controls src="${escapeHtml(url)}"></video>`);
+  };
+
+  const handleUpload = async (file: File | undefined, type: "image" | "video") => {
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const media = await uploadMedia(file);
+      if (type === "image") {
+        insertHtml(
+          `<figure><img src="${escapeHtml(media.url)}" alt="${escapeHtml(media.originalFilename)}" /></figure>`,
+        );
+      } else {
+        insertHtml(
+          `<video controls src="${escapeHtml(media.url)}"></video>`,
+        );
+      }
+    } catch (err) {
+      onError?.(err instanceof Error ? err.message : "文件上传失败。");
+    } finally {
+      setIsUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+      if (videoInputRef.current) videoInputRef.current.value = "";
+    }
+  };
+
+  const toolbar = [
+    { label: "B", title: "加粗", command: "bold" },
+    { label: "I", title: "斜体", command: "italic" },
+    { label: "H2", title: "二级标题", command: "formatBlock", argument: "h2" },
+    { label: "H3", title: "三级标题", command: "formatBlock", argument: "h3" },
+    { label: "•", title: "无序列表", command: "insertUnorderedList" },
+    { label: "1.", title: "有序列表", command: "insertOrderedList" },
+    { label: "P", title: "正文段落", command: "formatBlock", argument: "p" },
+    { label: "❝", title: "引用", command: "formatBlock", argument: "blockquote" },
+    { label: "HR", title: "分隔线", command: "insertHorizontalRule" },
+    { label: "清", title: "清除格式", command: "removeFormat" },
+  ];
+
+  return (
+    <div>
+      <span className="mb-1.5 block text-sm font-medium text-gray-700">
+        {label}
+      </span>
+      <div className="rounded-lg border border-gray-300 bg-white">
+        <div className="flex flex-wrap gap-1 border-b border-gray-200 bg-gray-50 p-2">
+          {toolbar.map((item) => (
+            <button
+              key={`${item.command}-${item.label}`}
+              type="button"
+              title={item.title}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                saveSelection();
+              }}
+              onClick={() => runCommand(item.command, item.argument)}
+              className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+            >
+              {item.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            title="插入链接"
+            onMouseDown={(event) => {
+              event.preventDefault();
+              saveSelection();
+            }}
+            onClick={insertLink}
+            className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+          >
+            链接
+          </button>
+          <button
+            type="button"
+            title="插入图片 URL"
+            onMouseDown={(event) => {
+              event.preventDefault();
+              saveSelection();
+            }}
+            onClick={insertImageUrl}
+            className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+          >
+            图URL
+          </button>
+          <button
+            type="button"
+            title="上传图片并插入"
+            disabled={isUploading}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              saveSelection();
+            }}
+            onClick={() => imageInputRef.current?.click()}
+            className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isUploading ? "上传中" : "上传图"}
+          </button>
+          <button
+            type="button"
+            title="插入视频 URL"
+            onMouseDown={(event) => {
+              event.preventDefault();
+              saveSelection();
+            }}
+            onClick={insertVideoUrl}
+            className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+          >
+            视频URL
+          </button>
+          <button
+            type="button"
+            title="上传视频并插入"
+            disabled={isUploading}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              saveSelection();
+            }}
+            onClick={() => videoInputRef.current?.click()}
+            className="h-8 min-w-8 rounded border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isUploading ? "上传中" : "上传视频"}
+          </button>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+            className="hidden"
+            onChange={(event) => handleUpload(event.target.files?.[0], "image")}
+          />
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/mp4,video/webm"
+            className="hidden"
+            onChange={(event) => handleUpload(event.target.files?.[0], "video")}
+          />
+        </div>
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          className="min-h-48 w-full px-3 py-3 text-sm leading-7 text-gray-900 focus:outline-none"
+          onFocus={() => {
+            setIsFocused(true);
+            saveSelection();
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            syncValue();
+          }}
+          onInput={() => {
+            syncValue();
+            saveSelection();
+          }}
+          onKeyUp={saveSelection}
+          onMouseUp={saveSelection}
+        />
+      </div>
+      <p className="mt-1 text-sm text-gray-500">
+        支持标题、列表、引用、分隔线、链接、图片和视频；上传后会自动插入可访问 URL。
+      </p>
+    </div>
+  );
+}
+
 function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
   const result = new Set<number>();
   const collect = (parentId: number) => {
@@ -186,15 +534,7 @@ function descendantIds(menus: SiteMenuDTO[], menuId: number): Set<number> {
 function publicMenuHref(siteSlug: string, menu: SiteMenuDTO): string {
   const baseHref = `/sites/${siteSlug}`;
   if (menu.menuType === "HOME") return baseHref;
-
-  const anchorSlugs: Record<string, string> = {
-    products: "products",
-    about: "about",
-    cooperation: "cooperation",
-    contact: "contact",
-  };
-  const anchor = anchorSlugs[menu.slug];
-  return anchor ? `${baseHref}#${anchor}` : `${baseHref}/${menu.slug}`;
+  return `${baseHref}/${menu.slug}`;
 }
 
 function heroFrom(config: SiteConfigDTO | null) {
@@ -277,11 +617,11 @@ function materialReadinessItems(
         : "缺少可展示产品服务",
     },
     {
-      label: "已发布动态",
+      label: "已发布文章",
       ready: publishedNews.length > 0,
       detail: publishedNews.length
-        ? `${publishedNews.length} 篇动态已发布`
-        : "缺少已发布动态或案例内容",
+        ? `${publishedNews.length} 篇文章已发布`
+        : "缺少已发布文章或案例内容",
     },
   ];
 }
@@ -381,9 +721,13 @@ export default function SiteContentPage() {
   >("ALL");
 
   const orderedMenus = useMemo(() => sortMenusForDisplay(menus), [menus]);
-  const articleMenus = useMemo(
+  const filterMenus = useMemo(
     () => orderedMenus.filter((menu) => menu.menuType !== "HOME"),
     [orderedMenus],
+  );
+  const articleMenus = useMemo(
+    () => filterMenus.filter((menu) => isLeafMenu(menus, menu.id)),
+    [filterMenus, menus],
   );
   const filteredNews = useMemo(
     () =>
@@ -763,9 +1107,38 @@ export default function SiteContentPage() {
     }
   };
 
+  const startCreateNewsForMenu = (menu: SiteMenuDTO) => {
+    if (menu.menuType === "HOME") {
+      setError("首页菜单不能直接挂文章，请选择其他栏目。");
+      return;
+    }
+    if (!isLeafMenu(menus, menu.id)) {
+      setError("这个菜单下面还有子菜单，文章只能挂在最后一级菜单下。");
+      return;
+    }
+    setActiveTab("news");
+    setNewsMenuFilter(String(menu.id));
+    setNewsStatusFilter("ALL");
+    setNewsForm((form) => ({
+      ...form,
+      menuId: String(menu.id),
+      category: menu.label,
+    }));
+    setError("");
+    setSuccess(`已切换到文章编辑，并预选栏目：${menuPath(menus, menu.id)}。`);
+  };
+
   const handleCreateNews = async () => {
     if (!newsForm.title || !newsForm.slug) {
-      setError("请填写动态标题和访问标识。");
+      setError("请填写文章标题和访问标识。");
+      return;
+    }
+    const menuWarning = articleMenuWarning(
+      menus,
+      newsForm.menuId ? Number(newsForm.menuId) : null,
+    );
+    if (menuWarning) {
+      setError(`请选择可挂文章的栏目：${menuWarning}。`);
       return;
     }
     setIsSaving(true);
@@ -787,27 +1160,32 @@ export default function SiteContentPage() {
         category: "公司动态",
         coverImage: "",
       });
-      setSuccess("最近动态已保存为草稿。");
+      setSuccess("栏目文章已保存为草稿。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "最近动态新增失败。");
+      setError(err instanceof Error ? err.message : "栏目文章新增失败。");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDeleteNews = async (newsId: number) => {
-    if (!window.confirm("确定删除这条动态吗？")) return;
+    if (!window.confirm("确定删除这篇文章吗？")) return;
     await deleteNews(siteId, newsId);
     setNews((items) => items.filter((item) => item.id !== newsId));
   };
 
   const handleNewsStatus = async (item: NewsDTO, status: NewsDTO["status"]) => {
     if (status === "PUBLISHED") {
-      const warnings = newsReadinessWarnings(item);
+      const menuWarning = articleMenuWarning(menus, item.menuId);
+      if (menuWarning) {
+        setError(`这篇文章暂不能发布：${menuWarning}。`);
+        return;
+      }
+      const warnings = newsReadinessWarnings(menus, item);
       if (
         warnings.length > 0 &&
         !window.confirm(
-          `这篇动态还有 ${warnings.join("、")} 的问题，发布后前台效果可能不完整。仍然发布吗？`,
+          `这篇文章还有 ${warnings.join("、")} 的问题，发布后前台效果可能不完整。仍然发布吗？`,
         )
       ) {
         return;
@@ -850,7 +1228,15 @@ export default function SiteContentPage() {
 
   const handleUpdateNews = async (item: NewsDTO) => {
     if (!newsEditForm.title || !newsEditForm.slug) {
-      setError("请填写动态标题和访问标识。");
+      setError("请填写文章标题和访问标识。");
+      return;
+    }
+    const menuWarning = articleMenuWarning(
+      menus,
+      newsEditForm.menuId ? Number(newsEditForm.menuId) : null,
+    );
+    if (menuWarning) {
+      setError(`请选择可挂文章的栏目：${menuWarning}。`);
       return;
     }
 
@@ -872,9 +1258,9 @@ export default function SiteContentPage() {
         items.map((newsItem) => (newsItem.id === updated.id ? updated : newsItem)),
       );
       cancelEditNews();
-      setSuccess("最近动态已更新。");
+      setSuccess("栏目文章已更新。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "最近动态更新失败。");
+      setError(err instanceof Error ? err.message : "栏目文章更新失败。");
     } finally {
       setIsSaving(false);
     }
@@ -900,7 +1286,7 @@ export default function SiteContentPage() {
             {currentSite?.name || `站点 #${siteId}`}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            管理前台官网所需的配置、产品服务、最近动态和留言线索。
+            管理前台官网所需的配置、产品服务、栏目文章和留言线索。
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -1000,13 +1386,13 @@ export default function SiteContentPage() {
         </Card>
         <Card>
           <CardContent>
-            <p className="text-sm text-gray-500">最近动态</p>
+            <p className="text-sm text-gray-500">栏目文章</p>
             <p className="mt-2 text-2xl font-bold">{stats.news}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
-            <p className="text-sm text-gray-500">已发布动态</p>
+            <p className="text-sm text-gray-500">已发布文章</p>
             <p className="mt-2 text-2xl font-bold">{stats.publishedNews}</p>
           </CardContent>
         </Card>
@@ -1086,7 +1472,7 @@ export default function SiteContentPage() {
               />
               <Input
                 label="Logo 图片 URL"
-                helperText="可先填写公网图片地址；未填写时前台使用文字标识。"
+                helperText="可填写公网图片地址，也可以上传后自动填入 URL；未填写时前台使用文字标识。"
                 value={configForm.logoUrl}
                 onChange={(event) =>
                   setConfigForm((form) => ({
@@ -1095,6 +1481,16 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <div className="flex items-end">
+                <MediaUploadButton
+                  accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                  label="上传 Logo"
+                  onError={setError}
+                  onUploaded={(url) =>
+                    setConfigForm((form) => ({ ...form, logoUrl: url }))
+                  }
+                />
+              </div>
               <ImagePreview
                 url={configForm.logoUrl}
                 label="Logo 预览"
@@ -1218,7 +1614,7 @@ export default function SiteContentPage() {
               />
               <Input
                 label="微信二维码 URL"
-                helperText="可填写二维码图片地址；公开站会在联系区展示。"
+                helperText="可填写二维码图片地址，也可以上传后自动填入 URL；公开站会在联系区展示。"
                 value={configForm.wechatQrUrl}
                 onChange={(event) =>
                   setConfigForm((form) => ({
@@ -1227,6 +1623,16 @@ export default function SiteContentPage() {
                   }))
                 }
               />
+              <div className="flex items-end">
+                <MediaUploadButton
+                  accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                  label="上传二维码"
+                  onError={setError}
+                  onUploaded={(url) =>
+                    setConfigForm((form) => ({ ...form, wechatQrUrl: url }))
+                  }
+                />
+              </div>
               <ImagePreview
                 url={configForm.wechatQrUrl}
                 label="微信二维码预览"
@@ -1297,13 +1703,21 @@ export default function SiteContentPage() {
               />
               <Input
                 label="产品图片 URL"
-                helperText="可填写真实产品图地址；未填写时前台显示文字卡片。"
+                helperText="可填写真实产品图地址，也可以上传后自动填入 URL；未填写时前台显示文字卡片。"
                 value={productForm.imageUrl}
                 onChange={(event) =>
                   setProductForm((form) => ({
                     ...form,
                     imageUrl: event.target.value,
                   }))
+                }
+              />
+              <MediaUploadButton
+                accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                label="上传产品图"
+                onError={setError}
+                onUploaded={(url) =>
+                  setProductForm((form) => ({ ...form, imageUrl: url }))
                 }
               />
               <ImagePreview url={productForm.imageUrl} label="产品图片预览" />
@@ -1364,6 +1778,7 @@ export default function SiteContentPage() {
                         />
                         <Input
                           label="产品图片 URL"
+                          helperText="可填写公网图片地址，也可以上传后自动填入 URL。"
                           value={productEditForm.imageUrl}
                           onChange={(event) =>
                             setProductEditForm((form) => ({
@@ -1372,6 +1787,19 @@ export default function SiteContentPage() {
                             }))
                           }
                         />
+                        <div className="flex items-end">
+                          <MediaUploadButton
+                            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                            label="上传产品图"
+                            onError={setError}
+                            onUploaded={(url) =>
+                              setProductEditForm((form) => ({
+                                ...form,
+                                imageUrl: url,
+                              }))
+                            }
+                          />
+                        </div>
                         <ImagePreview
                           url={productEditForm.imageUrl}
                           label="产品图片预览"
@@ -1492,7 +1920,7 @@ export default function SiteContentPage() {
             <CardHeader>
               <h2 className="text-lg font-semibold">新增菜单栏目</h2>
               <p className="mt-1 text-sm text-gray-500">
-                首页为系统入口；其他菜单可维护文章，最多三级。
+                菜单可自由挂到一级、二级或三级；只有没有子菜单的最后一级栏目可以维护文章。
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1574,13 +2002,15 @@ export default function SiteContentPage() {
             <CardHeader>
               <h2 className="text-lg font-semibold">菜单栏目列表</h2>
               <p className="mt-1 text-sm text-gray-500">
-                按前台导航层级展示。删除栏目不会删除文章，但会清空文章归属。
+                按前台导航层级展示。父级栏目用于分组和导航，文章只能挂在最后一级栏目下。
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               {orderedMenus.map((menu) => {
                 const childCount = countChildren(menus, menu.id);
                 const articleCount = countMenuNews(news, menu.id);
+                const canOwnArticles =
+                  menu.menuType !== "HOME" && childCount === 0;
                 const blockedParentIds = descendantIds(menus, menu.id);
                 return (
                 <div
@@ -1691,6 +2121,11 @@ export default function SiteContentPage() {
                           <span>{menu.menuType === "HOME" ? "首页" : "栏目"}</span>
                           <span>{menu.level} 级</span>
                           <span>{menu.visible ? "前台显示" : "已隐藏"}</span>
+                          {menu.menuType !== "HOME" ? (
+                            <span>
+                              {canOwnArticles ? "最后一级，可写文章" : "分组菜单"}
+                            </span>
+                          ) : null}
                           <span>/{menu.slug}</span>
                         </div>
                         <h3
@@ -1722,6 +2157,20 @@ export default function SiteContentPage() {
                             <Button size="sm" variant="outline">查看前台</Button>
                           </Link>
                         ) : null}
+                        {canOwnArticles ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startCreateNewsForMenu(menu)}
+                          >
+                            写文章
+                          </Button>
+                        ) : null}
+                        {menu.menuType !== "HOME" && !canOwnArticles ? (
+                          <span className="inline-flex h-9 items-center rounded-md bg-gray-100 px-3 text-xs font-medium text-gray-500">
+                            文章挂到子栏目
+                          </span>
+                        ) : null}
                         {menu.menuType !== "HOME" ? (
                           <Button
                             size="sm"
@@ -1752,11 +2201,14 @@ export default function SiteContentPage() {
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold">新增最近动态</h2>
+              <h2 className="text-lg font-semibold">新增栏目文章</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                文章必须归属到最后一级栏目。父级菜单只负责导航分组，不能直接挂文章。
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm leading-6 text-blue-800">
-                建议发布前补齐所属栏目、摘要和正文。公开站只展示“已发布”动态，草稿不会出现在前台。
+                建议发布前补齐所属栏目、摘要和正文。公开站只展示“已发布”文章，草稿不会出现在前台。
               </div>
               <Input
                 label="标题"
@@ -1791,7 +2243,7 @@ export default function SiteContentPage() {
                   }
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm"
                 >
-                  <option value="">不归属菜单</option>
+                  <option value="">请选择最后一级栏目</option>
                   {articleMenus
                     .map((menu) => (
                       <option key={menu.id} value={menu.id}>
@@ -1813,13 +2265,21 @@ export default function SiteContentPage() {
               />
               <Input
                 label="封面图片 URL"
-                helperText="可填写真实新闻或产品图片地址；未填写时前台显示文字内容。"
+                helperText="可填写真实新闻或产品图片地址，也可以上传后自动填入 URL；未填写时前台显示文字内容。"
                 value={newsForm.coverImage}
                 onChange={(event) =>
                   setNewsForm((form) => ({
                     ...form,
                     coverImage: event.target.value,
                   }))
+                }
+              />
+              <MediaUploadButton
+                accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                label="上传封面"
+                onError={setError}
+                onUploaded={(url) =>
+                  setNewsForm((form) => ({ ...form, coverImage: url }))
                 }
               />
               <ImagePreview url={newsForm.coverImage} label="封面图片预览" />
@@ -1834,24 +2294,20 @@ export default function SiteContentPage() {
                   }))
                 }
               />
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-gray-700">
-                  正文
-                </span>
-                <textarea
-                  className="min-h-32 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-                  value={newsForm.content}
-                  onChange={(event) =>
-                    setNewsForm((form) => ({
-                      ...form,
-                      content: event.target.value,
-                    }))
-                  }
-                />
-                <p className="mt-1 text-sm text-gray-500">
-                  {charCount(newsForm.content)} 字；建议至少 80 字，避免发布后详情页过空。
-                </p>
-              </label>
+              <RichTextEditor
+                label="正文（富文本）"
+                value={newsForm.content}
+                onChange={(content) =>
+                  setNewsForm((form) => ({
+                    ...form,
+                    content,
+                  }))
+                }
+                onError={setError}
+              />
+              <p className="text-sm text-gray-500">
+                {charCount(newsForm.content)} 字；建议至少 80 字，避免发布后详情页过空。
+              </p>
               <Button onClick={handleCreateNews} isLoading={isSaving}>
                 保存为草稿
               </Button>
@@ -1862,7 +2318,7 @@ export default function SiteContentPage() {
             <CardHeader>
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">动态列表</h2>
+                  <h2 className="text-lg font-semibold">文章列表</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     当前显示 {filteredNews.length} / {news.length} 篇。
                   </p>
@@ -1875,7 +2331,7 @@ export default function SiteContentPage() {
                   >
                     <option value="all">全部栏目</option>
                     <option value="none">未归属栏目</option>
-                    {articleMenus.map((menu) => (
+                    {filterMenus.map((menu) => (
                       <option key={menu.id} value={menu.id}>
                         {"　".repeat(Math.max(0, menu.level - 1))}
                         {menu.label}
@@ -1906,7 +2362,7 @@ export default function SiteContentPage() {
                 <div key={item.id} className="rounded-lg border p-4">
                   {editingNewsId === item.id ? (
                     <div className="space-y-4">
-                      {newsReadinessWarnings({
+                      {newsReadinessWarnings(menus, {
                         menuId: newsEditForm.menuId
                           ? Number(newsEditForm.menuId)
                           : null,
@@ -1915,7 +2371,7 @@ export default function SiteContentPage() {
                       }).length ? (
                         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-800">
                           发布前建议处理：
-                          {newsReadinessWarnings({
+                          {newsReadinessWarnings(menus, {
                             menuId: newsEditForm.menuId
                               ? Number(newsEditForm.menuId)
                               : null,
@@ -1925,7 +2381,7 @@ export default function SiteContentPage() {
                         </div>
                       ) : (
                         <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-                          这篇动态的栏目、摘要和正文长度已满足基础发布建议。
+                          这篇文章的栏目、摘要和正文长度已满足基础发布建议。
                         </div>
                       )}
                       <div className="grid gap-4 md:grid-cols-2">
@@ -1965,7 +2421,7 @@ export default function SiteContentPage() {
                             }
                             className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm"
                           >
-                            <option value="">不归属菜单</option>
+                            <option value="">请选择最后一级栏目</option>
                             {articleMenus
                               .map((menu) => (
                                 <option key={menu.id} value={menu.id}>
@@ -1987,6 +2443,7 @@ export default function SiteContentPage() {
                         />
                         <Input
                           label="封面图片 URL"
+                          helperText="可填写公网图片地址，也可以上传后自动填入 URL。"
                           value={newsEditForm.coverImage}
                           onChange={(event) =>
                             setNewsEditForm((form) => ({
@@ -1995,6 +2452,19 @@ export default function SiteContentPage() {
                             }))
                           }
                         />
+                        <div className="flex items-end">
+                          <MediaUploadButton
+                            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                            label="上传封面"
+                            onError={setError}
+                            onUploaded={(url) =>
+                              setNewsEditForm((form) => ({
+                                ...form,
+                                coverImage: url,
+                              }))
+                            }
+                          />
+                        </div>
                         <ImagePreview
                           url={newsEditForm.coverImage}
                           label="封面图片预览"
@@ -2011,24 +2481,20 @@ export default function SiteContentPage() {
                           }
                         />
                       </div>
-                      <label className="block">
-                        <span className="mb-1.5 block text-sm font-medium text-gray-700">
-                          正文
-                        </span>
-                        <textarea
-                          className="min-h-32 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-                          value={newsEditForm.content}
-                          onChange={(event) =>
-                            setNewsEditForm((form) => ({
-                              ...form,
-                              content: event.target.value,
-                            }))
-                          }
-                        />
-                        <p className="mt-1 text-sm text-gray-500">
-                          {charCount(newsEditForm.content)} 字；建议至少 80 字。
-                        </p>
-                      </label>
+                      <RichTextEditor
+                        label="正文（富文本）"
+                        value={newsEditForm.content}
+                        onChange={(content) =>
+                          setNewsEditForm((form) => ({
+                            ...form,
+                            content,
+                          }))
+                        }
+                        onError={setError}
+                      />
+                      <p className="text-sm text-gray-500">
+                        {charCount(newsEditForm.content)} 字；建议至少 80 字。
+                      </p>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
@@ -2058,8 +2524,8 @@ export default function SiteContentPage() {
                           {item.summary || "暂无摘要"}
                         </p>
                         <div className="mt-3 flex flex-wrap gap-2">
-                          {newsReadinessWarnings(item).length ? (
-                            newsReadinessWarnings(item).map((warning) => (
+                          {newsReadinessWarnings(menus, item).length ? (
+                            newsReadinessWarnings(menus, item).map((warning) => (
                               <span
                                 key={warning}
                                 className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700"
@@ -2124,12 +2590,12 @@ export default function SiteContentPage() {
               ))}
               {news.length === 0 ? (
                 <p className="py-8 text-center text-sm text-gray-500">
-                  暂无最近动态。
+                  暂无栏目文章。
                 </p>
               ) : null}
               {news.length > 0 && filteredNews.length === 0 ? (
                 <p className="py-8 text-center text-sm text-gray-500">
-                  当前筛选条件下没有动态。
+                  当前筛选条件下没有文章。
                 </p>
               ) : null}
             </CardContent>

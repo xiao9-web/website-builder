@@ -101,7 +101,7 @@ public class SiteMenuService {
         if (menu.getMenuType() == SiteMenu.MenuType.HOME) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Home menu cannot be deleted");
         }
-        if (siteMenuRepository.existsByParentId(menu.getId())) {
+        if (siteMenuRepository.existsByParentIdAndSiteId(menu.getId(), siteId)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Delete child menus before deleting this menu");
         }
         siteMenuRepository.delete(menu);
@@ -111,6 +111,24 @@ public class SiteMenuService {
     public SiteMenu requireReadableMenu(Long siteId, Long menuId, User user) {
         siteService.requireReadableSite(siteId, user);
         return requireMenu(siteId, menuId);
+    }
+
+    public SiteMenu requireArticleMenu(Long siteId, Long menuId, User user) {
+        SiteMenu menu = requireReadableMenu(siteId, menuId, user);
+        validateArticleMenu(siteId, menu);
+        return menu;
+    }
+
+    public void validateArticleMenu(Long siteId, SiteMenu menu) {
+        if (menu == null) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Article menu is required before publishing");
+        }
+        if (menu.getMenuType() == SiteMenu.MenuType.HOME) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Homepage menu cannot be used as an article column");
+        }
+        if (siteMenuRepository.existsByParentIdAndSiteId(menu.getId(), siteId)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Articles can only be assigned to leaf menus");
+        }
     }
 
     private SiteMenu requireMenu(Long siteId, Long menuId) {

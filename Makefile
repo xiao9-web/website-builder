@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-up-full db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
@@ -15,6 +15,18 @@ dev-down: ## Stop all Docker services
 
 dev-reset: ## Stop services and remove volumes (fresh start)
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v
+
+docker-demo-up: ## Build and start full Docker demo stack (PostgreSQL + Redis + backend + frontend)
+	docker compose -f docker/docker-compose.full.yml up -d --build
+
+docker-demo-down: ## Stop full Docker demo stack
+	docker compose -f docker/docker-compose.full.yml down
+
+docker-demo-reset: ## Stop full Docker demo stack and remove volumes
+	docker compose -f docker/docker-compose.full.yml down -v
+
+docker-demo-logs: ## Tail full Docker demo stack logs
+	docker compose -f docker/docker-compose.full.yml logs -f
 
 db-migrate: ## Run Flyway database migrations
 	mvn -f apps/server/pom.xml -Dflyway.url=jdbc:postgresql://localhost:5432/website_builder -Dflyway.user=wb_user -Dflyway.password=wb_pass flyway:migrate

@@ -6,14 +6,9 @@ interface PublicSiteHeaderProps {
   menus: PublicMenu[];
 }
 
-const sectionSlugs = new Set(["products", "about", "cooperation", "contact"]);
-
 function menuHref(siteSlug: string, menu: PublicMenu) {
   if (menu.menuType === "HOME" || menu.slug === "home") {
     return `/sites/${siteSlug}`;
-  }
-  if (sectionSlugs.has(menu.slug)) {
-    return `/sites/${siteSlug}#${menu.slug}`;
   }
   return `/sites/${siteSlug}/${menu.slug}`;
 }

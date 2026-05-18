@@ -13,8 +13,14 @@ import type {
   PublicSiteData,
 } from "./types";
 
-const API_BASE_URL =
+const BROWSER_API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const SERVER_API_BASE_URL =
+  process.env.INTERNAL_API_URL || BROWSER_API_BASE_URL;
+
+function apiBaseUrl() {
+  return typeof window === "undefined" ? SERVER_API_BASE_URL : BROWSER_API_BASE_URL;
+}
 
 interface ApiEnvelope<T> {
   code: number;
@@ -42,7 +48,7 @@ async function fetchPublic<T>(path: string): Promise<T> {
 
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(`${apiBaseUrl()}${path}`, {
       next: { revalidate: 30 },
       signal: controller.signal,
     });
@@ -173,7 +179,7 @@ export async function submitPublicLead(
   slug: string,
   payload: LeadPayload,
 ): Promise<{ id: number; message: string }> {
-  const response = await fetch(`${API_BASE_URL}/public/sites/${slug}/leads`, {
+  const response = await fetch(`${apiBaseUrl()}/public/sites/${slug}/leads`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

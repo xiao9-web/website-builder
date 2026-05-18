@@ -1604,13 +1604,18 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 ## REQ-MENU-ARTICLE-001 Menu-Scoped Articles And Rich Text Requirement Update
 
 - User clarified two product gaps:
-  - Articles should be written under menus/columns; every non-homepage menu should support articles.
+  - Articles should be written under menus/columns, but only the final leaf menu can own articles.
   - Article body editing needs a rich-text editor, not only a plain textarea.
   - Newly added menus and saved articles should be reflected in public preview/build behavior.
+- User corrected the model:
+  - menus can be nested under any valid parent within the existing three-level rule
+  - only leaf menus can own articles
+  - parent menus are grouping/navigation columns and cannot directly own articles
 - Updated `docs/REQUIREMENTS_PLATFORM_MVP.md`:
-  - every non-homepage menu is a content column and can own articles
+  - menus can be nested under any valid parent within the existing max-depth rule
+  - parent menus are grouping/navigation columns and cannot directly own articles
   - public navigation for non-homepage menus should route to menu public pages
-  - publishing requires a non-homepage menu assignment
+  - publishing requires a leaf, non-homepage menu assignment
   - dashboard should allow creating an article directly from a menu row
   - rich-text editor is required in phase one
   - public article pages must render sanitized rich text
@@ -1619,8 +1624,203 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Updated `docs/API_SPEC_MVP.md`:
   - `menuId` is part of news management semantics
   - `GET /news` supports `menuId`
-  - menu-scoped public news belongs to every visible non-homepage menu
+  - menu-scoped public news belongs to visible leaf non-homepage menus
   - `content` stores rich-text HTML and must be sanitized before public rendering
 - Updated `docs/DEVELOPMENT_TASKS_MVP.md`:
   - replaced Markdown-textarea wording with rich-text/menu-scoped article workflow requirements
 - Current implementation changes are intentionally not committed yet; the requirements baseline was updated first.
+
+## FEA-MENU-ARTICLE-002 Leaf Menu Article Enforcement
+
+- Implemented the corrected menu/article model:
+  - menus can still be nested under any valid parent within the existing three-level limit
+  - only leaf non-homepage menus can own articles
+  - parent menus are public grouping/navigation columns and show child column entries
+- Backend:
+  - added site-scoped child-menu existence checks
+  - added article-menu validation in `SiteMenuService`
+  - article create/update requires a leaf article menu when `menuId` is supplied
+  - publishing validates that the article has a leaf non-homepage menu
+- Admin frontend:
+  - renamed the article tab from `最近动态` to `栏目文章`
+  - only leaf menu rows show `写文章`
+  - article create/edit selectors only list leaf non-homepage menus
+  - publish action blocks missing, homepage, unknown, or non-leaf menu assignments
+  - article body uses the rich-text editor and readiness counts plain text from saved HTML
+- Public frontend:
+  - non-home menus route to public column pages instead of homepage anchors
+  - non-leaf public column pages show child column links
+  - article detail pages render sanitized rich-text HTML
+- Documentation:
+  - updated API, development tasks, requirements, task plan, and Obsidian notes to the leaf-menu-only article rule
+- Verification:
+  - `mvn -f apps/server/pom.xml -Dtest=NewsServiceTest,SiteMenuServiceTest test` passed
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - `npm run build:server` passed
+  - restarted `npm run dev:web` after clearing `apps/web/.next`
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang/products` returned HTTP `200`
+  - authenticated `GET /api/sites` returned HTTP `200`
+- Graphify refresh:
+  - attempted the required graph rebuild command
+  - blocked by local missing Python module: `ModuleNotFoundError: No module named 'graphify'`
+
+## Stop Hook Reconciliation After 40-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (40/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Found one real ledger drift:
+  - Current run steps listed only through step 40.
+  - Backlog still listed `UX-ADMIN: Implement menu-scoped article workflow, rich-text editor, public rich-text rendering, and preview/build freshness behavior`.
+  - That UX-ADMIN scope has now been implemented by `FEA-MENU-ARTICLE-002`.
+- Updated `task_plan.md`:
+  - added step 41 as complete for `FEA-MENU-ARTICLE-002`
+  - removed the now-completed `UX-ADMIN` backlog item
+  - kept only real-material dependent backlog items pending
+- Current active implementation state:
+  - no current-run phase is open
+  - remaining work is blocked on real company materials: logo, contact details, product photos, certifications, cases, and final approval content
+- Verification already recorded for this completed phase:
+  - backend focused tests passed
+  - frontend lint/build passed
+  - backend build passed
+  - local frontend was restarted and smoke checks returned HTTP `200`
+
+## DOC-ENG-PORTFOLIO-001 Interview-Oriented Engineering Roadmap
+
+- User wants the project to also support interview preparation and asked to consider common engineering technologies such as Jenkins, Apollo, XXL-JOB, and Kubernetes.
+- Decision:
+  - keep the existing Website Builder product path as the mainline
+  - add these technologies as production-style engineering capabilities, not as decorative resume keywords
+  - introduce them in slices that can be explained through real project needs
+- Added `docs/ENGINEERING_PORTFOLIO_ROADMAP.md`.
+- Updated `docs/README.md` to link the roadmap.
+- Updated `docs/TECHNICAL_ARCHITECTURE_MVP.md` with the planned engineering-expansion stack.
+- Updated `task_plan.md`:
+  - added current run step 42 as complete
+  - added engineering backlog items for Dockerized full-stack demo, Jenkins CI, and optional Apollo/XXL-JOB/Kubernetes/observability slices
+- Recommended order:
+  - Dockerize backend and frontend first
+  - add Actuator health endpoints
+  - add Jenkins pipeline
+  - add OpenAPI
+  - add XXL-JOB for one idempotent scheduled task
+  - add Apollo as optional profile-based config center
+  - add Kubernetes manifests
+  - add Prometheus/Grafana observability
+
+## Stop Hook Reconciliation After 42-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (42/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Selected the next unblocked engineering phase:
+  - `ENG-DOCKER-001`
+- Real-material tasks remain pending because they need company assets from the user.
+
+## ENG-DOCKER-001 Full Docker Local Demo
+
+- Added backend containerization:
+  - `apps/server/Dockerfile`
+  - multi-stage Maven build
+  - Java 17 runtime image
+- Added frontend containerization:
+  - `apps/web/Dockerfile`
+  - `npm ci` dependency stage
+  - Next.js production build stage
+  - production `next start` runtime stage
+- Added full-stack Docker Compose:
+  - `docker/docker-compose.full.yml`
+  - PostgreSQL
+  - Redis
+  - Spring Boot backend
+  - Next.js frontend
+  - service health checks
+  - compose-network backend URL for SSR
+- Added operational commands:
+  - `make docker-demo-up`
+  - `make docker-demo-down`
+  - `make docker-demo-reset`
+  - `make docker-demo-logs`
+- Added `docs/DOCKER_LOCAL_DEMO.md` with startup URLs, login, health checks, logs, reset, and troubleshooting.
+- Added Spring Boot Actuator dependency and exposed health/info endpoints for container health checks.
+- Updated public-site API client:
+  - browser requests use `NEXT_PUBLIC_API_URL`
+  - server-side rendering inside Docker can use `INTERNAL_API_URL`
+- Verification:
+  - `npm run build:server` passed
+  - `npm run lint:web` passed
+  - `docker compose -f docker/docker-compose.full.yml config` passed
+  - `npm run build:web` passed after stopping the dev server and clearing `apps/web/.next`
+- Docker image build status:
+  - attempted `docker build -f apps/server/Dockerfile -t website-builder-server:test .`
+  - blocked before project build by Docker base-image pull failure
+  - root cause: Docker proxy is configured to use `127.0.0.1:7890`, but that local proxy port is not accepting connections
+  - code/compose files are ready for image build once Docker registry access is fixed
+
+## SITE-LIFECYCLE-001 Replace Site Delete With Offline
+
+- User requested removing site deletion and replacing it with offline behavior so sites can be brought back online later.
+- TDD red step:
+  - added `SiteServiceTest`
+  - confirmed it failed because `offline` and `updateStatus` did not exist
+- Backend:
+  - added `SiteService.offline`
+  - added `SiteService.updateStatus`
+  - added `UpdateSiteStatusRequest`
+  - added `POST /api/sites/{id}/offline`
+  - added `PATCH /api/sites/{id}/status`
+  - changed deprecated `DELETE /api/sites/{id}` to call offline instead of physical delete
+  - offline clears `publishedAt` and keeps site data
+- Frontend:
+  - replaced dashboard site-list `删除` action with `下线`
+  - offline sites show `重新上线`
+  - `重新上线` uses the existing publish/build flow
+  - store now updates site state after offline instead of removing it from the list
+- Documentation:
+  - updated API spec, development tasks, requirements, launch checklist, engineering roadmap, and task plan
+- Verification:
+  - `mvn -f apps/server/pom.xml -Dtest=SiteServiceTest test` passed
+  - `npm run lint:web` passed
+  - `npm run build:server` passed
+  - `npm run build:web` passed after clearing `apps/web/.next`
+
+## Stop Hook Reconciliation After 44-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (44/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md`.
+- Selected the next unblocked engineering phase:
+  - `ENG-CI-001`
+- Real-material tasks remain pending because they need company assets from the user.
+
+## ENG-CI-001 Jenkins Pipeline
+
+- Added root `Jenkinsfile`.
+- Pipeline stages:
+  - checkout
+  - toolchain version print
+  - backend unit tests
+  - backend package
+  - frontend `npm ci`
+  - frontend lint
+  - frontend production build
+  - Docker Compose config validation
+  - optional Docker image build
+- Pipeline parameters:
+  - `BUILD_DOCKER_IMAGES=false` by default
+  - `RUN_COMPOSE_CONFIG_CHECK=true` by default
+- CI behavior:
+  - publishes backend Surefire reports
+  - archives backend jar artifacts
+  - keeps Docker build optional so normal CI is not blocked by local Docker proxy or registry access
+- Added `docs/JENKINS_CI.md`.
+- Updated `docs/README.md`, `docs/ENGINEERING_PORTFOLIO_ROADMAP.md`, and `task_plan.md`.
+- During verification, full `mvn test` exposed that `WbApplicationTests` had no test datasource.
+- Added H2 test dependency and `apps/server/src/test/resources/application-test.yml` so Jenkins can run backend tests without a live PostgreSQL instance.
+- Verification:
+  - `mvn -f apps/server/pom.xml test` passed with 57 tests
+  - `npm run build:server` passed
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - `docker compose -f docker/docker-compose.full.yml config` passed

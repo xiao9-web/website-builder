@@ -19,4 +19,6 @@ public interface SiteMenuRepository extends JpaRepository<SiteMenu, Long> {
     Optional<SiteMenu> findBySiteIdAndSlug(Long siteId, String slug);
 
     boolean existsByParentId(Long parentId);
+
+    boolean existsByParentIdAndSiteId(Long parentId, Long siteId);
 }

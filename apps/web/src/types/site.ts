@@ -8,6 +8,7 @@ export type SiteStatus =
   | "ERROR"
   | "draft"
   | "published"
+  | "offline"
   | "archived";
 
 export interface Site {

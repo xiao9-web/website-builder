@@ -126,12 +126,14 @@ Rules:
 - The homepage is a system menu and cannot be deleted.
 - Non-homepage menus can be created, edited, hidden, sorted, and deleted.
 - Menus support at most three levels.
-- Every non-homepage menu is a content column and can own articles.
+- Every non-homepage menu can appear in public navigation.
+- Only leaf menus can own articles. A leaf menu means a menu with no child menus.
+- A non-leaf menu is a grouping/navigation menu and cannot directly own articles.
 - Public navigation for non-homepage menus must route to that menu's public column page, not silently fall back to a homepage anchor.
 - A menu cannot be moved under itself or under any of its descendant menus.
 - Moving a menu must not cause any descendant menu to exceed the three-level limit.
-- Articles must be assigned to a non-homepage menu before they can be published.
-- The dashboard must allow creating an article directly from a menu row, with that menu preselected.
+- Articles must be assigned to a leaf, non-homepage menu before they can be published.
+- The dashboard must allow creating an article directly from a leaf menu row, with that menu preselected.
 - Deleting a menu keeps its articles and clears their menu assignment.
 - A menu can be used as a navigation entry even before it has articles.
 
@@ -152,9 +154,9 @@ Corporate website dynamic article or menu-scoped article.
 
 Rules:
 
-- Articles belong to a non-homepage menu.
+- Articles belong to a leaf, non-homepage menu.
 - Articles can still have a category such as company news or product knowledge.
-- Draft imported articles may temporarily have no menu, but unassigned articles cannot be published to the public site.
+- Draft imported articles may temporarily have no menu, but unassigned or non-leaf-menu articles cannot be published to the public site.
 - Article publication status remains `DRAFT`, `PUBLISHED`, or `OFFLINE`.
 - Article body editing requires a rich-text editor in phase one.
 - Public article pages must render the saved rich-text body, with unsafe HTML sanitized before display.
@@ -313,10 +315,11 @@ Menu requirements:
 
 Article requirements:
 
-- Allow creating an article under any selected non-homepage menu.
-- Allow creating an article directly from a menu row with that menu preselected.
+- Allow creating an article under any selected leaf, non-homepage menu.
+- Allow creating an article directly from a leaf menu row with that menu preselected.
 - Allow editing an article's menu assignment.
-- Allow unassigned draft articles only for migration/import or temporary saving; block publishing until a non-homepage menu is selected.
+- Allow unassigned draft articles only for migration/import or temporary saving; block publishing until a leaf, non-homepage menu is selected.
+- Menus with child menus cannot directly own articles; the article selector must disable or hide non-leaf menus.
 - Allow publishing, offline, draft editing, and deletion.
 - Show article menu, category, status, and updated time in the list.
 - Show the full menu path for an article, not only the leaf menu label.
@@ -331,6 +334,7 @@ Public rendering requirements:
 - Public site navigation should read visible menus from the backend menu model.
 - The homepage menu should route to the public site homepage.
 - Every visible non-homepage menu should support a public route such as `/sites/{slug}/{menuSlug}`.
+- Public pages for non-leaf menus may show child menus and should not imply that articles can be attached directly to the parent menu.
 - Built-in homepage sections such as product services, about, cooperation, and contact can still exist on the homepage, but visible menu navigation must not prevent those menus from having public column pages and menu-scoped articles.
 - Menu pages should list published articles assigned to that menu.
 - Existing imported or seeded articles without a menu assignment should be assigned to the default recent-news menu during migration when possible.
@@ -342,7 +346,7 @@ Content update / build visibility requirements:
 
 - Saved menu changes must be visible in the local public preview without requiring a separate manual rebuild.
 - Saved article changes must be visible in the local public preview after the article is published.
-- Rebuild/publish must use the latest saved menus, menu hierarchy, article assignments, article body, product services, and site configuration.
+- Rebuild/publish must use the latest saved menus, menu hierarchy, leaf-menu article assignments, article body, product services, and site configuration.
 - The build history UI must make clear whether the current build is a validation/build record or a real deployed static artifact.
 - In phase one, if real static deployment is not implemented, the public local preview is the source of truth for content verification after saving.
 
@@ -434,12 +438,12 @@ More menu may reserve:
 - Site detail
 - Duplicate site
 - Offline site
-- Delete site
+- Offline site
 
-Delete confirmation:
+Offline confirmation:
 
 ```text
-删除后该站点配置、内容和发布记录将不可恢复。确认删除？
+下线后前台不可访问，站点配置、内容和发布记录都会保留，后续可以重新上线。确认下线？
 ```
 
 ### 7.3 Create Site Page
@@ -772,10 +776,10 @@ Editor:
 
 Publication rules:
 
-- Publishing requires a non-homepage menu assignment.
+- Publishing requires a leaf, non-homepage menu assignment.
 - Unassigned articles may exist only as drafts.
-- All non-homepage menus can own articles.
-- Creating an article from a menu row should preselect that menu.
+- Only leaf non-homepage menus can own articles.
+- Creating an article from a leaf menu row should preselect that menu.
 
 Statuses:
 
@@ -1393,7 +1397,8 @@ GET /api/sites
 POST /api/sites
 GET /api/sites/{siteId}
 PUT /api/sites/{siteId}
-DELETE /api/sites/{siteId}
+POST /api/sites/{siteId}/offline
+PATCH /api/sites/{siteId}/status
 ```
 
 ### Admin Site Config

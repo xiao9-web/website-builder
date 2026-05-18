@@ -169,10 +169,26 @@ public class SiteService {
     }
 
     @Transactional
-    public void delete(Long id, User user) {
+    public SiteDTO offline(Long id, User user) {
         Site site = requireWritableSite(id, user);
-        siteRepository.delete(site);
-        log.info("Site deleted: {} by user {}", id, user.getId());
+        site.setStatus(Site.Status.OFFLINE);
+        site.setPublishedAt(null);
+        siteRepository.save(site);
+        log.info("Site offline: {} by user {}", id, user.getId());
+        return SiteDTO.from(site);
+    }
+
+    @Transactional
+    public SiteDTO updateStatus(Long id, String status, User user) {
+        Site site = requireWritableSite(id, user);
+        Site.Status parsedStatus = parseStatus(status);
+        site.setStatus(parsedStatus);
+        if (parsedStatus == Site.Status.OFFLINE || parsedStatus == Site.Status.DRAFT) {
+            site.setPublishedAt(null);
+        }
+        siteRepository.save(site);
+        log.info("Site status updated: {} -> {} by user {}", id, parsedStatus, user.getId());
+        return SiteDTO.from(site);
     }
 
     @Transactional(readOnly = true)
@@ -192,6 +208,17 @@ public class SiteService {
             throw new BusinessException(ErrorCode.FORBIDDEN, "You can only modify your own sites");
         }
         return site;
+    }
+
+    private Site.Status parseStatus(String status) {
+        if (status == null || status.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Site status is required");
+        }
+        try {
+            return Site.Status.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Invalid site status");
+        }
     }
 
     private boolean isAdmin(User user) {

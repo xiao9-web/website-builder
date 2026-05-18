@@ -10,19 +10,30 @@ import { formatDate } from "@/lib/utils";
 import { siteStatusClass, siteStatusLabel } from "@/lib/site-status";
 
 export default function SitesPage() {
-  const { sites, isLoading, fetchSites, deleteSite } = useSiteStore();
+  const { sites, isLoading, fetchSites, offlineSite, publishSite } =
+    useSiteStore();
 
   useEffect(() => {
     fetchSites();
   }, [fetchSites]);
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleOffline = async (id: string, name: string) => {
     if (
       window.confirm(
-        `确定删除「${name}」吗？此操作无法撤销。`,
+        `确定下线「${name}」吗？下线后前台不可访问，后续可以重新上线。`,
       )
     ) {
-      await deleteSite(id);
+      await offlineSite(id);
+    }
+  };
+
+  const handlePublish = async (id: string, name: string) => {
+    if (
+      window.confirm(
+        `确定重新上线「${name}」吗？系统会重新生成发布记录。`,
+      )
+    ) {
+      await publishSite(id);
     }
   };
 
@@ -121,14 +132,25 @@ export default function SitesPage() {
                       预览
                     </Button>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(site.id, site.name)}
-                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                  >
-                    删除
-                  </Button>
+                  {site.status === "OFFLINE" ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handlePublish(site.id, site.name)}
+                      className="text-green-700 hover:bg-green-50 hover:text-green-800"
+                    >
+                      重新上线
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleOffline(site.id, site.name)}
+                      className="text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                    >
+                      下线
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

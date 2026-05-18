@@ -8,6 +8,7 @@ const statusLabels: Partial<Record<SiteStatus, string>> = {
   BUILDING: "构建中",
   draft: "草稿",
   published: "已发布",
+  offline: "已下线",
   archived: "已归档",
 };
 

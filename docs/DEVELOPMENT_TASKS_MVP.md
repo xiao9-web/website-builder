@@ -169,11 +169,13 @@ POST /api/sites
 GET /api/sites/{siteId}
 PUT /api/sites/{siteId}
 DELETE /api/sites/{siteId}
+POST /api/sites/{siteId}/offline
+PATCH /api/sites/{siteId}/status
 ```
 
 Work:
 
-- Implement site list, detail, create, update, and delete.
+- Implement site list, detail, create, update, offline, and status update.
 - Validate slug format.
 - Ensure slug uniqueness.
 - On create, bind selected template and create default SiteConfig.
@@ -186,6 +188,7 @@ Acceptance:
 - Invalid slugs are rejected.
 - Duplicate slugs are rejected.
 - USER cannot edit another user's site.
+- Site offline action keeps all data and allows later republishing.
 
 ### BE-004: SiteConfig API
 
@@ -667,7 +670,7 @@ Work:
 
 - Implement news table.
 - Implement news create/edit form.
-- Support menu-scoped article creation for every non-homepage menu.
+- Support menu-scoped article creation for leaf, non-homepage menus.
 - Add a "write article" entry from menu rows that preselects the menu.
 - Support rich-text article body editing.
 - Render saved rich text safely on public article pages.
@@ -677,9 +680,9 @@ Work:
 Acceptance:
 
 - User can create draft news.
-- User can create an article directly under a selected non-homepage menu.
+- User can create an article directly under a selected leaf, non-homepage menu.
 - User can publish and unpublish menu-scoped articles.
-- Publishing is blocked or clearly prevented when no non-homepage menu is selected.
+- Publishing is blocked or clearly prevented when no leaf, non-homepage menu is selected.
 - Public preview only displays published news under visible menus.
 - Saved menu and article changes are reflected in local public preview after save/publish without requiring a separate manual rebuild.
 

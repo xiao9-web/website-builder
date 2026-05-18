@@ -104,6 +104,7 @@ http://localhost:3000/dashboard/sites/1/content
 - Public lead form is tested.
 - Submitted lead appears in the dashboard.
 - Lead status can be changed from new to contacted/closed/invalid.
+- Site destructive deletion is not exposed in the dashboard; sites are taken offline and can be republished later.
 
 ## 4. Public Site Review Checklist
 

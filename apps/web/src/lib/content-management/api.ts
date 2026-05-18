@@ -1,6 +1,7 @@
 import api from "@/lib/api";
 import type {
   LeadDTO,
+  MediaDTO,
   NewsDTO,
   ProductServiceDTO,
   SiteMenuDTO,
@@ -123,6 +124,29 @@ export async function updateNewsStatus(
   return (await api.patch(`/sites/${siteId}/news/${newsId}/status`, {
     status,
   })) as NewsDTO;
+}
+
+export async function uploadMedia(file: File): Promise<MediaDTO> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return (await api.post("/media/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })) as MediaDTO;
+}
+
+export async function listMedia(): Promise<MediaDTO[]> {
+  const data = (await api.get("/media")) as unknown;
+  if (Array.isArray(data)) return data as MediaDTO[];
+  if (
+    data &&
+    typeof data === "object" &&
+    Array.isArray((data as { content?: MediaDTO[] }).content)
+  ) {
+    return (data as { content: MediaDTO[] }).content;
+  }
+  return [];
 }
 
 export async function listLeads(siteId: string): Promise<LeadDTO[]> {

@@ -61,6 +61,11 @@ Build the Website Builder Platform MVP around the active implementation directio
 38. [complete] DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
 39. [complete] UX-ADMIN-003: Image URL previews for logo, QR code, product images, and article covers.
 40. [complete] REQ-MENU-ARTICLE-001: Clarify menu-scoped articles, rich-text editing, and build/preview visibility requirements.
+41. [complete] FEA-MENU-ARTICLE-002: Implement leaf-menu-only article workflow, rich-text editing, public menu routing, and backend enforcement.
+42. [complete] DOC-ENG-PORTFOLIO-001: Add interview-oriented engineering expansion roadmap.
+43. [complete] ENG-DOCKER-001: Dockerize backend and frontend for a full-stack local demo.
+44. [complete] SITE-LIFECYCLE-001: Replace site deletion with offline and re-online lifecycle actions.
+45. [complete] ENG-CI-001: Add Jenkins pipeline for backend tests, frontend lint/build, packaging, and optional image build.
 
 ## Backlog
 
@@ -69,8 +74,8 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 Recommended next slice:
 
 1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
-2. [pending] UX-ADMIN: Implement menu-scoped article workflow, rich-text editor, public rich-text rendering, and preview/build freshness behavior.
-3. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
+2. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
+3. [pending] ENG-OPS-001: Add optional Apollo, XXL-JOB, Kubernetes, and observability slices in that order.
 
 ## Completed Execution: BE-001
 
@@ -649,7 +654,7 @@ Verification:
 
 Primary deliverable:
 
-- Add editable menus/columns and menu-scoped articles. Menus support at most three levels, and non-homepage menus can maintain articles.
+- Add editable menus/columns and menu-scoped articles. Menus support at most three levels and can be nested under any valid parent; articles can only be maintained under leaf, non-homepage menus.
 
 Result:
 

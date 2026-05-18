@@ -13,6 +13,95 @@ interface PublicArticlePageProps {
   };
 }
 
+function isHtmlContent(content?: string | null) {
+  return Boolean(content && /<\/?[a-z][\s\S]*>/i.test(content));
+}
+
+function sanitizeArticleHtml(content?: string | null) {
+  const allowedTags = new Set([
+    "p",
+    "br",
+    "strong",
+    "b",
+    "em",
+    "i",
+    "h2",
+    "h3",
+    "ul",
+    "ol",
+    "li",
+    "blockquote",
+    "hr",
+    "a",
+    "img",
+    "figure",
+    "video",
+    "source",
+  ]);
+  const allowedAttrs: Record<string, Set<string>> = {
+    a: new Set(["href", "target", "rel"]),
+    img: new Set(["src", "alt"]),
+    video: new Set(["src", "controls"]),
+    source: new Set(["src", "type"]),
+  };
+
+  const cleanUrl = (value: string) => {
+    const trimmed = value.trim();
+    if (/^(https?:|\/uploads\/|data:image\/)/i.test(trimmed)) return trimmed;
+    return "";
+  };
+
+  const readAttrs = (rawAttrs: string, tag: string) => {
+    const attrs = allowedAttrs[tag];
+    if (!attrs) return "";
+    const result: string[] = [];
+    rawAttrs.replace(
+      /\s([a-zA-Z][a-zA-Z0-9:-]*)=(?:"([^"]*)"|'([^']*)')/g,
+      (_match, attrName: string, doubleValue?: string, singleValue?: string) => {
+        const attr = attrName.toLowerCase();
+        const value = doubleValue ?? singleValue ?? "";
+        if (!attrs.has(attr)) return "";
+        if ((attr === "href" || attr === "src") && !cleanUrl(value)) return "";
+        if (attr === "target" && value !== "_blank") return "";
+        if (attr === "rel" && value !== "noopener noreferrer") return "";
+        if (attr === "controls") {
+          result.push("controls");
+          return "";
+        }
+        result.push(`${attr}="${value.replace(/"/g, "&quot;")}"`);
+        return "";
+      },
+    );
+    if (tag === "a" && !result.some((item) => item.startsWith("rel="))) {
+      result.push('rel="noopener noreferrer"');
+    }
+    if (tag === "a" && !result.some((item) => item.startsWith("target="))) {
+      result.push('target="_blank"');
+    }
+    return result.length ? ` ${result.join(" ")}` : "";
+  };
+
+  return (content || "<p>正文内容待补充。</p>")
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "")
+    .replace(/javascript:/gi, "")
+    .replace(
+      /<\/?([a-z][a-z0-9]*)\b([^>]*)>/gi,
+      (match, tagName: string, attrs: string) => {
+        const tag = tagName.toLowerCase();
+        if (!allowedTags.has(tag)) return "";
+        if (match.startsWith("</")) return `</${tag}>`;
+        const normalizedAttrs =
+          tag === "video" && /\scontrols(\s|>|$)/i.test(match)
+            ? `${attrs} controls="controls"`
+            : attrs;
+        return `<${tag}${readAttrs(normalizedAttrs, tag)}>`;
+      },
+    );
+}
+
 export default async function PublicArticlePage({
   params,
 }: PublicArticlePageProps) {
@@ -68,16 +157,25 @@ export default async function PublicArticlePage({
             className="mt-8 aspect-[16/9] w-full rounded-md border border-stone-200 object-cover shadow-sm"
           />
         ) : null}
-        <div className="mt-10 rounded-md border border-stone-200 bg-white p-6 text-base leading-8 text-stone-700 shadow-sm sm:p-8">
-          {(article.content || "正文内容待补充。")
-            .split("\n")
-            .filter(Boolean)
-            .map((paragraph) => (
-              <p key={paragraph} className="mb-5 last:mb-0">
-                {paragraph}
-              </p>
-            ))}
-        </div>
+        {isHtmlContent(article.content) ? (
+          <div
+            className="mt-10 rounded-md border border-stone-200 bg-white p-6 text-base leading-8 text-stone-700 shadow-sm sm:p-8 [&_a]:font-semibold [&_a]:text-emerald-800 [&_a]:underline [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-700 [&_blockquote]:bg-emerald-50 [&_blockquote]:px-4 [&_blockquote]:py-3 [&_figure]:my-6 [&_h2]:mb-4 [&_h2]:mt-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-stone-950 [&_h3]:mb-3 [&_h3]:mt-5 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-stone-950 [&_hr]:my-8 [&_hr]:border-stone-200 [&_img]:my-6 [&_img]:w-full [&_img]:rounded-md [&_img]:border [&_img]:border-stone-200 [&_img]:object-cover [&_li]:ml-5 [&_li]:list-disc [&_ol>li]:list-decimal [&_p]:mb-5 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_video]:my-6 [&_video]:w-full [&_video]:rounded-md [&_video]:border [&_video]:border-stone-200"
+            dangerouslySetInnerHTML={{
+              __html: sanitizeArticleHtml(article.content),
+            }}
+          />
+        ) : (
+          <div className="mt-10 rounded-md border border-stone-200 bg-white p-6 text-base leading-8 text-stone-700 shadow-sm sm:p-8">
+            {(article.content || "正文内容待补充。")
+              .split("\n")
+              .filter(Boolean)
+              .map((paragraph) => (
+                <p key={paragraph} className="mb-5 last:mb-0">
+                  {paragraph}
+                </p>
+              ))}
+          </div>
+        )}
         <div className="mt-10 rounded-md bg-emerald-950 p-6 text-white">
           <h2 className="text-xl font-semibold">需要进一步沟通？</h2>
           <p className="mt-3 text-sm leading-6 text-emerald-50">

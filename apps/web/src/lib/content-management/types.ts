@@ -71,6 +71,18 @@ export interface UpsertNewsPayload {
   status?: "DRAFT" | "PUBLISHED" | "OFFLINE";
 }
 
+export interface MediaDTO {
+  id: number;
+  filename: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+  url: string;
+  thumbnailUrl?: string | null;
+  uploadedBy: number;
+  createdAt: string;
+}
+
 export interface SiteMenuDTO {
   id: number;
   siteId: number;

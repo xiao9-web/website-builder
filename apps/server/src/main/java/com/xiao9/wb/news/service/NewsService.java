@@ -108,11 +108,7 @@ public class NewsService {
         if (menuId == null) {
             return null;
         }
-        SiteMenu menu = siteMenuService.requireReadableMenu(siteId, menuId, user);
-        if (menu.getMenuType() == SiteMenu.MenuType.HOME) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Homepage menu cannot be used as an article column");
-        }
-        return menu;
+        return siteMenuService.requireArticleMenu(siteId, menuId, user);
     }
 
     @Transactional
@@ -128,6 +124,9 @@ public class NewsService {
         siteService.requireReadableSite(siteId, user);
         News news = requireNewsInSite(siteId, newsId);
         News.Status parsedStatus = parseStatus(status);
+        if (parsedStatus == News.Status.PUBLISHED) {
+            siteMenuService.validateArticleMenu(siteId, news.getMenu());
+        }
         news.setStatus(parsedStatus);
         news.setPublishedAt(resolvePublishedAt(news.getPublishedAt(), parsedStatus));
 

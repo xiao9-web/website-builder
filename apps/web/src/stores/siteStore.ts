@@ -27,7 +27,7 @@ interface SiteState {
   fetchSite: (id: string) => Promise<void>;
   createSite: (data: CreateSiteData) => Promise<Site>;
   updateSite: (id: string, data: UpdateSiteData) => Promise<void>;
-  deleteSite: (id: string) => Promise<void>;
+  offlineSite: (id: string) => Promise<void>;
   updateConfig: (config: Record<string, unknown>) => void;
   setCurrentTemplate: (template: Template | null) => void;
   publishSite: (id: string) => Promise<void>;
@@ -97,11 +97,11 @@ export const useSiteStore = create<SiteState>((set, get) => ({
     }
   },
 
-  deleteSite: async (id: string) => {
-    await api.delete(`/sites/${id}`);
+  offlineSite: async (id: string) => {
+    const site = (await api.post(`/sites/${id}/offline`)) as Site;
     set((state) => ({
-      sites: state.sites.filter((s) => s.id !== id),
-      currentSite: state.currentSite?.id === id ? null : state.currentSite,
+      sites: state.sites.map((s) => (s.id === id ? site : s)),
+      currentSite: state.currentSite?.id === id ? site : state.currentSite,
     }));
   },
 

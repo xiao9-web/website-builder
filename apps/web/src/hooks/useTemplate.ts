@@ -4,6 +4,37 @@ import { useState, useEffect, useCallback } from "react";
 import type { Template, TemplateCategory } from "@/types/template";
 import api from "@/lib/api";
 
+interface TemplatePageResponse {
+  content?: Template[];
+}
+
+function normalizeTemplates(value: unknown): Template[] {
+  if (Array.isArray(value)) return value as Template[];
+  if (
+    value &&
+    typeof value === "object" &&
+    Array.isArray((value as TemplatePageResponse).content)
+  ) {
+    return (value as TemplatePageResponse).content ?? [];
+  }
+  return [];
+}
+
+function buildCategories(templates: Template[]): TemplateCategory[] {
+  const counts = templates.reduce<Record<string, number>>((acc, template) => {
+    const category = template.category || "default";
+    acc[category] = (acc[category] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(counts).map(([id, count]) => ({
+    id,
+    name: id === "default" ? "通用模板" : id,
+    icon: "layout",
+    count,
+  }));
+}
+
 export function useTemplates(category?: string) {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [categories, setCategories] = useState<TemplateCategory[]>([]);
@@ -15,8 +46,8 @@ export function useTemplates(category?: string) {
     setError(null);
     try {
       const params = category ? { category } : {};
-      const data = (await api.get("/templates", { params })) as Template[];
-      setTemplates(data);
+      const data = await api.get("/templates", { params });
+      setTemplates(normalizeTemplates(data));
     } catch (err) {
       setError(err instanceof Error ? err.message : "模板加载失败");
     } finally {
@@ -26,10 +57,8 @@ export function useTemplates(category?: string) {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const data = (await api.get(
-        "/templates/categories",
-      )) as TemplateCategory[];
-      setCategories(data);
+      const data = await api.get("/templates");
+      setCategories(buildCategories(normalizeTemplates(data)));
     } catch {
       // 分类加载失败不阻塞模板列表。
     }

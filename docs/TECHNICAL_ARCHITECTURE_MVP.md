@@ -13,6 +13,7 @@ Current active direction:
 - Use form-driven template configuration in phase one.
 - Reserve drag-and-drop editing for a later phase.
 - Reserve the personal blog template until the corporate-site flow is stable.
+- Add interview-oriented engineering capabilities in later slices when they support a real operational concern.
 
 ## 2. Active Stack
 
@@ -29,6 +30,19 @@ Current active direction:
 | Migration | Flyway |
 | Backend build | Maven |
 | Frontend build | npm |
+
+Planned engineering-expansion stack:
+
+| Area | Candidate Technology |
+| --- | --- |
+| CI/CD | Jenkins |
+| Configuration center | Apollo |
+| Distributed scheduled jobs | XXL-JOB |
+| Containerized demo | Docker Compose |
+| Orchestration | Kubernetes |
+| Reverse proxy / ingress | Nginx or Kubernetes Ingress |
+| Observability | Spring Boot Actuator, Prometheus, Grafana |
+| API docs | OpenAPI / Swagger |
 
 Non-mainline tracks:
 
@@ -83,6 +97,8 @@ Spring Boot public site APIs
 ```
 
 Redis is available for cache/rate-limit/session-adjacent needs, but the MVP should not depend on Redis for core persistence.
+
+Engineering portfolio features are tracked in `docs/ENGINEERING_PORTFOLIO_ROADMAP.md`. They should be added as production-style supporting capabilities, not as forced dependencies for the normal local development loop.
 
 ## 5. Core Runtime Flows
 
