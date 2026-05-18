@@ -1400,3 +1400,25 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - The hook is again treating future backlog as unfinished current phases.
   - No current run step is actually open.
   - Continue with backlog implementation work.
+
+## UX-ADMIN-001 Dedicated Build History Page
+
+- Added a dedicated dashboard route:
+  - `/dashboard/sites/{siteId}/builds`
+- Site detail build-history card now links to the full page.
+- The dedicated page shows:
+  - site name and slug
+  - site status and published time
+  - rebuild action
+  - build ID
+  - build status
+  - trigger source
+  - duration
+  - created time
+  - completed time
+  - output URL
+  - build log summary
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed and listed `/dashboard/sites/[id]/builds`
+  - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`

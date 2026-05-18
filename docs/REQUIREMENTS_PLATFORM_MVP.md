@@ -866,6 +866,7 @@ Publish module:
 - Manual rebuild should be available from the site detail page.
 - Site detail should show a compact recent build history list after builds exist.
 - Build history should include failed attempts, not only successful builds.
+- The dedicated build-history page `/dashboard/sites/{siteId}/builds` should show all recent build attempts with status, trigger source, duration, timestamps, output URL, and log summary.
 
 Publish confirmation:
 

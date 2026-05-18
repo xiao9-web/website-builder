@@ -187,6 +187,7 @@ Dashboard routes:
 /dashboard/sites/[id]
 /dashboard/sites/[id]/edit
 /dashboard/sites/[id]/content
+/dashboard/sites/[id]/builds
 /dashboard/templates
 ```
 

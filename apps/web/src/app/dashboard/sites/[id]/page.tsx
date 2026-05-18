@@ -270,7 +270,14 @@ export default function SiteDetailPage() {
 
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold text-gray-900">构建历史</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  构建历史
+                </h2>
+                <Link href={`/dashboard/sites/${currentSite.id}/builds`}>
+                  <Button size="sm" variant="outline">查看全部</Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {builds.slice(0, 5).map((build) => (
