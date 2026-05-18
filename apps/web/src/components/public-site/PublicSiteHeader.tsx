@@ -34,11 +34,23 @@ export function PublicSiteHeader({ config, menus }: PublicSiteHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-emerald-900/10 bg-[#f7f5ee]/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href={`/sites/${config.slug}`} className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-emerald-800 text-sm font-bold text-white">
-            春昌
-          </span>
-          <span className="text-base font-semibold text-stone-950">
+        <Link
+          href={`/sites/${config.slug}`}
+          className="flex min-w-0 items-center gap-3"
+        >
+          {brand.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={brand.logoUrl}
+              alt={shortName}
+              className="h-10 w-10 rounded-md border border-emerald-900/10 object-contain"
+            />
+          ) : (
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-emerald-800 text-sm font-bold text-white">
+              春昌
+            </span>
+          )}
+          <span className="truncate text-base font-semibold text-stone-950">
             {shortName}
           </span>
         </Link>
@@ -82,7 +94,7 @@ export function PublicSiteHeader({ config, menus }: PublicSiteHeaderProps) {
         </nav>
         <Link
           href={`/sites/${config.slug}#contact`}
-          className="rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900"
+          className="shrink-0 rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900"
         >
           联系咨询
         </Link>

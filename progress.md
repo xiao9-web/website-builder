@@ -1422,3 +1422,27 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `npm run lint:web` passed
   - `npm run build:web` passed and listed `/dashboard/sites/[id]/builds`
   - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`
+
+## FEP-001 Public Chunchang Corporate-Site Polish
+
+- Recovered the local public site from a stale Next.js `.next` state after production build and dev server overlap.
+- Restarted the frontend dev server after clearing `apps/web/.next`.
+- Improved the public Chunchang corporate homepage:
+  - stronger Chinese-first enterprise hero
+  - visible company-name signal in the first viewport
+  - cleaner cooperation card layout for food processing, baking/catering, wholesale, and channel cooperation
+  - trust notes that reinforce real-material discipline
+  - improved product-service cards and consultation cues
+  - about section placeholders for enterprise materials, product materials, and cooperation cases
+  - recent-news empty state when no published articles exist
+  - contact section that keeps留言 as the main conversion path until phone, WeChat, and address are provided
+  - mobile bottom action bar spacing adjusted so it does not cover the footer content
+- Public header now supports a real logo URL when provided and falls back to the `春昌` text mark.
+- Verification:
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - restarted `npm run dev:web` after build to avoid stale `.next`
+  - `http://localhost:3000/sites/chunchang` returned HTTP `200`
+  - `http://localhost:3000/sites/chunchang/news` returned HTTP `200`
+  - `http://localhost:3000/dashboard/sites/1/builds` returned HTTP `200`
+  - `http://localhost:8080/api/public/sites/chunchang/config` returned HTTP `200`
