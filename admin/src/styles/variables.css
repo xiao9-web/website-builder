@@ -1,0 +1,129 @@
+/* ============================================================
+   Design Tokens — 管理后台设计变量系统
+   引入方式: import '@/styles/variables.css'
+   ============================================================ */
+
+:root {
+  /* ── 品牌色 ── */
+  --color-primary: #4F6EF7;
+  --color-primary-light: #7B93FA;
+  --color-primary-dark: #3A56E0;
+  --color-primary-bg: #EEF1FE;
+  --color-primary-10: rgba(79, 110, 247, 0.1);
+  --color-primary-15: rgba(79, 110, 247, 0.15);
+
+  /* ── 侧边栏 ── */
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 64px;
+  --sidebar-bg: #0F172A;
+  --sidebar-header-bg: #0A1020;
+  --sidebar-text: #94A3B8;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-item-active-bg: rgba(79, 110, 247, 0.2);
+  --sidebar-item-hover-bg: rgba(255, 255, 255, 0.07);
+  --sidebar-group-label: rgba(148, 163, 184, 0.5);
+  --sidebar-divider: rgba(255, 255, 255, 0.06);
+  --sidebar-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
+
+  /* ── 顶栏 ── */
+  --header-height: 64px;
+  --header-bg: #FFFFFF;
+  --header-border: #E2E8F0;
+
+  /* ── 中性色 ── */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-tertiary: #94A3B8;
+  --color-text-disabled: #CBD5E1;
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  /* ── 背景 ── */
+  --color-bg-page: #F8FAFC;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F1F5F9;
+  --color-bg-active: #E2E8F0;
+
+  /* ── 状态色 ── */
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-info: #3B82F6;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+
+  /* ── 统计卡片图标语义色 ── */
+  --stat-article-color: #4F6EF7;
+  --stat-article-bg: rgba(79, 110, 247, 0.1);
+  --stat-page-color: #8B5CF6;
+  --stat-page-bg: rgba(139, 92, 246, 0.1);
+  --stat-deploy-color: #06B6D4;
+  --stat-deploy-bg: rgba(6, 182, 212, 0.1);
+  --stat-time-color: #10B981;
+  --stat-time-bg: rgba(16, 185, 129, 0.1);
+
+  /* ── 字体 ── */
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
+  /* ── 字号 ── */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  /* ── 字重 ── */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ── 行高 ── */
+  --leading-tight: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  /* ── 间距 ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── 圆角 ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── 阴影 ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+  /* ── 过渡 ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ── z-index 层级 ── */
+  --z-sidebar: 100;
+  --z-header: 90;
+  --z-dropdown: 200;
+  --z-modal: 300;
+  --z-tooltip: 400;
+}

@@ -1,410 +1,314 @@
 <template>
   <div id="app">
-    <GradientBackground />
+    <!-- ── Navigation ── -->
+    <header class="nav" :class="{ scrolled: isScrolled }">
+      <div class="container nav-inner">
+        <!-- Logo -->
+        <router-link to="/" class="nav-logo">
+          <span class="logo-icon">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+              <circle cx="15" cy="15" r="15" fill="#1B6B3A"/>
+              <path d="M9 19 C9 13 15 9 15 9 C15 9 21 13 21 19" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M12 19 C12 16 15 14 15 14 C15 14 18 16 18 19" fill="#F5A623"/>
+            </svg>
+          </span>
+          <span class="logo-text">春昌食品科技</span>
+        </router-link>
 
-    <header class="header">
-      <div class="container">
-        <div class="header-left">
-          <router-link to="/" class="logo">
-            <span class="logo-icon">🏙️</span>
-            <span class="logo-text">{{ siteConfig.site_name || '我的博客' }}</span>
-          </router-link>
-        </div>
-        <nav class="nav">
-          <template v-for="menu in menus" :key="menu.id">
-            <!-- 一级菜单 -->
-            <div v-if="!menu.parent_id" class="nav-item">
-              <router-link
-                :to="getMenuPath(menu)"
-                class="nav-link"
-              >
-                {{ menu.name }}
-              </router-link>
-              <!-- 二级菜单 -->
-              <div v-if="menu.children && menu.children.length > 0" class="submenu">
-                <template v-for="child in menu.children" :key="child.id">
-                  <div class="submenu-item">
-                    <router-link
-                      :to="getMenuPath(child)"
-                      class="nav-link"
-                    >
-                      {{ child.name }}
-                    </router-link>
-                    <!-- 三级菜单 -->
-                    <div v-if="child.children && child.children.length > 0" class="subsubmenu">
-                      <router-link
-                        v-for="grandchild in child.children"
-                        :key="grandchild.id"
-                        :to="getMenuPath(grandchild)"
-                        class="nav-link"
-                      >
-                        {{ grandchild.name }}
-                      </router-link>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </template>
+        <!-- Desktop nav links -->
+        <nav class="nav-links">
+          <router-link to="/" class="nav-link" exact-active-class="active">首页</router-link>
+          <router-link to="/about" class="nav-link" active-class="active">关于我们</router-link>
+          <router-link to="/products" class="nav-link" active-class="active">产品中心</router-link>
+          <router-link to="/news" class="nav-link" active-class="active">新闻资讯</router-link>
+          <router-link to="/contact" class="nav-link" active-class="active">联系我们</router-link>
         </nav>
-        <div class="header-right">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" placeholder="搜索文档" class="search-input" />
-            <span class="search-shortcut">⌘K</span>
-          </div>
-          <div class="nav-actions">
-            <button class="icon-btn" title="语言切换">🌐</button>
-            <button class="icon-btn" title="主题切换">☀️</button>
-            <a href="https://github.com" target="_blank" class="icon-btn" title="GitHub">
-              <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-            </a>
-          </div>
-        </div>
+
+        <!-- Phone -->
+        <a href="tel:053188001234" class="nav-phone">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.01L6.6 10.8z"/>
+          </svg>
+          0531-8800-1234
+        </a>
+
+        <!-- Mobile burger -->
+        <button class="burger" @click="mobileOpen = !mobileOpen" aria-label="菜单">
+          <span :class="{ open: mobileOpen }"></span>
+          <span :class="{ open: mobileOpen }"></span>
+          <span :class="{ open: mobileOpen }"></span>
+        </button>
+      </div>
+
+      <!-- Mobile menu -->
+      <div class="mobile-menu" :class="{ open: mobileOpen }">
+        <router-link to="/" class="mobile-link" @click="mobileOpen = false">首页</router-link>
+        <router-link to="/about" class="mobile-link" @click="mobileOpen = false">关于我们</router-link>
+        <router-link to="/products" class="mobile-link" @click="mobileOpen = false">产品中心</router-link>
+        <router-link to="/news" class="mobile-link" @click="mobileOpen = false">新闻资讯</router-link>
+        <router-link to="/contact" class="mobile-link" @click="mobileOpen = false">联系我们</router-link>
+        <a href="tel:053188001234" class="mobile-link mobile-phone">📞 0531-8800-1234</a>
       </div>
     </header>
 
-    <main class="main">
+    <!-- ── Page content ── -->
+    <main>
       <router-view />
     </main>
 
+    <!-- ── Footer ── -->
     <footer class="footer">
       <div class="container">
-        <p>{{ siteConfig.site_copyright || 'Copyright © 2024 My Site' }}</p>
-        <p v-if="siteConfig.site_icp" class="icp">{{ siteConfig.site_icp }}</p>
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
+                <circle cx="15" cy="15" r="15" fill="#25884A"/>
+                <path d="M9 19 C9 13 15 9 15 9 C15 9 21 13 21 19" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M12 19 C12 16 15 14 15 14 C15 14 18 16 18 19" fill="#F5A623"/>
+              </svg>
+              <span>春昌食品科技</span>
+            </div>
+            <p class="footer-desc">专注食品科技研发与生产，为客户提供高品质、安全健康的食品解决方案。深耕行业十五年，值得信赖。</p>
+            <div class="footer-contact-info">
+              <p>📍 山东省济南市历下区科技路88号</p>
+              <p>📞 0531-8800-1234</p>
+              <p>✉️ contact@chunchang-food.com</p>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>关于我们</h4>
+            <router-link to="/about">公司简介</router-link>
+            <router-link to="/about">发展历程</router-link>
+            <router-link to="/about">企业荣誉</router-link>
+          </div>
+          <div class="footer-col">
+            <h4>产品中心</h4>
+            <router-link to="/products">全部产品</router-link>
+            <router-link to="/products">休闲食品</router-link>
+            <router-link to="/products">功能食品</router-link>
+            <router-link to="/products">健康饮品</router-link>
+          </div>
+          <div class="footer-col">
+            <h4>更多</h4>
+            <router-link to="/news">新闻资讯</router-link>
+            <router-link to="/contact">联系我们</router-link>
+            <a href="#">招商合作</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 山东春昌食品科技有限公司 版权所有</p>
+          <a href="https://beian.miit.gov.cn" target="_blank">鲁ICP备XXXXXXXX号</a>
+        </div>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import GradientBackground from './components/GradientBackground.vue'
-import { getPublishedMenus } from './api/menu'
-import type { Menu, SiteConfig } from './types'
+import { ref, onMounted, onUnmounted } from 'vue'
 
-// 模拟数据，实际部署时会替换为真实数据
-const siteConfig = ref<SiteConfig>({
-  site_name: '我的官网',
-  site_description: '这是我的个人官网',
-  site_copyright: 'Copyright © 2024 My Site',
-  site_icp: '粤ICP备XXXXXX号',
-  template_theme_color: '#667eea',
-  template_background: {
-    type: 'particle',
-    options: {
-      color: '#667eea',
-      density: 80,
-      interactive: true,
-    }
-  }
-})
+const isScrolled = ref(false)
+const mobileOpen = ref(false)
 
-const menus = ref<Menu[]>([])
-
-const getMenuPath = (menu: Menu) => {
-  // 优先使用关联的页面模板
-  if (menu.page_id) {
-    return `/page/${menu.page_id}`
-  }
-  // 优先使用关联的分类（显示文章列表）
-  if (menu.category_id && menu.category) {
-    return `/category/${menu.category_id}`
-  }
-  // 如果关联了文章，跳转到菜单文章列表页
-  if (menu.article_id) {
-    return `/menu/${menu.id}`
-  }
-  // 如果有自定义路径，使用自定义路径
-  if (menu.path && menu.path !== '/') {
-    return menu.path
-  }
-  // 默认返回首页
-  return '/'
-}
-
-onMounted(async () => {
-  try {
-    const data = await getPublishedMenus()
-    menus.value = data
-  } catch (error) {
-    console.error('Failed to load menus:', error)
-    // 使用默认菜单作为后备
-    menus.value = [
-      { id: 1, name: '首页', path: '/', target: '_self', is_visible: true, sort: 0 },
-      { id: 2, name: '关于', path: '/about', target: '_self', is_visible: true, sort: 1 },
-    ]
-  }
-})
+const onScroll = () => { isScrolled.value = window.scrollY > 60 }
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
-<style scoped lang="css">
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+<style scoped>
+/* ── Nav ── */
+.nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: transparent;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.nav.scrolled {
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.09);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  height: var(--nav-height);
+  gap: 24px;
 }
 
-.container {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.logo-icon { display: flex; }
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+.nav.scrolled .logo-text { color: var(--primary); }
+
+.nav-links {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+}
+.nav-link {
+  padding: 7px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  border-radius: 6px;
+  transition: all var(--transition);
+  position: relative;
+}
+.nav:not(.scrolled) .nav-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+}
+.nav:not(.scrolled) .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.nav.scrolled .nav-link { color: var(--text-secondary); }
+.nav.scrolled .nav-link:hover { color: var(--primary); background: var(--primary-bg); }
+.nav.scrolled .nav-link.active { color: var(--primary); font-weight: 600; }
+
+.nav-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+.nav.scrolled .nav-phone { color: var(--primary); }
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 6px;
+  margin-left: auto;
+}
+.burger span {
+  display: block;
+  width: 24px; height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+.nav.scrolled .burger span { background: var(--text); }
+
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: var(--bg-dark);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+.mobile-menu.open { max-height: 360px; }
+.mobile-link {
+  display: block;
+  padding: 13px 24px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: color var(--transition), background var(--transition);
+}
+.mobile-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.mobile-phone { color: var(--accent) !important; }
+
+@media (max-width: 900px) {
+  .nav-phone { display: none; }
+}
+@media (max-width: 768px) {
+  .burger { display: flex; }
+  .nav-links { display: none; }
+  .mobile-menu { display: flex; }
 }
 
-.header .container {
+/* ── Footer ── */
+.footer {
+  background: var(--bg-dark);
+  color: rgba(255,255,255,0.65);
+  padding: 64px 0 0;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 580px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+}
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.footer-desc {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.5);
+}
+.footer-contact-info p {
+  font-size: 13px;
+  margin-bottom: 7px;
+  color: rgba(255,255,255,0.55);
+}
+.footer-col h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.footer-col a {
+  display: block;
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
+  transition: color var(--transition);
+  text-decoration: none;
+}
+.footer-col a:hover { color: var(--accent); }
+.footer-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
-  gap: 32px;
-  padding: 0 40px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-shrink: 0;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-  min-width: 280px;
-}
-
-.nav {
-  display: flex;
+  padding: 20px 0;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
-  flex: 1;
-  justify-content: center;
-  position: relative;
 }
-
-.nav-item {
-  position: relative;
-}
-
-.nav-item > .nav-link {
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.nav-item:hover > .nav-link {
-  background: rgba(102, 126, 234, 0.08);
-}
-
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  min-width: 160px;
-  z-index: 1000;
-}
-
-.nav-item:hover > .submenu {
-  display: block;
-}
-
-.submenu-item {
-  position: relative;
-}
-
-.submenu-item > .nav-link {
-  display: block;
-  padding: 8px 16px;
-}
-
-.submenu-item:hover > .nav-link {
-  background: rgba(102, 126, 234, 0.08);
-}
-
-.subsubmenu {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  min-width: 160px;
-  z-index: 1001;
-}
-
-.submenu-item:hover > .subsubmenu {
-  display: block;
-}
-
-.subsubmenu > .nav-link {
-  display: block;
-  padding: 8px 16px;
-}
-
-.subsubmenu > .nav-link:hover {
-  background: rgba(102, 126, 234, 0.08);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.logo:hover {
-  opacity: 0.8;
-}
-
-.logo-icon {
-  font-size: 24px;
-}
-
-.logo-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  padding: 6px 12px;
-  width: 220px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.search-box:focus-within {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 0, 0, 0.2);
-}
-
-.search-icon {
-  font-size: 14px;
-  opacity: 0.5;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 14px;
-  color: #333;
-}
-
-.search-input::placeholder {
-  color: #999;
-}
-
-.search-shortcut {
-  font-size: 12px;
-  color: #999;
-  font-family: monospace;
-}
-
-.nav-link {
-  color: #555;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s;
-  padding: 4px 8px;
-  white-space: nowrap;
-  border-bottom: 2px solid transparent;
-}
-
-.nav-link:hover {
-  color: #333;
-  border-bottom-color: #667eea;
-}
-
-.nav-link.router-link-active {
-  color: #667eea;
-  border-bottom-color: #667eea;
-  font-weight: 600;
-}
-
-.nav-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #666;
-  text-decoration: none;
-}
-
-.icon-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #333;
-}
-
-.main {
-  flex: 1;
-  width: 100%;
-  margin-top: 60px;
-}
-
-.footer {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 30px 0;
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-}
-
-.footer p {
-  margin: 5px 0;
-}
-
-.icp {
-  font-size: 12px;
-  color: #999;
-}
+.footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; }
+.footer-bottom a:hover { color: var(--accent); }
 </style>
