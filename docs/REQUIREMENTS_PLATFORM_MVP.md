@@ -1599,21 +1599,30 @@ Acceptance:
 
 Goal:
 
-Dashboard users can maintain company news and public pages can display them.
+Dashboard users can maintain column-scoped articles and public pages can display them.
 
 Tasks:
 
 - News table.
-- Admin CRUD.
-- News list page.
-- News detail page.
+- Admin CRUD for articles.
+- Article assignment to a leaf menu only.
+- Rich text article body editing.
+- Image/video upload and URL insertion.
+- Article list page by menu.
+- Article detail page.
 
 Acceptance:
 
-- User can create draft news.
-- User can publish and unpublish news.
-- Public site displays published news only.
-- News detail is accessible by slug.
+- User can create draft articles under the last-level menu.
+- User cannot publish an article under homepage or a non-leaf parent menu.
+- User can publish, unpublish, offline, and edit articles.
+- Dashboard must not physically delete articles in normal operations. The destructive action is represented as offline so content can be restored by publishing again.
+- Public site displays published articles only.
+- Article detail is accessible by slug.
+- Rich text supports paragraph, headings, lists, quote, divider, link, image, and video.
+- Dashboard image/video upload returns a URL from `/api/media/upload`.
+- Uploaded file URLs are served publicly from `/uploads/**`, for example `http://localhost:8080/uploads/{filename}`.
+- Article detail preserves safe rich text media tags while stripping scripts, event handlers, and unsafe URLs.
 
 ### Phase 5: Build Records
 
@@ -1673,7 +1682,8 @@ Do not implement these in the first phase:
 - Public site content must come from APIs or mock data matching the API shape.
 - Do not hardcode Chunchang-specific copy directly inside reusable template components.
 - Corporate-site components should accept `siteConfig`, `products`, and `news` as inputs.
-- Dashboard forms save structured JSON and records, not HTML blobs.
+- Dashboard site/home/product/contact forms save structured JSON and records.
+- Article body is the one accepted HTML-rich field in the MVP. It must be sanitized before public rendering.
 - Public APIs must not expose admin-only fields.
 - Lead API must validate required fields.
 - Delete operations require confirmation.

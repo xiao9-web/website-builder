@@ -192,6 +192,31 @@ Keep ownership clear:
 - `lead`: visitor inquiries and dashboard lead processing.
 - `publicsite`: unauthenticated read APIs by site slug.
 
+## 6.1 Media Upload And Public URL Contract
+
+Media upload is the source of image and video URLs used by dashboard fields and rich text articles.
+
+```text
+Dashboard user chooses image/video
+-> Frontend posts multipart file to POST /api/media/upload
+-> Backend validates content type and size
+-> Backend stores file under app.media.upload-dir
+-> Backend returns MediaDTO.url
+-> Frontend saves or inserts that URL
+-> Public page renders the URL through /uploads/**
+```
+
+Rules:
+
+- Upload API requires JWT.
+- Public file read does not require JWT.
+- Local default storage is `./uploads` under the backend working directory.
+- Local default public base URL is `http://localhost:8080/uploads`.
+- Spring MVC maps `/uploads/**` to the normalized absolute upload directory.
+- `MediaService` must write and delete using absolute normalized paths so Tomcat does not resolve relative paths under its temporary work directory.
+- Current accepted content types: JPEG, PNG, GIF, WebP, SVG, MP4, WebM, and PDF.
+- Current maximum upload size is 10 MB.
+
 ## 7. Frontend Architecture
 
 Dashboard routes:
@@ -220,6 +245,8 @@ Frontend principles:
 - Dashboard is a work tool: restrained, dense, predictable.
 - Public corporate site should express green, healthy, ecological, professional, stable, simple, and approachable branding.
 - First-phase editor is forms over structured JSON, not drag-and-drop.
+- Article rich text is implemented as a bounded contentEditable editor for the MVP. It supports headings, lists, quote, divider, links, image URL, image upload, video URL, and video upload.
+- Article public rendering sanitizes HTML and only allows safe text/media tags and safe URL attributes.
 - Public template components must render from API data, not hardcoded Chunchang values.
 
 ## 8. Security And Access Rules

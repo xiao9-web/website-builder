@@ -184,7 +184,7 @@ class SiteMenuServiceTest {
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         when(siteMenuRepository.findByIdAndSiteId(1L, 11L)).thenReturn(Optional.of(home));
         when(siteMenuRepository.findByIdAndSiteId(21L, 11L)).thenReturn(Optional.of(parent));
-        when(siteMenuRepository.existsByParentId(21L)).thenReturn(true);
+        when(siteMenuRepository.existsByParentIdAndSiteId(21L, 11L)).thenReturn(true);
 
         assertThatThrownBy(() -> siteMenuService.delete(11L, 1L, user))
                 .isInstanceOf(BusinessException.class)
@@ -202,11 +202,35 @@ class SiteMenuServiceTest {
         SiteMenu leaf = menu(31L, null, "合作机会", "cooperation", SiteMenu.MenuType.CUSTOM);
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         when(siteMenuRepository.findByIdAndSiteId(31L, 11L)).thenReturn(Optional.of(leaf));
-        when(siteMenuRepository.existsByParentId(31L)).thenReturn(false);
+        when(siteMenuRepository.existsByParentIdAndSiteId(31L, 11L)).thenReturn(false);
 
         siteMenuService.delete(11L, 31L, user);
 
         verify(siteMenuRepository).delete(leaf);
+    }
+
+    @Test
+    void requireArticleMenuRejectsParentMenu() {
+        SiteMenu parent = menu(41L, null, "知识中心", "knowledge", SiteMenu.MenuType.CUSTOM);
+        when(siteService.requireReadableSite(11L, user)).thenReturn(site);
+        when(siteMenuRepository.findByIdAndSiteId(41L, 11L)).thenReturn(Optional.of(parent));
+        when(siteMenuRepository.existsByParentIdAndSiteId(41L, 11L)).thenReturn(true);
+
+        assertThatThrownBy(() -> siteMenuService.requireArticleMenu(11L, 41L, user))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Articles can only be assigned to leaf menus");
+    }
+
+    @Test
+    void requireArticleMenuAllowsCustomLeafMenu() {
+        SiteMenu leaf = menu(42L, null, "行业案例", "cases", SiteMenu.MenuType.CUSTOM);
+        when(siteService.requireReadableSite(11L, user)).thenReturn(site);
+        when(siteMenuRepository.findByIdAndSiteId(42L, 11L)).thenReturn(Optional.of(leaf));
+        when(siteMenuRepository.existsByParentIdAndSiteId(42L, 11L)).thenReturn(false);
+
+        var result = siteMenuService.requireArticleMenu(11L, 42L, user);
+
+        assertThat(result).isSameAs(leaf);
     }
 
     private UpsertSiteMenuRequest request(Long parentId, String label, String slug) {

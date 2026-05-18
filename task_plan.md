@@ -66,6 +66,8 @@ Build the Website Builder Platform MVP around the active implementation directio
 43. [complete] ENG-DOCKER-001: Dockerize backend and frontend for a full-stack local demo.
 44. [complete] SITE-LIFECYCLE-001: Replace site deletion with offline and re-online lifecycle actions.
 45. [complete] ENG-CI-001: Add Jenkins pipeline for backend tests, frontend lint/build, packaging, and optional image build.
+46. [complete] CMS-MEDIA-001: Fix template center, rich text media insertion, upload URLs, and public media serving.
+47. [complete] FEA-007: Replace article physical delete with offline/archive lifecycle behavior.
 
 ## Backlog
 
@@ -699,5 +701,55 @@ Verification:
 
 Recommended next slice:
 
-- `FEA-005`: Render editable menus and menu-scoped articles on the public site routes, including `/sites/{slug}/{menuSlug}` and article detail pages.
-- `FEA-006`: Improve menu/article editor ergonomics with reorder controls, clearer tree display, and richer article editing.
+- `FEA-007`: Replace article delete with offline/archive if the product rule should match site lifecycle.
+- `FEA-008`: Improve menu/article editor ergonomics with reorder controls, clearer tree display, and a later TipTap-based rich text editor if interview polish is desired.
+- `OPS-002`: Fix Docker registry/proxy access, then verify full image build and `make docker-demo-up`.
+
+## Completed Execution: CMS-MEDIA-001
+
+Primary deliverable:
+
+- Fix template center error and close the rich text + media upload URL loop.
+
+Result:
+
+- Template center now accepts backend paginated template responses and derives categories locally.
+- Dashboard can upload images for Logo, WeChat QR code, product image, and article cover; uploaded URLs are filled into the corresponding URL fields.
+- Article rich text now supports heading, paragraph, lists, quote, divider, clear format, links, image URL insertion, image upload insertion, video URL insertion, and video upload insertion.
+- Rich text toolbar now preserves selection on toolbar interaction so buttons respond more reliably.
+- Backend serves uploaded files publicly under `/uploads/**`.
+- Backend upload storage uses normalized absolute paths so Tomcat no longer writes relative paths under its temporary directory.
+- Public article pages sanitize and render safe links, images, videos, quotes, and dividers.
+
+URL rule:
+
+- The image/video URL comes from `POST /api/media/upload`.
+- The response field is `data.url`.
+- Local example: `http://localhost:8080/uploads/{filename}`.
+
+Verification:
+
+- `mvn -f apps/server/pom.xml test` passed with 58 tests.
+- `npm run lint:web` passed.
+- `npm run build:web` passed.
+- Upload smoke returned HTTP 200 and media URL readback returned HTTP 200.
+- `/dashboard/templates` returned HTTP 200.
+- `/dashboard/sites/1/content` returned HTTP 200.
+
+## Completed Execution: FEA-007
+
+Primary deliverable:
+
+- Replace article physical delete with offline lifecycle behavior.
+
+Result:
+
+- The existing `DELETE /api/sites/{siteId}/news/{newsId}` endpoint is retained for backward compatibility, but now sets article status to `OFFLINE` and clears `publishedAt`.
+- Backend no longer physically deletes articles through the dashboard delete path.
+- Dashboard article action text changed from `删除` to `下线`.
+- Offline articles remain in the dashboard and can be published again later.
+
+Verification:
+
+- Added `NewsServiceTest.deleteOfflineArticleInsteadOfPhysicallyDeletingIt`.
+- Focused red/green test passed after implementation.

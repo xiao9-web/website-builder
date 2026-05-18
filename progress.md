@@ -1824,3 +1824,63 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `npm run lint:web` passed
   - `npm run build:web` passed
   - `docker compose -f docker/docker-compose.full.yml config` passed
+
+## CMS-MEDIA-001 Rich Text, Template Center, And Media Upload
+
+- User reported that the rich text editor had too few functions, some toolbar buttons did not respond, image/video upload was missing, template center clicked into an error state, and it was unclear where future image URLs should come from.
+- Root causes found:
+  - template hook treated backend paginated template responses as `Template[]`
+  - rich text toolbar clicks could lose the current selection before `execCommand`
+  - frontend had no media upload client
+  - backend stored files and returned URLs but did not publicly serve `/uploads/**`
+  - `MultipartFile.transferTo` received a relative path and Tomcat resolved it under its temporary work directory
+  - public article sanitizer removed `a`, `img`, `video`, `figure`, `blockquote`, and `hr`
+- Backend:
+  - added `WebMvcConfig` mapping `/uploads/**` to the normalized upload directory
+  - allowed `/uploads/**` through Spring Security
+  - changed `MediaService` upload/delete paths to absolute normalized paths
+  - added `WebMvcConfigTest`
+- Frontend:
+  - fixed template list normalization and derived categories without calling missing `/templates/categories`
+  - added `MediaDTO`, `uploadMedia`, and `listMedia`
+  - added reusable dashboard upload button for Logo, WeChat QR, product image, and article cover
+  - upgraded article rich text editor with selection preservation, link insertion, image URL insertion, image upload insertion, video URL insertion, video upload insertion, quote, divider, and clear format
+  - public article rendering now sanitizes and displays safe rich text links, images, videos, quotes, and dividers
+- Important answer for future use:
+  - image/video URL comes from `POST /api/media/upload`
+  - the response contains `data.url`
+  - local URLs look like `http://localhost:8080/uploads/{filename}`
+  - that URL can be saved into Logo/product/cover fields or inserted into article rich text
+- Verification:
+  - `mvn -f apps/server/pom.xml test` passed with 58 tests
+  - `npm run lint:web` passed
+  - `npm run build:web` passed
+  - smoke uploaded `/tmp/wb-upload-test.png`; API returned HTTP 200 with a media URL
+  - smoke read uploaded media URL and got HTTP 200
+  - `http://localhost:3000/dashboard/templates` returned HTTP 200
+  - `http://localhost:3000/dashboard/sites/1/content` returned HTTP 200
+
+## Stop Hook Reconciliation After 45-Step Ledger Update
+
+- Stop hook reported: `Task incomplete (45/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
+- Re-read `task_plan.md` and recent `progress.md`.
+- Confirmed the latest completed CMS-MEDIA-001 work was documented but not yet represented in the top-level run-step ledger.
+- Selected the next unblocked product-consistency phase:
+  - `FEA-007`: Replace article delete with offline/archive behavior so article lifecycle matches the site lifecycle rule.
+
+## FEA-007 Article Offline Lifecycle
+
+- Added a focused test proving `NewsService.delete` should offline an article instead of physically deleting it.
+- Confirmed the test failed first because the service still called `newsRepository.delete(news)`.
+- Changed backend delete compatibility path:
+  - set `News.status = OFFLINE`
+  - clear `publishedAt`
+  - save the entity
+  - do not call repository delete
+- Changed dashboard wording and behavior:
+  - API helper renamed to `offlineNews`
+  - article action changed from `删除` to `下线`
+  - local UI state keeps the article and marks it `OFFLINE`
+- Updated requirements and task plan.
+- Focused verification:
+  - `mvn -f apps/server/pom.xml -Dtest=NewsServiceTest#deleteOfflineArticleInsteadOfPhysicallyDeletingIt test` passed.

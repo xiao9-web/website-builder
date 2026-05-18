@@ -13,7 +13,6 @@ import {
   createNews,
   createProductService,
   createSiteMenu,
-  deleteNews,
   deleteProductService,
   deleteSiteMenu,
   getSiteConfig,
@@ -29,6 +28,7 @@ import {
   updateSiteMenu,
   updateSiteConfig,
   uploadMedia,
+  offlineNews,
 } from "@/lib/content-management/api";
 import type {
   LeadDTO,
@@ -1168,10 +1168,17 @@ export default function SiteContentPage() {
     }
   };
 
-  const handleDeleteNews = async (newsId: number) => {
-    if (!window.confirm("确定删除这篇文章吗？")) return;
-    await deleteNews(siteId, newsId);
-    setNews((items) => items.filter((item) => item.id !== newsId));
+  const handleOfflineNews = async (item: NewsDTO) => {
+    if (!window.confirm(`确定下线文章“${item.title}”吗？下线后不会在前台展示，但后台仍可重新发布。`)) return;
+    await offlineNews(siteId, item.id);
+    setNews((items) =>
+      items.map((newsItem) =>
+        newsItem.id === item.id
+          ? { ...newsItem, status: "OFFLINE", publishedAt: null }
+          : newsItem,
+      ),
+    );
+    setSuccess("文章已下线，可后续重新发布。");
   };
 
   const handleNewsStatus = async (item: NewsDTO, status: NewsDTO["status"]) => {
@@ -2579,9 +2586,9 @@ export default function SiteContentPage() {
                         <Button
                           size="sm"
                           variant="danger"
-                          onClick={() => handleDeleteNews(item.id)}
+                          onClick={() => handleOfflineNews(item)}
                         >
-                          删除
+                          下线
                         </Button>
                       </div>
                     </div>

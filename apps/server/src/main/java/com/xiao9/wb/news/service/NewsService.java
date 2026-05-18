@@ -115,8 +115,10 @@ public class NewsService {
     public void delete(Long siteId, Long newsId, User user) {
         siteService.requireReadableSite(siteId, user);
         News news = requireNewsInSite(siteId, newsId);
-        newsRepository.delete(news);
-        log.info("News deleted: {} for site {} by user {}", newsId, siteId, user.getId());
+        news.setStatus(News.Status.OFFLINE);
+        news.setPublishedAt(null);
+        newsRepository.save(news);
+        log.info("News offline via delete endpoint: {} for site {} by user {}", newsId, siteId, user.getId());
     }
 
     @Transactional

@@ -118,13 +118,13 @@ class NewsServiceTest {
         SiteMenu menu = menu(31L, "knowledge-center");
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         when(newsRepository.findBySiteIdAndSlug(11L, "menu-article")).thenReturn(Optional.empty());
-        when(siteMenuService.requireReadableMenu(11L, 31L, user)).thenReturn(menu);
+        when(siteMenuService.requireArticleMenu(11L, 31L, user)).thenReturn(menu);
         when(newsRepository.save(any(News.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var result = newsService.create(11L, request(31L, "Menu Article", "menu-article", "draft"), user);
 
         assertThat(result.menuId()).isEqualTo(31L);
-        verify(siteMenuService).requireReadableMenu(11L, 31L, user);
+        verify(siteMenuService).requireArticleMenu(11L, 31L, user);
         verify(newsRepository).save(argThat(saved -> saved.getMenu() == menu));
     }
 
@@ -134,7 +134,8 @@ class NewsServiceTest {
         home.setMenuType(SiteMenu.MenuType.HOME);
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         when(newsRepository.findBySiteIdAndSlug(11L, "home-article")).thenReturn(Optional.empty());
-        when(siteMenuService.requireReadableMenu(11L, 1L, user)).thenReturn(home);
+        when(siteMenuService.requireArticleMenu(11L, 1L, user))
+                .thenThrow(new BusinessException(com.xiao9.wb.common.exception.ErrorCode.BAD_REQUEST, "Homepage menu cannot be used as an article column"));
 
         assertThatThrownBy(() -> newsService.create(11L, request(1L, "Home Article", "home-article", "draft"), user))
                 .isInstanceOf(BusinessException.class)
@@ -152,7 +153,7 @@ class NewsServiceTest {
         var result = newsService.create(11L, request(null, "Plain Article", "plain-article", "draft"), user);
 
         assertThat(result.menuId()).isNull();
-        verify(siteMenuService, never()).requireReadableMenu(anyLong(), anyLong(), any());
+        verify(siteMenuService, never()).requireArticleMenu(anyLong(), anyLong(), any());
     }
 
     @Test
@@ -186,13 +187,13 @@ class NewsServiceTest {
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         when(newsRepository.findByIdAndSiteId(8L, 11L)).thenReturn(Optional.of(article));
         when(newsRepository.findBySiteIdAndSlug(11L, "article")).thenReturn(Optional.of(article));
-        when(siteMenuService.requireReadableMenu(11L, 32L, user)).thenReturn(menu);
+        when(siteMenuService.requireArticleMenu(11L, 32L, user)).thenReturn(menu);
         when(newsRepository.save(any(News.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var result = newsService.update(11L, 8L, request(32L, "Article", "article", "draft"), user);
 
         assertThat(result.menuId()).isEqualTo(32L);
-        verify(siteMenuService).requireReadableMenu(11L, 32L, user);
+        verify(siteMenuService).requireArticleMenu(11L, 32L, user);
         verify(newsRepository).save(argThat(saved -> saved.getMenu() == menu));
     }
 
@@ -200,6 +201,7 @@ class NewsServiceTest {
     void updateStatusSetsPublishedAtWhenPublishing() {
         when(siteService.requireReadableSite(11L, user)).thenReturn(site);
         News draft = news(3L, site, "draft-news", News.Status.DRAFT);
+        draft.setMenu(menu(31L, "knowledge-center"));
         draft.setPublishedAt(null);
         when(newsRepository.findByIdAndSiteId(3L, 11L)).thenReturn(Optional.of(draft));
         when(newsRepository.save(any(News.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -208,6 +210,41 @@ class NewsServiceTest {
 
         assertThat(result.status()).isEqualTo("PUBLISHED");
         assertThat(result.publishedAt()).isNotNull();
+        verify(siteMenuService).validateArticleMenu(11L, draft.getMenu());
+    }
+
+    @Test
+    void updateStatusRejectsPublishingWithoutLeafMenu() {
+        when(siteService.requireReadableSite(11L, user)).thenReturn(site);
+        News draft = news(3L, site, "draft-news", News.Status.DRAFT);
+        when(newsRepository.findByIdAndSiteId(3L, 11L)).thenReturn(Optional.of(draft));
+        doThrow(new BusinessException(com.xiao9.wb.common.exception.ErrorCode.BAD_REQUEST, "Article menu is required before publishing"))
+                .when(siteMenuService)
+                .validateArticleMenu(11L, null);
+
+        assertThatThrownBy(() -> newsService.updateStatus(11L, 3L, "PUBLISHED", user))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Article menu is required before publishing");
+
+        verify(newsRepository, never()).save(any());
+    }
+
+    @Test
+    void updateStatusRejectsPublishingUnderParentMenu() {
+        when(siteService.requireReadableSite(11L, user)).thenReturn(site);
+        SiteMenu parent = menu(31L, "knowledge-center");
+        News draft = news(3L, site, "draft-news", News.Status.DRAFT);
+        draft.setMenu(parent);
+        when(newsRepository.findByIdAndSiteId(3L, 11L)).thenReturn(Optional.of(draft));
+        doThrow(new BusinessException(com.xiao9.wb.common.exception.ErrorCode.BAD_REQUEST, "Articles can only be assigned to leaf menus"))
+                .when(siteMenuService)
+                .validateArticleMenu(11L, parent);
+
+        assertThatThrownBy(() -> newsService.updateStatus(11L, 3L, "PUBLISHED", user))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Articles can only be assigned to leaf menus");
+
+        verify(newsRepository, never()).save(any());
     }
 
     @Test
@@ -222,6 +259,22 @@ class NewsServiceTest {
 
         assertThat(result.status()).isEqualTo("OFFLINE");
         assertThat(result.publishedAt()).isNull();
+    }
+
+    @Test
+    void deleteOfflineArticleInsteadOfPhysicallyDeletingIt() {
+        when(siteService.requireReadableSite(11L, user)).thenReturn(site);
+        News published = news(6L, site, "published-news", News.Status.PUBLISHED);
+        published.setPublishedAt(LocalDateTime.parse("2026-01-01T00:00:00"));
+        when(newsRepository.findByIdAndSiteId(6L, 11L)).thenReturn(Optional.of(published));
+        when(newsRepository.save(any(News.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        newsService.delete(11L, 6L, user);
+
+        assertThat(published.getStatus()).isEqualTo(News.Status.OFFLINE);
+        assertThat(published.getPublishedAt()).isNull();
+        verify(newsRepository).save(published);
+        verify(newsRepository, never()).delete(any());
     }
 
     private UpsertNewsRequest request(String title, String slug, String status) {

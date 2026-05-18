@@ -112,7 +112,7 @@ export async function updateNews(
   return (await api.put(`/sites/${siteId}/news/${newsId}`, payload)) as NewsDTO;
 }
 
-export async function deleteNews(siteId: string, newsId: number): Promise<void> {
+export async function offlineNews(siteId: string, newsId: number): Promise<void> {
   await api.delete(`/sites/${siteId}/news/${newsId}`);
 }
 
