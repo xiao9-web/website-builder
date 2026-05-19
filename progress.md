@@ -158,6 +158,25 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed latest completed run is `OPS-ALIYUN-001`.
 - No additional implementation work is open from this hook.
 
+## DOC-ALIYUN-QUICK-001 Copy-Paste Deployment Manual
+
+- Added `docs/ALIYUN_COPY_PASTE_DEPLOY.md` as the direct "照着做版" deployment manual for the current Aliyun ECS.
+- The manual covers:
+  - Aliyun security group rules
+  - local Git pre-check
+  - SSH login
+  - first clone or update flow
+  - `.env.prod` creation
+  - server initialization
+  - deployment
+  - health checks
+  - browser acceptance
+  - update deployment
+  - backup
+  - common failure handling
+  - later domain migration
+- Updated `docs/README.md` and `deploy/aliyun-2c2g/README.md` to point first-time deployers to the copy-paste manual.
+
 ## DOC-ALIYUN-001 Go-Live Runbook
 
 - User invoked `meta-theory` and requested an上线操作文档.
@@ -2255,3 +2274,19 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - Sensitive keyword scan no longer finds tracked API key/JWT-secret-looking material.
   - Git no longer tracks legacy source trees, local runtime state, generated data, uploads, or OS junk files.
   - Local dependency/build caches were removed again after verification.
+
+## Stop Hook Reconciliation After Commit e2f2bfc
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after commit `e2f2bfc`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed the latest committed work is `chore: remove legacy tracks and sensitive artifacts`.
+- No additional implementation work is open from this hook.
+
+## Stop Hook Reconciliation After DOC-ALIYUN-QUICK-001
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after the copy-paste Aliyun deployment manual update.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` still says no active run steps are open.
+- Confirmed the latest completed run is `DOC-ALIYUN-QUICK-001`.
+- No additional implementation phase is open from the hook; current uncommitted work is the deployment manual documentation update.

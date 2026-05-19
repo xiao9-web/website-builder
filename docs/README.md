@@ -19,6 +19,7 @@ Read these documents first:
 | [FINAL_LAUNCH_CHECKLIST.md](./FINAL_LAUNCH_CHECKLIST.md) | Final company-material and launch approval checklist |
 | [ENGINEERING_PORTFOLIO_ROADMAP.md](./ENGINEERING_PORTFOLIO_ROADMAP.md) | Interview-oriented engineering expansion roadmap |
 | [DOCKER_LOCAL_DEMO.md](./DOCKER_LOCAL_DEMO.md) | Full Docker local demo startup and troubleshooting |
+| [ALIYUN_COPY_PASTE_DEPLOY.md](./ALIYUN_COPY_PASTE_DEPLOY.md) | Copy-paste Aliyun ECS deployment manual for the current 2c2g server |
 | [../deploy/aliyun-2c2g/README.md](../deploy/aliyun-2c2g/README.md) | Aliyun 2c2g low-memory production practice deployment |
 | [ALIYUN_GO_LIVE_RUNBOOK.md](./ALIYUN_GO_LIVE_RUNBOOK.md) | Step-by-step Aliyun go-live, verification, backup, rollback, and troubleshooting runbook |
 | [JENKINS_CI.md](./JENKINS_CI.md) | Jenkins CI pipeline stages, parameters, and troubleshooting |

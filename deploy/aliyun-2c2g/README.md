@@ -1,5 +1,11 @@
 # 阿里云 2核2G 练手生产部署
 
+第一次部署时，优先看照着做版：
+
+```text
+docs/ALIYUN_COPY_PASTE_DEPLOY.md
+```
+
 完整上线、验收、备份、回滚和排障流程见：
 
 ```text

@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `CLEANUP-001`: Remove obsolete tracks and sensitive/local runtime artifacts.
+- `DOC-ALIYUN-QUICK-001`: Add a copy-paste Aliyun ECS deployment manual.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -88,6 +88,7 @@ Next work should be selected from the backlog below or from a new user request.
 - done: OPS-DEMO-004: Fix start-demo local mode process lifetime and docs.
 - done: OPS-ALIYUN-001: Add Aliyun 2c2g production-practice deployment package.
 - done: DOC-ALIYUN-001: Add Aliyun go-live operation runbook.
+- done: DOC-ALIYUN-QUICK-001: Add a copy-paste Aliyun ECS deployment manual.
 - done: UX-ERROR-001: Show request errors as toast popups instead of top-of-page messages.
 - done: CLEANUP-001: Remove obsolete tracks and sensitive/local runtime artifacts.
 
