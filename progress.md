@@ -1951,3 +1951,31 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
 - Commit:
   - `2530609 chore: add one-command demo launcher`
+
+## DOC-OPS-001 Chinese Operation Manual Refresh
+
+- User requested an operation manual update.
+- Replaced the outdated root `使用说明.md`, which still described the old page/template/component editor workflow.
+- New operation manual covers:
+  - one-command startup with `./start-demo.sh`
+  - local service URLs
+  - dashboard and Grafana credentials
+  - site config maintenance
+  - media upload URL usage
+  - product service maintenance
+  - menu column rules
+  - leaf-menu-only article workflow
+  - rich text editing capabilities
+  - public preview rules
+  - lead management
+  - build history
+  - stop/reset/log commands
+  - Docker proxy and port troubleshooting
+  - interview demo sequence
+- Updated `docs/README.md` to link to the root Chinese operation manual.
+- Verification:
+  - confirmed `使用说明.md` exists and contains the refreshed current workflow
+  - searched for old operation wording such as 页面管理、组件库、拖动菜单; no stale matches remain in `使用说明.md`
+  - `bash -n start-demo.sh` passed
+  - `make docker-demo-config` passed
+  - graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`

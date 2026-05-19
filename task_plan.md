@@ -71,6 +71,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 48. [complete] ENG-K8S-001: Add Kubernetes local/demo deployment manifests and validation docs.
 49. [complete] ENG-OBS-001: Add Prometheus metrics and local observability documentation.
 50. [complete] ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
+51. [complete] DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
 
 ## Backlog
 
@@ -833,4 +834,36 @@ Verification:
 - `./start-demo.sh --help` passed.
 - `make docker-demo-config` passed.
 - Full startup was attempted with `./start-demo.sh --no-build`, but Docker image pull failed because Docker is configured to use an unavailable local proxy at `127.0.0.1:7890`.
+- Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
+
+## Completed Execution: DOC-OPS-001
+
+Primary deliverable:
+
+- Refresh the Chinese operation manual so it matches the current product, Docker demo, and admin workflow.
+
+Result:
+
+- Replaced the outdated `使用说明.md` content that still described the old page/component editor flow.
+- Documented one-command startup through `./start-demo.sh` and `make demo`.
+- Documented local URLs, dashboard credentials, Grafana credentials, stop/reset/log commands, and Docker proxy troubleshooting.
+- Documented current admin workflows:
+  - site config
+  - media upload
+  - product services
+  - menu columns
+  - leaf-menu-only articles
+  - rich text editing
+  - preview
+  - leads
+  - build history
+- Added interview demo suggestions and links to related docs.
+- Updated `docs/README.md` to link to the operation manual.
+
+Verification:
+
+- Confirmed `使用说明.md` exists and contains the refreshed current workflow.
+- Searched the operation manual for old page/component editor wording; no stale matches remain in `使用说明.md`.
+- `bash -n start-demo.sh` passed.
+- `make docker-demo-config` passed.
 - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
