@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-up-full docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
@@ -15,6 +15,9 @@ dev-down: ## Stop all Docker services
 
 dev-reset: ## Stop services and remove volumes (fresh start)
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v
+
+demo: ## One-command full local demo startup with readiness checks
+	./start-demo.sh
 
 docker-demo-up: ## Build and start full Docker demo stack (PostgreSQL + Redis + backend + frontend)
 	docker compose -f docker/docker-compose.full.yml up -d --build

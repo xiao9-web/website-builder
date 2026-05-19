@@ -20,10 +20,26 @@ It is meant for interview/demo usage. Normal development can still use `make dev
 From the repository root:
 
 ```bash
-make docker-demo-up
+./start-demo.sh
 ```
 
-Equivalent raw command:
+The script validates Docker, starts the full demo stack, waits for key services, and prints all URLs and credentials.
+
+Common options:
+
+```bash
+./start-demo.sh --no-build
+./start-demo.sh --reset
+./start-demo.sh --open
+```
+
+Equivalent Makefile command:
+
+```bash
+make demo
+```
+
+Equivalent raw Docker command:
 
 ```bash
 docker compose -f docker/docker-compose.full.yml up -d --build
@@ -128,4 +144,10 @@ If image builds are stale:
 
 ```bash
 docker compose -f docker/docker-compose.full.yml build --no-cache
+```
+
+If Docker image pull fails with a proxy error such as `127.0.0.1:7890 connect: connection refused`, Docker Desktop is configured to use a local proxy that is not running. Start the proxy/VPN client, or disable/fix Docker Desktop proxy settings, then rerun:
+
+```bash
+./start-demo.sh
 ```
