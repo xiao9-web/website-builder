@@ -46,7 +46,11 @@ const mockQueryBuilder = {
 // 模拟 repository
 const mockPageRepository = {
   find: jest.fn().mockResolvedValue(mockPages),
-  findOne: jest.fn().mockResolvedValue(mockPages[0]),
+  // Bug fix: 原来始终返回 mockPages[0]（PUBLISHED），导致无法测试 DRAFT→PUBLISHED 的 published_at 分支。
+  // 改为按 id 匹配，使各测试能独立控制返回值。
+  findOne: jest.fn().mockImplementation(({ where }) =>
+    Promise.resolve(mockPages.find(p => p.id === where?.id) ?? mockPages[0])
+  ),
   create: jest.fn().mockImplementation((dto) => dto),
   save: jest.fn().mockImplementation((page) => Promise.resolve({ id: Date.now(), ...page })),
   update: jest.fn().mockResolvedValue(true),
@@ -60,6 +64,7 @@ describe('PageService', () => {
   let repository: Repository<Page>;
 
   beforeEach(async () => {
+    jest.clearAllMocks(); // 每个测试前清空调用记录，防止跨测试污染
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PageService,
@@ -134,9 +139,14 @@ describe('PageService', () => {
       expect(repository.update).toHaveBeenCalled();
     });
 
-    it('should set published_at when status changes to published', async () => {
-      await service.update(1, { status: PageStatus.PUBLISHED });
-      expect(repository.update).toHaveBeenCalled();
+    it('should set published_at when status changes from DRAFT to PUBLISHED', async () => {
+      // Bug fix: 原测试 mock 返回的页面已是 PUBLISHED，导致
+      // if(page.status !== PUBLISHED) 分支永远不执行，属于虚假通过。
+      // 正确做法：让 findOne 返回 DRAFT 状态的页面。
+      mockPageRepository.findOne.mockResolvedValueOnce({ ...mockPages[1] }); // status: DRAFT
+      await service.update(2, { status: PageStatus.PUBLISHED });
+      const updateArg = mockPageRepository.update.mock.calls[0]?.[1];
+      expect(updateArg?.published_at).toBeInstanceOf(Date);
     });
   });
 

@@ -50,7 +50,12 @@ const mockQueryBuilder = {
 // 模拟 repository
 const mockArticleRepository = {
   find: jest.fn().mockResolvedValue(mockArticles),
-  findOne: jest.fn().mockResolvedValue(mockArticles[0]),
+  // Bug fix: 原来始终返回 mockArticles[0]，导致 create() 中 slug 唯一性 while 循环死循环。
+  // 改为第一次返回 null（slug 可用），后续调用再按 id 匹配。
+  findOne: jest.fn().mockImplementation(({ where }) => {
+    if (where?.slug) return Promise.resolve(null); // slug 唯一性检查：可用
+    return Promise.resolve(mockArticles.find(a => a.id === where?.id) ?? null);
+  }),
   create: jest.fn().mockImplementation((dto) => dto),
   save: jest.fn().mockImplementation((article) => Promise.resolve({ id: Date.now(), ...article })),
   update: jest.fn().mockResolvedValue(true),
@@ -68,6 +73,7 @@ describe('ArticleService', () => {
   let repository: Repository<Article>;
 
   beforeEach(async () => {
+    jest.clearAllMocks(); // 每个测试前清空调用记录，防止跨测试污染
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ArticleService,
@@ -131,9 +137,24 @@ describe('ArticleService', () => {
   });
 
   describe('update', () => {
-    it('should update an article', async () => {
+    it('should update an article via save()', async () => {
+      // Bug fix: ArticleService.update() 调用 repository.save()，而非 repository.update()。
+      // 原测试只断言返回值，未验证 save() 被调用，属于虚假通过。
       const result = await service.update(1, { title: '更新后的标题' });
-      expect(result).toEqual(mockArticles[0]);
+      expect(mockArticleRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ title: '更新后的标题' }),
+      );
+      expect(result).toBeDefined();
+    });
+
+    it('should set published_at when status changes from DRAFT to PUBLISHED', async () => {
+      // 确保 mock 返回 DRAFT 状态的文章，触发 published_at 设置分支
+      mockArticleRepository.findOne.mockResolvedValueOnce({
+        ...mockArticles[1], // status: DRAFT
+      });
+      await service.update(2, { status: ArticleStatus.PUBLISHED });
+      const savedArg = mockArticleRepository.save.mock.calls[0]?.[0];
+      expect(savedArg?.published_at).toBeInstanceOf(Date);
     });
   });
 

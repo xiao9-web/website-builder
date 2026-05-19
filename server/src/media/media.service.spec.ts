@@ -167,11 +167,14 @@ describe('MediaService', () => {
   describe('remove', () => {
     it('should delete media record and file', async () => {
       jest.spyOn(fs, 'pathExists').mockResolvedValue(true as never);
-      jest.spyOn(fs, 'unlink').mockResolvedValue(undefined as never);
+      // Bug fix: 原测试 spy 了 fs.unlink，但 MediaService.remove() 调用的是 fs.remove()。
+      // unlink spy 从未被触发，断言形同虚设。
+      const removeSpy = jest.spyOn(fs, 'remove').mockResolvedValue(undefined as never);
 
       await service.remove(1);
 
       expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(removeSpy).toHaveBeenCalled(); // 验证实际调用的方法
       expect(mockRepository.delete).toHaveBeenCalledWith(1);
     });
 
