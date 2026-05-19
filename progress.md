@@ -1926,3 +1926,28 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `make docker-demo-config` passed.
   - `make k8s-validate` passed.
   - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
+
+## ENG-DEMO-001 One-Command Local Demo Launcher
+
+- User requested a one-click startup script.
+- Added `start-demo.sh` at the repository root.
+- Added `make demo` to call the script.
+- Updated `docs/DOCKER_LOCAL_DEMO.md` to make `./start-demo.sh` the primary startup path.
+- Script behavior:
+  - validates Docker installation
+  - validates Docker Compose v2
+  - verifies Docker daemon is running
+  - validates `docker/docker-compose.full.yml`
+  - starts the full Docker demo stack
+  - waits for backend, frontend, Prometheus, and Grafana readiness
+  - prints all local URLs and credentials
+  - supports `--reset`, `--no-build`, and `--open`
+  - detects the known Docker proxy failure pattern around `127.0.0.1:7890`
+- Verification:
+  - `bash -n start-demo.sh` passed.
+  - `./start-demo.sh --help` passed.
+  - `make docker-demo-config` passed.
+  - `./start-demo.sh --no-build` reached Docker image pull/startup, then failed because Docker is using an unavailable local proxy at `127.0.0.1:7890`.
+  - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
+- Commit:
+  - `2530609 chore: add one-command demo launcher`

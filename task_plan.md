@@ -70,6 +70,7 @@ Build the Website Builder Platform MVP around the active implementation directio
 47. [complete] FEA-007: Replace article physical delete with offline/archive lifecycle behavior.
 48. [complete] ENG-K8S-001: Add Kubernetes local/demo deployment manifests and validation docs.
 49. [complete] ENG-OBS-001: Add Prometheus metrics and local observability documentation.
+50. [complete] ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
 
 ## Backlog
 
@@ -803,4 +804,33 @@ Verification:
 - `npm run lint:web` passed.
 - `make docker-demo-config` passed.
 - `make k8s-validate` passed.
+- Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
+
+## Completed Execution: ENG-DEMO-001
+
+Primary deliverable:
+
+- Add a one-command local demo startup script for the full Docker stack.
+
+Result:
+
+- Added `start-demo.sh` at the repository root.
+- Added `make demo` as the friendly Makefile entrypoint.
+- Script validates Docker, Docker Compose v2, and Docker daemon availability.
+- Script validates the full Docker Compose config before startup.
+- Script starts the full local stack and waits for backend, frontend, Prometheus, and Grafana readiness.
+- Script prints all local URLs and dashboard/Grafana credentials.
+- Script supports:
+  - `--reset`
+  - `--no-build`
+  - `--open`
+- Script diagnoses the known Docker proxy failure where Docker points at `127.0.0.1:7890` but that proxy is not running.
+- Updated `docs/DOCKER_LOCAL_DEMO.md`.
+
+Verification:
+
+- `bash -n start-demo.sh` passed.
+- `./start-demo.sh --help` passed.
+- `make docker-demo-config` passed.
+- Full startup was attempted with `./start-demo.sh --no-build`, but Docker image pull failed because Docker is configured to use an unavailable local proxy at `127.0.0.1:7890`.
 - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
