@@ -1979,3 +1979,12 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `bash -n start-demo.sh` passed
   - `make docker-demo-config` passed
   - graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`
+
+## Stop Hook Reconciliation After 51-Step Ledger Update
+
+- Stop hook reported `Task incomplete (51/0 phases done)` after `DOC-OPS-001`.
+- Re-read `task_plan.md` and confirmed all 51 listed items were already marked `[complete]`.
+- Root cause: the historical completion list was still under `Current Run Steps`, so the hook treated the ledger as an active run queue.
+- Updated `task_plan.md` so `Current Run Steps` explicitly says no active run steps are open.
+- Moved the 51 historical completed items under `Completed Run Ledger`.
+- Current next work should be selected from backlog or a new user request, not inferred from the completed ledger.

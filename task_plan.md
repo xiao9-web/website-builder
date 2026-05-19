@@ -21,6 +21,16 @@ Build the Website Builder Platform MVP around the active implementation directio
 
 ## Current Run Steps
 
+No active run steps are open.
+
+The latest completed run was:
+
+- `DOC-OPS-001`: Update the Chinese operation manual for the current local demo and admin workflow.
+
+Next work should be selected from the backlog below or from a new user request.
+
+## Completed Run Ledger
+
 1. [complete] Capture the final product direction in `docs/REQUIREMENTS_PLATFORM_MVP.md`.
 2. [complete] Mark the new document as the current requirements baseline in `docs/README.md`.
 3. [complete] Split the requirements into executable tasks in `docs/DEVELOPMENT_TASKS_MVP.md`.
