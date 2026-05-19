@@ -2040,3 +2040,12 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - `make docker-proxy-doctor` confirmed `127.0.0.1:7897` is reachable
   - Docker registry pull still fails because Docker Desktop is still sending registry traffic to stale `127.0.0.1:7890`
   - next manual action is to update Docker Desktop proxy settings to `http://host.docker.internal:7897` or `http://127.0.0.1:7897`, then restart Docker Desktop
+
+## Stop Hook Reconciliation After 0-Step Check
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after the Clash Verge port alignment.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` explicitly says no active run steps are open.
+- Confirmed the latest completed run is `OPS-DOCKER-002`.
+- Confirmed the remaining work is intentionally listed as backlog candidates or requires a new user request.
+- No implementation work is open from this hook.
