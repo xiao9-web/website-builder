@@ -1884,3 +1884,45 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Updated requirements and task plan.
 - Focused verification:
   - `mvn -f apps/server/pom.xml -Dtest=NewsServiceTest#deleteOfflineArticleInsteadOfPhysicallyDeletingIt test` passed.
+
+## ENG-K8S-001 Kubernetes Local Demo Manifests
+
+- Started the next unblocked engineering portfolio slice because real company materials are still pending from the user.
+- Selected Kubernetes before Apollo/XXL-JOB because it builds directly on the existing Docker and Jenkins work and does not require a live external service.
+- Added `deploy/k8s/`:
+  - `namespace.yaml`
+  - `configmap.yaml`
+  - `secret.example.yaml`
+  - `server.yaml`
+  - `web.yaml`
+  - `ingress.yaml`
+  - `kustomization.yaml`
+  - `README.md`
+- Added `make k8s-validate` for `kubectl apply --dry-run=client -k deploy/k8s`.
+- Updated the engineering roadmap with the Kubernetes implementation status.
+- First validation attempt failed because Docker Desktop's Kubernetes API server was not listening at `127.0.0.1:6443`; `kubectl --dry-run=client` still tried to download OpenAPI for validation.
+- `kubectl --dry-run=client --validate=false` still tried to recognize resources through the unavailable API server.
+- Updated `make k8s-validate` to use `kubectl kustomize deploy/k8s`, which performs local manifest rendering without a live cluster.
+- Verification:
+  - `make k8s-validate` passed.
+
+## ENG-OBS-001 Local Prometheus Observability
+
+- Continued with the next unblocked engineering portfolio slice after Kubernetes.
+- Selected observability before Apollo/XXL-JOB because it is low-risk, directly demonstrable, and complements Docker/Kubernetes health probes.
+- Added `micrometer-registry-prometheus` to the backend Maven dependencies.
+- Updated Actuator exposure to include `health,info,prometheus`.
+- Added the `application=website-builder` metrics tag for filtering.
+- Added Prometheus to the full Docker demo stack on `http://localhost:9090`.
+- Added `docker/prometheus/prometheus.yml` scraping `server:8080/actuator/prometheus`.
+- Added Grafana to the full Docker demo stack on `http://localhost:3001`.
+- Added a provisioned Grafana Prometheus data source and `Website Builder Overview` dashboard.
+- Added `make docker-demo-config` for compose validation.
+- Added `docs/OBSERVABILITY_LOCAL_DEMO.md`.
+- Updated Docker local demo docs and engineering roadmap.
+- Verification:
+  - `mvn -f apps/server/pom.xml test` passed with 59 tests.
+  - `npm run lint:web` passed.
+  - `make docker-demo-config` passed.
+  - `make k8s-validate` passed.
+  - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.

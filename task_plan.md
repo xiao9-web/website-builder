@@ -68,6 +68,8 @@ Build the Website Builder Platform MVP around the active implementation directio
 45. [complete] ENG-CI-001: Add Jenkins pipeline for backend tests, frontend lint/build, packaging, and optional image build.
 46. [complete] CMS-MEDIA-001: Fix template center, rich text media insertion, upload URLs, and public media serving.
 47. [complete] FEA-007: Replace article physical delete with offline/archive lifecycle behavior.
+48. [complete] ENG-K8S-001: Add Kubernetes local/demo deployment manifests and validation docs.
+49. [complete] ENG-OBS-001: Add Prometheus metrics and local observability documentation.
 
 ## Backlog
 
@@ -77,7 +79,7 @@ Recommended next slice:
 
 1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
 2. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
-3. [pending] ENG-OPS-001: Add optional Apollo, XXL-JOB, Kubernetes, and observability slices in that order.
+3. [pending] ENG-OPS-001: Add optional Apollo, XXL-JOB, alerting, and structured logging slices.
 
 ## Completed Execution: BE-001
 
@@ -753,3 +755,52 @@ Verification:
 
 - Added `NewsServiceTest.deleteOfflineArticleInsteadOfPhysicallyDeletingIt`.
 - Focused red/green test passed after implementation.
+
+## Completed Execution: ENG-K8S-001
+
+Primary deliverable:
+
+- Add Kubernetes local/demo deployment manifests and validation docs.
+
+Result:
+
+- Added `deploy/k8s/` manifests for namespace, runtime config, secret example, backend app, frontend app, service discovery, and ingress routing.
+- Added `deploy/k8s/kustomization.yaml` for one-command rendering.
+- Added `deploy/k8s/README.md` with local image, Kind, validation, apply, routing, and security notes.
+- Added `make k8s-validate`.
+- Updated `docs/ENGINEERING_PORTFOLIO_ROADMAP.md`.
+
+Verification:
+
+- `make k8s-validate` passed using local `kubectl kustomize deploy/k8s` rendering.
+
+Notes:
+
+- `kubectl apply --dry-run=client` was not suitable on this machine because Docker Desktop Kubernetes is not running and kubectl still attempted API resource discovery.
+
+## Completed Execution: ENG-OBS-001
+
+Primary deliverable:
+
+- Add a small local observability layer for backend health and Prometheus metrics.
+
+Result:
+
+- Added `micrometer-registry-prometheus` to the backend.
+- Exposed `/actuator/prometheus` through Spring Boot Actuator.
+- Added a stable `application` metrics tag.
+- Added Prometheus to `docker/docker-compose.full.yml`.
+- Added `docker/prometheus/prometheus.yml` to scrape `server:8080/actuator/prometheus`.
+- Added Grafana to `docker/docker-compose.full.yml`.
+- Added a provisioned Grafana Prometheus data source and `Website Builder Overview` dashboard.
+- Added `make docker-demo-config`.
+- Added `docs/OBSERVABILITY_LOCAL_DEMO.md`.
+- Updated Docker demo docs and engineering roadmap.
+
+Verification:
+
+- `mvn -f apps/server/pom.xml test` passed with 59 tests.
+- `npm run lint:web` passed.
+- `make docker-demo-config` passed.
+- `make k8s-validate` passed.
+- Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.

@@ -10,6 +10,8 @@ The full demo starts:
 - Redis
 - Spring Boot backend
 - Next.js frontend
+- Prometheus
+- Grafana
 
 It is meant for interview/demo usage. Normal development can still use `make dev-up`, `npm run dev:server`, and `npm run dev:web`.
 
@@ -36,13 +38,23 @@ docker compose -f docker/docker-compose.full.yml up -d --build
 | Dashboard content page | `http://localhost:3000/dashboard/sites/1/content` |
 | Backend API | `http://localhost:8080` |
 | Backend health | `http://localhost:8080/actuator/health` |
+| Backend Prometheus metrics | `http://localhost:8080/actuator/prometheus` |
 | Swagger UI | `http://localhost:8080/swagger-ui.html` |
+| Prometheus UI | `http://localhost:9090` |
+| Grafana UI | `http://localhost:3001` |
 
 Login:
 
 ```text
 admin@xiao9.com
 admin123
+```
+
+Grafana login:
+
+```text
+admin
+admin
 ```
 
 ## Stop
@@ -89,6 +101,8 @@ Docker Compose waits for:
 - Redis readiness through `redis-cli ping`
 - backend readiness through `/actuator/health`
 - frontend readiness through `/login`
+- Prometheus scrapes backend metrics through `/actuator/prometheus`
+- Grafana loads the Prometheus data source and Website Builder dashboard from provisioning files
 
 This makes the startup order explainable for interviews and future Kubernetes probes.
 

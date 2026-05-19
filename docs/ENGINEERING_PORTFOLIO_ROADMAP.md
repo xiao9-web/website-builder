@@ -202,6 +202,12 @@ Interview story:
 
 - "The Kubernetes layer makes deployment boundaries explicit: stateless app pods, externalized configuration, service discovery, health probes, and ingress routing."
 
+Implementation status:
+
+- `ENG-K8S-001` added `deploy/k8s/` manifests for namespace, ConfigMap, Secret example, backend Deployment/Service, frontend Deployment/Service, Ingress, and kustomization.
+- `ENG-K8S-001` added `deploy/k8s/README.md` with local validation, Kind image loading notes, routing, and security notes.
+- `ENG-K8S-001` added `make k8s-validate`.
+
 ### Phase E6: Observability
 
 Goal:
@@ -225,6 +231,16 @@ Acceptance:
 Interview story:
 
 - "I can observe the system at three levels: service liveness/readiness, HTTP/API behavior, and JVM/resource indicators."
+
+Implementation status:
+
+- `ENG-OBS-001` added Micrometer Prometheus registry support to the backend.
+- `ENG-OBS-001` exposed `/actuator/prometheus` alongside health and info.
+- `ENG-OBS-001` added Prometheus to `docker/docker-compose.full.yml`.
+- `ENG-OBS-001` added `docker/prometheus/prometheus.yml`.
+- `ENG-OBS-001` added Grafana with a provisioned Prometheus data source and overview dashboard.
+- `ENG-OBS-001` added `docs/OBSERVABILITY_LOCAL_DEMO.md`.
+- `ENG-OBS-001` added `make docker-demo-config` for local compose validation.
 
 ## 5. What Not To Add Yet
 

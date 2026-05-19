@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-up-full docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
@@ -27,6 +27,12 @@ docker-demo-reset: ## Stop full Docker demo stack and remove volumes
 
 docker-demo-logs: ## Tail full Docker demo stack logs
 	docker compose -f docker/docker-compose.full.yml logs -f
+
+docker-demo-config: ## Validate full Docker demo compose config
+	docker compose -f docker/docker-compose.full.yml config >/dev/null
+
+k8s-validate: ## Validate Kubernetes manifests with kubectl dry-run
+	kubectl kustomize deploy/k8s >/dev/null
 
 db-migrate: ## Run Flyway database migrations
 	mvn -f apps/server/pom.xml -Dflyway.url=jdbc:postgresql://localhost:5432/website_builder -Dflyway.user=wb_user -Dflyway.password=wb_pass flyway:migrate

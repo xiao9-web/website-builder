@@ -103,6 +103,7 @@ make db-status
 
 - Real company materials: logo, phone, WeChat, address, product photos, product specs, certificates, cases, and real news.
 - Interview-oriented engineering expansion: Dockerized full stack, Jenkins CI/CD, Apollo config center, XXL-JOB scheduled tasks, Kubernetes manifests, and observability.
+- Local observability demo: `docs/OBSERVABILITY_LOCAL_DEMO.md`.
 - Personal blog planning after the corporate-site flow is stable.
 
 ## Redundant Documents Policy
