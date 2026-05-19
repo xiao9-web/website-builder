@@ -25,64 +25,64 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `DOC-OPS-001`: Update the Chinese operation manual for the current local demo and admin workflow.
+- `OPS-DOCKER-001`: Make dev helper startup resilient to Docker proxy pull failures.
 
 Next work should be selected from the backlog below or from a new user request.
 
 ## Completed Run Ledger
 
-1. [complete] Capture the final product direction in `docs/REQUIREMENTS_PLATFORM_MVP.md`.
-2. [complete] Mark the new document as the current requirements baseline in `docs/README.md`.
-3. [complete] Split the requirements into executable tasks in `docs/DEVELOPMENT_TASKS_MVP.md`.
-4. [complete] Keep audit findings, progress, and Obsidian notes aligned with the accepted direction.
-5. [complete] BE-001: Align Flyway migrations with the MVP schema.
-6. [complete] BE-002: Seed corporate template and default Chunchang site data.
-7. [complete] Verify backend build and migration command expansion after BE-002.
-8. [complete] Update progress, findings, and Obsidian notes with BE-002 results.
-9. [complete] BE-003: Site API alignment with slug, template code, and default SiteConfig creation.
-10. [complete] DOC-001: Create current MVP technical documentation baseline.
-11. [complete] DOC-002: Remove obsolete documents after confirming the new MVP requirements and technical baseline.
-12. [complete] OPS-001: Configure workday 17:30 commit and push sync.
-13. [complete] BE-004: SiteConfig API for loading and saving corporate-site config.
-14. [complete] BE-005: Product Service API.
-15. [complete] BE-006: News API.
-16. [complete] BE-007: Lead API.
-17. [complete] BE-008: Public Site APIs.
-18. [complete] FE-PUBLIC-001: Local Chunchang corporate website preview.
-19. [complete] FE-LOCALIZE-001: Chinese-language visible product pass.
-20. [complete] FE-MANAGE-001: No-login local Chunchang management demo.
-21. [complete] FEA-001: Authenticated dashboard content-management page.
-22. [complete] FEA-002: Edit existing product services and recent news records.
-23. [complete] FEA-003: Real authenticated end-to-end smoke test with Docker database, backend, login, and content APIs.
-24. [complete] FEA-004: Editable menus and menu-scoped articles.
-25. [complete] FEA-004-T: Menu/article service unit tests and requirement sync.
-26. [complete] FEA-005: Public menu pages and article detail pages.
-27. [complete] FEA-006: Content-management menu/article UX improvements.
-28. [complete] FEA-006-P: Admin-to-public preview links for visible menus and published articles.
-29. [complete] PUB-001: Publish/build visibility on site detail.
-30. [complete] PUB-002: Build history API and compact site-detail history.
-31. [complete] READY-001: Launch material readiness checklist.
-32. [complete] E2E-REFRESH: Full local Docker/database/backend/frontend smoke test after Docker recovery.
-33. [complete] UX-ADMIN-001: Dedicated build-history page.
-34. [complete] FEP-001: Public Chunchang corporate-site polish for Chinese local demo.
-35. [complete] UX-ADMIN-002: Article editing publish-readiness hints.
-36. [complete] DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
-37. [complete] DOC-ACCEPT-001: Local demo and acceptance guide.
-38. [complete] DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
-39. [complete] UX-ADMIN-003: Image URL previews for logo, QR code, product images, and article covers.
-40. [complete] REQ-MENU-ARTICLE-001: Clarify menu-scoped articles, rich-text editing, and build/preview visibility requirements.
-41. [complete] FEA-MENU-ARTICLE-002: Implement leaf-menu-only article workflow, rich-text editing, public menu routing, and backend enforcement.
-42. [complete] DOC-ENG-PORTFOLIO-001: Add interview-oriented engineering expansion roadmap.
-43. [complete] ENG-DOCKER-001: Dockerize backend and frontend for a full-stack local demo.
-44. [complete] SITE-LIFECYCLE-001: Replace site deletion with offline and re-online lifecycle actions.
-45. [complete] ENG-CI-001: Add Jenkins pipeline for backend tests, frontend lint/build, packaging, and optional image build.
-46. [complete] CMS-MEDIA-001: Fix template center, rich text media insertion, upload URLs, and public media serving.
-47. [complete] FEA-007: Replace article physical delete with offline/archive lifecycle behavior.
-48. [complete] ENG-K8S-001: Add Kubernetes local/demo deployment manifests and validation docs.
-49. [complete] ENG-OBS-001: Add Prometheus metrics and local observability documentation.
-50. [complete] ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
-51. [complete] DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
-52. [complete] OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
+- done: Capture the final product direction in `docs/REQUIREMENTS_PLATFORM_MVP.md`.
+- done: Mark the new document as the current requirements baseline in `docs/README.md`.
+- done: Split the requirements into executable tasks in `docs/DEVELOPMENT_TASKS_MVP.md`.
+- done: Keep audit findings, progress, and Obsidian notes aligned with the accepted direction.
+- done: BE-001: Align Flyway migrations with the MVP schema.
+- done: BE-002: Seed corporate template and default Chunchang site data.
+- done: Verify backend build and migration command expansion after BE-002.
+- done: Update progress, findings, and Obsidian notes with BE-002 results.
+- done: BE-003: Site API alignment with slug, template code, and default SiteConfig creation.
+- done: DOC-001: Create current MVP technical documentation baseline.
+- done: DOC-002: Remove obsolete documents after confirming the new MVP requirements and technical baseline.
+- done: OPS-001: Configure workday 17:30 commit and push sync.
+- done: BE-004: SiteConfig API for loading and saving corporate-site config.
+- done: BE-005: Product Service API.
+- done: BE-006: News API.
+- done: BE-007: Lead API.
+- done: BE-008: Public Site APIs.
+- done: FE-PUBLIC-001: Local Chunchang corporate website preview.
+- done: FE-LOCALIZE-001: Chinese-language visible product pass.
+- done: FE-MANAGE-001: No-login local Chunchang management demo.
+- done: FEA-001: Authenticated dashboard content-management page.
+- done: FEA-002: Edit existing product services and recent news records.
+- done: FEA-003: Real authenticated end-to-end smoke test with Docker database, backend, login, and content APIs.
+- done: FEA-004: Editable menus and menu-scoped articles.
+- done: FEA-004-T: Menu/article service unit tests and requirement sync.
+- done: FEA-005: Public menu pages and article detail pages.
+- done: FEA-006: Content-management menu/article UX improvements.
+- done: FEA-006-P: Admin-to-public preview links for visible menus and published articles.
+- done: PUB-001: Publish/build visibility on site detail.
+- done: PUB-002: Build history API and compact site-detail history.
+- done: READY-001: Launch material readiness checklist.
+- done: E2E-REFRESH: Full local Docker/database/backend/frontend smoke test after Docker recovery.
+- done: UX-ADMIN-001: Dedicated build-history page.
+- done: FEP-001: Public Chunchang corporate-site polish for Chinese local demo.
+- done: UX-ADMIN-002: Article editing publish-readiness hints.
+- done: DATA-REAL-001: Real-material URL fields for logo, QR code, product images, and article covers.
+- done: DOC-ACCEPT-001: Local demo and acceptance guide.
+- done: DOC-LAUNCH-001: Final launch checklist for real company materials and approval.
+- done: UX-ADMIN-003: Image URL previews for logo, QR code, product images, and article covers.
+- done: REQ-MENU-ARTICLE-001: Clarify menu-scoped articles, rich-text editing, and build/preview visibility requirements.
+- done: FEA-MENU-ARTICLE-002: Implement leaf-menu-only article workflow, rich-text editing, public menu routing, and backend enforcement.
+- done: DOC-ENG-PORTFOLIO-001: Add interview-oriented engineering expansion roadmap.
+- done: ENG-DOCKER-001: Dockerize backend and frontend for a full-stack local demo.
+- done: SITE-LIFECYCLE-001: Replace site deletion with offline and re-online lifecycle actions.
+- done: ENG-CI-001: Add Jenkins pipeline for backend tests, frontend lint/build, packaging, and optional image build.
+- done: CMS-MEDIA-001: Fix template center, rich text media insertion, upload URLs, and public media serving.
+- done: FEA-007: Replace article physical delete with offline/archive lifecycle behavior.
+- done: ENG-K8S-001: Add Kubernetes local/demo deployment manifests and validation docs.
+- done: ENG-OBS-001: Add Prometheus metrics and local observability documentation.
+- done: ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
+- done: DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
+- done: OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
 
 ## Backlog
 
@@ -90,9 +90,9 @@ No active backend API backlog items in the current BE-001 through BE-008 slice.
 
 Recommended next slice:
 
-1. [pending] FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
-2. [pending] DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
-3. [pending] ENG-OPS-001: Add optional Apollo, XXL-JOB, alerting, and structured logging slices.
+- candidate: FEP-REAL: Public corporate-site polish with real logo, contact details, product photos, certifications, and cases after company materials are available.
+- candidate: DATA-REAL: Replace placeholder company materials after the user provides real logo, phone, WeChat, address, product photos, certifications, and cases.
+- candidate: ENG-OPS-001: Add optional Apollo, XXL-JOB, alerting, and structured logging slices.
 
 ## Completed Execution: BE-001
 

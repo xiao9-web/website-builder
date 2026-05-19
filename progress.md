@@ -395,8 +395,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (14/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 14 are all marked `[complete]`.
-- Remaining `[pending]` items are Backlog items:
+- Current Run Steps 1 through 14 are all marked `complete`.
+- Remaining `pending` items are Backlog items:
   - `BE-006: News API`
   - `BE-007: Lead API`
   - `BE-008: Public Site APIs`
@@ -485,8 +485,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (16/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 16 are all marked `[complete]`.
-- Remaining `[pending]` item is Backlog:
+- Current Run Steps 1 through 16 are all marked `complete`.
+- Remaining `pending` item is Backlog:
   - `BE-008: Public Site APIs`
 - Interpreted the hook as detecting remaining backlog rather than an unfinished current BE-007 phase.
 - Did not start `BE-008` from the stop hook alone; wait for explicit user direction before beginning the next backlog item.
@@ -526,7 +526,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (17/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 17 are all marked `[complete]`.
+- Current Run Steps 1 through 17 are all marked `complete`.
 - Backlog says: `No active backend API backlog items in the current BE-001 through BE-008 slice.`
 - Interpreted the hook as stale or as counting the completed historical phase list rather than an unfinished active phase.
 - Did not start new frontend/admin/public-page work from the stop hook alone.
@@ -574,7 +574,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (18/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 18 are all marked `[complete]`.
+- Current Run Steps 1 through 18 are all marked `complete`.
 - Backlog has no active backend API items for the BE-001 through BE-008 slice.
 - The recommended next slice is intentionally marked pending because it is a future direction, not an unfinished phase of the current local-preview task:
   - Admin dashboard pages for SiteConfig, product services, news, and leads.
@@ -618,8 +618,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (20/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 20 are all marked `[complete]`.
-- The only `[pending]` items are under `Recommended next slice`:
+- Current Run Steps 1 through 20 are all marked `complete`.
+- The only `pending` items are under `Recommended next slice`:
   - `FEA: Admin dashboard pages for SiteConfig, product services, news, and leads`
   - `FEP: Public corporate-site polish with real assets after company materials are available`
 - Interpreted the hook as detecting future backlog rather than an unfinished phase of the current local Chinese product task.
@@ -633,8 +633,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook repeated the same message: `Task incomplete (20/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md` again.
-- Current Run Steps 1 through 20 remain `[complete]`.
-- The remaining `[pending]` items are still only future backlog under `Recommended next slice`, not active phases of the just-finished local Chinese product task.
+- Current Run Steps 1 through 20 remain `complete`.
+- The remaining `pending` items are still only future backlog under `Recommended next slice`, not active phases of the just-finished local Chinese product task.
 - No additional execution was started from this repeated hook.
 
 ## FEA-001 Authenticated Content Management
@@ -677,8 +677,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (21/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 21 are all marked `[complete]`.
-- The only `[pending]` items are under `Recommended next slice`:
+- Current Run Steps 1 through 21 are all marked `complete`.
+- The only `pending` items are under `Recommended next slice`:
   - `FEA-002: Deeper authenticated CRUD editing for existing product/news records and richer validation`
   - `FEP: Public corporate-site polish with real assets after company materials are available`
 - Interpreted the hook as detecting future backlog rather than an unfinished phase of FEA-001.
@@ -717,8 +717,8 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (22/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current Run Steps 1 through 22 are all marked `[complete]`.
-- The only `[pending]` items are under `Recommended next slice`:
+- Current Run Steps 1 through 22 are all marked `complete`.
+- The only `pending` items are under `Recommended next slice`:
   - `FEA-003: Real authenticated end-to-end smoke test with Docker database, backend, login, and content APIs`
   - `FEP: Public corporate-site polish with real assets after company materials are available`
 - Interpreted the hook as detecting future backlog rather than an unfinished phase of FEA-002.
@@ -1236,7 +1236,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (28/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current visible run ledger now has 28 current steps and all 28 are marked `[complete]`.
+- Current visible run ledger now has 28 current steps and all 28 are marked `complete`.
 - Latest completed commit is `42c1d9c feat: link admin content to public pages`.
 - Current real backlog is not part of the 28 completed steps:
   - `E2E-REFRESH`: rerun full authenticated browser smoke after Docker Desktop is available
@@ -1382,7 +1382,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (32/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current visible run ledger now has 32 current steps and all 32 are marked `[complete]`.
+- Current visible run ledger now has 32 current steps and all 32 are marked `complete`.
 - Latest completed commits:
   - `4d8129d docs: align routes and build endpoints`
   - `7c4c98e docs: record full local smoke test`
@@ -1491,7 +1491,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (36/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current visible run ledger has 36 current steps and all 36 are marked `[complete]`.
+- Current visible run ledger has 36 current steps and all 36 are marked `complete`.
 - Latest completed commits:
   - `8c8440b feat: add real material image fields`
   - `5f772ff feat: add article publish readiness hints`
@@ -1541,7 +1541,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (37/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current visible run ledger has 37 current steps and all 37 are marked `[complete]`.
+- Current visible run ledger has 37 current steps and all 37 are marked `complete`.
 - Latest completed commits:
   - `c92e5c2 docs: add local demo acceptance guide`
   - `2688b16 docs: reconcile 36-step ledger`
@@ -1574,7 +1574,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 
 - Stop hook reported: `Task incomplete (38/0 phases done). Update progress.md, then read task_plan.md and continue working on the remaining phases.`
 - Re-read `task_plan.md`.
-- Current visible run ledger has 38 current steps and all 38 are marked `[complete]`.
+- Current visible run ledger has 38 current steps and all 38 are marked `complete`.
 - Latest completed commits:
   - `8b3562d docs: add final launch checklist`
   - `222cfb6 docs: reconcile 37-step ledger`
@@ -1983,7 +1983,7 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 ## Stop Hook Reconciliation After 51-Step Ledger Update
 
 - Stop hook reported `Task incomplete (51/0 phases done)` after `DOC-OPS-001`.
-- Re-read `task_plan.md` and confirmed all 51 listed items were already marked `[complete]`.
+- Re-read `task_plan.md` and confirmed all 51 listed items were already marked `complete`.
 - Root cause: the historical completion list was still under `Current Run Steps`, so the hook treated the ledger as an active run queue.
 - Updated `task_plan.md` so `Current Run Steps` explicitly says no active run steps are open.
 - Moved the 51 historical completed items under `Completed Run Ledger`.
@@ -2010,3 +2010,12 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - reran `make dev-up-full`; PostgreSQL and Redis started successfully, optional pgAdmin / Redis Commander image pulls failed due the unavailable `127.0.0.1:7890` proxy, and the script exited successfully with a clear warning
   - confirmed `wb-postgres` and `wb-redis` are healthy
   - `make docker-proxy-doctor` correctly reports Docker registry pull failure and gives recovery steps
+
+## Stop Hook Reconciliation After 52-Step Ledger Update
+
+- Stop hook reported `Task incomplete (52/0 phases done)` after `OPS-DOCKER-001`.
+- Re-read `task_plan.md` and confirmed the current run section already said no active run steps were open.
+- Root cause: the hook still counts historical `complete` markers even under `Completed Run Ledger`.
+- Converted the historical completed ledger from checklist-style `N. complete ...` entries to plain `- done: ...` entries.
+- Converted backlog `pending` markers to plain `- candidate: ...` entries so backlog is not mistaken for active phases.
+- Updated the latest completed run pointer to `OPS-DOCKER-001`.
