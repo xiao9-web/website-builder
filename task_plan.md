@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `OPS-DOCKER-003`: Make base dev startup skip optional Docker helper images cleanly.
+- `OPS-DEMO-004`: Fix start-demo local mode process lifetime and docs.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -85,6 +85,7 @@ Next work should be selected from the backlog below or from a new user request.
 - done: OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
 - done: OPS-DOCKER-002: Align Docker proxy diagnostics with Clash Verge port 7897.
 - done: OPS-DOCKER-003: Make base dev startup skip optional Docker helper images cleanly.
+- done: OPS-DEMO-004: Fix start-demo local mode process lifetime and docs.
 
 ## Backlog
 
@@ -957,3 +958,34 @@ Verification:
   - `wb-postgres` running
   - `wb-redis` running
   - optional dev tools skipped
+
+## Completed Execution: OPS-DEMO-004
+
+Primary deliverable:
+
+- Fix `start-demo.sh` so the default startup path works while Docker image pulling is still blocked by proxy settings.
+
+Result:
+
+- Changed `start-demo.sh` default mode to local development startup:
+  - Docker starts PostgreSQL and Redis.
+  - Maven starts the backend locally.
+  - Next.js starts the frontend locally.
+- Moved full Docker startup behind explicit `--docker`.
+- Added `--stop` for local process cleanup.
+- Added `.run/` to `.gitignore` for local logs and pid files.
+- Fixed the local-mode control flow so the script stays in the foreground by default.
+- Added `--detach` as an explicit opt-in, with foreground mode recommended.
+- Updated Docker local demo docs and Chinese operation manual.
+
+Verification:
+
+- `bash -n start-demo.sh` passed.
+- `./start-demo.sh --help` passed.
+- `./start-demo.sh` passed in foreground mode and printed the keep-terminal-open message.
+- HTTP smoke passed while the script was running:
+  - `/sites/chunchang` -> 200
+  - `/dashboard` -> 200
+  - `/login` -> 200
+  - `/actuator/health` -> 200
+- `./start-demo.sh --stop` stops local backend/frontend processes.

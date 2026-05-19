@@ -23,14 +23,33 @@ From the repository root:
 ./start-demo.sh
 ```
 
-The script validates Docker, starts the full demo stack, waits for key services, and prints all URLs and credentials.
+The default script mode starts PostgreSQL and Redis with Docker, then starts the backend and frontend locally. Keep this terminal open while viewing the site; press `Ctrl+C` or run `./start-demo.sh --stop` to stop local backend/frontend processes.
 
 Common options:
 
 ```bash
-./start-demo.sh --no-build
-./start-demo.sh --reset
 ./start-demo.sh --open
+./start-demo.sh --stop
+./start-demo.sh --docker
+./start-demo.sh --docker --no-build
+./start-demo.sh --docker --reset
+./start-demo.sh --detach
+```
+
+`--detach` returns after startup, but foreground mode is recommended on macOS terminal sessions because it keeps backend/frontend child processes attached and easier to stop cleanly.
+
+Full Docker mode:
+
+```bash
+./start-demo.sh --docker
+```
+
+Full Docker mode starts backend, frontend, Prometheus, and Grafana as containers. Use it after Docker Desktop proxy/image pulling is healthy.
+
+Local-mode logs:
+
+```bash
+tail -f .run/server.log .run/web.log
 ```
 
 Equivalent Makefile command:
@@ -39,7 +58,7 @@ Equivalent Makefile command:
 make demo
 ```
 
-Equivalent raw Docker command:
+Equivalent raw Docker command for full Docker mode:
 
 ```bash
 docker compose -f docker/docker-compose.full.yml up -d --build

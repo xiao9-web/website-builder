@@ -2071,3 +2071,25 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed latest completed run is `OPS-DOCKER-003`.
 - Confirmed backlog entries remain candidates only and should not be executed from the hook alone.
 - No additional implementation work is open from this hook.
+
+## OPS-DEMO-004 Start Demo Script Repair
+
+- User reported the startup script is currently unusable.
+- Reproduced the first immediate issue: rewriting `start-demo.sh` had removed executable permission, causing `permission denied`.
+- Restored executable permission.
+- Found the deeper issue: default `start-demo.sh` still tried to use the full Docker stack, which requires pulling/building images while Docker Desktop is still using stale proxy settings.
+- Reworked `start-demo.sh`:
+  - default mode starts PostgreSQL and Redis through Docker and starts backend/frontend locally
+  - full Docker stack is now explicit via `--docker`
+  - added `--stop`
+  - added `.run/` logs and pid files
+  - added `.run/` to `.gitignore`
+- Found and fixed a control-flow bug: `keep_local_processes_attached` was called in the Docker branch instead of the local branch.
+- Verified foreground local mode keeps the launcher attached and displays the keep-terminal-open message.
+- Verified HTTP smoke while the launcher was running:
+  - public Chunchang site returned 200
+  - dashboard returned 200
+  - login returned 200
+  - backend health returned 200
+- Verified `./start-demo.sh --stop` stops local backend/frontend processes.
+- Updated Docker local demo docs and Chinese operation manual to describe default local mode, `--docker`, `--detach`, and `--stop`.

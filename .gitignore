@@ -116,3 +116,4 @@ agentdb.rvf.lock
 .swarm/
 .cursor/
 .claude-flow/
+.run/
