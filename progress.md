@@ -1988,3 +1988,25 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Updated `task_plan.md` so `Current Run Steps` explicitly says no active run steps are open.
 - Moved the 51 historical completed items under `Completed Run Ledger`.
 - Current next work should be selected from backlog or a new user request, not inferred from the completed ledger.
+
+## OPS-DOCKER-001 Docker Proxy Pull Failure Handling
+
+- User reported `pgAdmin` / `Redis Commander` startup failed while Docker was pulling from Docker Hub through `127.0.0.1:7890`, which refused connections.
+- Confirmed the failure is Docker registry/proxy access, not application code.
+- Confirmed the machine already has `postgres:15-alpine` and `redis:6-alpine`, so base database services can start without pulling the optional helper images.
+- Added `scripts/dev-up-full.sh`.
+- Updated `make dev-up-full`:
+  - starts required PostgreSQL and Redis first
+  - attempts optional pgAdmin and Redis Commander afterward
+  - if optional image pull fails due Docker proxy, it warns but leaves base services available
+- Added `scripts/docker-proxy-doctor.sh`.
+- Added `make docker-proxy-doctor`.
+- Updated Docker demo docs and the Chinese operation manual with the proxy recovery flow.
+- Verification:
+  - `bash -n scripts/dev-up-full.sh scripts/docker-proxy-doctor.sh start-demo.sh` passed
+  - `docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml config` passed
+  - first `make dev-up-full` attempt exposed a container name conflict caused by using a different compose project name while compose files define fixed `container_name`
+  - removed the custom project name from `scripts/dev-up-full.sh`
+  - reran `make dev-up-full`; PostgreSQL and Redis started successfully, optional pgAdmin / Redis Commander image pulls failed due the unavailable `127.0.0.1:7890` proxy, and the script exited successfully with a clear warning
+  - confirmed `wb-postgres` and `wb-redis` are healthy
+  - `make docker-proxy-doctor` correctly reports Docker registry pull failure and gives recovery steps

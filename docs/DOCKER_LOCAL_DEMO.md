@@ -124,6 +124,26 @@ This makes the startup order explainable for interviews and future Kubernetes pr
 
 ## Troubleshooting
 
+If you only need PostgreSQL and Redis for local backend/frontend development:
+
+```bash
+make dev-up
+```
+
+If you also want pgAdmin and Redis Commander:
+
+```bash
+make dev-up-full
+```
+
+`make dev-up-full` now starts PostgreSQL and Redis first. If Docker cannot pull optional dev-tool images because of proxy/network issues, the script keeps the required base services running and prints a warning.
+
+Run a Docker registry/proxy diagnosis:
+
+```bash
+make docker-proxy-doctor
+```
+
 If ports are already occupied:
 
 ```bash
@@ -150,4 +170,10 @@ If Docker image pull fails with a proxy error such as `127.0.0.1:7890 connect: c
 
 ```bash
 ./start-demo.sh
+```
+
+For the development helper stack, rerun:
+
+```bash
+make dev-up-full
 ```

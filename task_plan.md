@@ -82,6 +82,7 @@ Next work should be selected from the backlog below or from a new user request.
 49. [complete] ENG-OBS-001: Add Prometheus metrics and local observability documentation.
 50. [complete] ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
 51. [complete] DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
+52. [complete] OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
 
 ## Backlog
 
@@ -877,3 +878,33 @@ Verification:
 - `bash -n start-demo.sh` passed.
 - `make docker-demo-config` passed.
 - Graphify rebuild was attempted but remains blocked by `ModuleNotFoundError: No module named 'graphify'`.
+
+## Completed Execution: OPS-DOCKER-001
+
+Primary deliverable:
+
+- Fix the local `pgAdmin` / `Redis Commander` startup failure caused by Docker proxy pull errors.
+
+Result:
+
+- Added `scripts/dev-up-full.sh`.
+- Changed `make dev-up-full` to start required base services first:
+  - PostgreSQL
+  - Redis
+- `make dev-up-full` then attempts optional dev tools:
+  - pgAdmin
+  - Redis Commander
+- If optional dev-tool image pulls fail because Docker is using an unavailable proxy such as `127.0.0.1:7890`, the script now warns and keeps the base services running instead of failing the whole local development startup.
+- Added `scripts/docker-proxy-doctor.sh`.
+- Added `make docker-proxy-doctor` for Docker proxy/registry diagnosis.
+- Updated `docs/DOCKER_LOCAL_DEMO.md` and `使用说明.md`.
+
+Verification:
+
+- `bash -n scripts/dev-up-full.sh scripts/docker-proxy-doctor.sh start-demo.sh` passed.
+- `docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml config` passed.
+- `make dev-up-full` now exits successfully even when optional pgAdmin / Redis Commander image pulls fail due the unavailable `127.0.0.1:7890` proxy.
+- Confirmed required base containers are healthy:
+  - `wb-postgres`
+  - `wb-redis`
+- `make docker-proxy-doctor` correctly reports that `127.0.0.1:7890` is unreachable and Docker registry pull still fails until the local proxy/Docker Desktop proxy config is fixed.

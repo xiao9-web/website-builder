@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-up-full demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full docker-proxy-doctor demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
@@ -8,7 +8,10 @@ dev-up: ## Start base Docker services (PostgreSQL + Redis)
 	docker compose -f docker/docker-compose.yml up -d
 
 dev-up-full: ## Start all Docker services including dev tools (pgAdmin, Redis Commander)
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d
+	./scripts/dev-up-full.sh
+
+docker-proxy-doctor: ## Diagnose Docker proxy and registry pull issues
+	./scripts/docker-proxy-doctor.sh
 
 dev-down: ## Stop all Docker services
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down
