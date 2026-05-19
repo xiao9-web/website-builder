@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `OPS-DOCKER-002`: Align Docker proxy diagnostics with Clash Verge port 7897.
+- `OPS-DOCKER-003`: Make base dev startup skip optional Docker helper images cleanly.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -84,6 +84,7 @@ Next work should be selected from the backlog below or from a new user request.
 - done: DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
 - done: OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
 - done: OPS-DOCKER-002: Align Docker proxy diagnostics with Clash Verge port 7897.
+- done: OPS-DOCKER-003: Make base dev startup skip optional Docker helper images cleanly.
 
 ## Backlog
 
@@ -932,3 +933,27 @@ Verification:
 - `make docker-proxy-doctor` now checks `127.0.0.1:7897` and confirms the Clash Verge port is reachable.
 - `make docker-proxy-doctor` still reports Docker registry pull failure because Docker Desktop is still routing registry traffic to old `127.0.0.1:7890`.
 - Next manual action: update Docker Desktop proxy settings to `http://host.docker.internal:7897` or `http://127.0.0.1:7897`, then restart Docker Desktop.
+
+## Completed Execution: OPS-DOCKER-003
+
+Primary deliverable:
+
+- Make the normal local development startup avoid optional Docker helper image pulls while Docker Desktop proxy is still misconfigured.
+
+Result:
+
+- Changed `make dev-up` to call `scripts/dev-up-full.sh` with `SKIP_DEV_TOOLS=1`.
+- `make dev-up` now starts only PostgreSQL and Redis and skips pgAdmin / Redis Commander.
+- Added `make dev-up-tools` to retry only optional helper tools after Docker Desktop proxy is fixed.
+- Avoided `--remove-orphans` because it can remove unrelated local compose containers.
+- Used `COMPOSE_IGNORE_ORPHANS=True` to suppress orphan warnings without destructive cleanup.
+- Updated Docker local demo docs and Chinese operation manual.
+
+Verification:
+
+- `bash -n scripts/dev-up-full.sh` passed.
+- `make dev-up` passed.
+- `make dev-up` output confirms:
+  - `wb-postgres` running
+  - `wb-redis` running
+  - optional dev tools skipped

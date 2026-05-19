@@ -1,23 +1,26 @@
-.PHONY: dev-up dev-down dev-up-full docker-proxy-doctor demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full dev-up-tools docker-proxy-doctor demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 dev-up: ## Start base Docker services (PostgreSQL + Redis)
-	docker compose -f docker/docker-compose.yml up -d
+	SKIP_DEV_TOOLS=1 ./scripts/dev-up-full.sh
 
 dev-up-full: ## Start all Docker services including dev tools (pgAdmin, Redis Commander)
 	./scripts/dev-up-full.sh
+
+dev-up-tools: ## Start optional dev tools only (pgAdmin + Redis Commander)
+	COMPOSE_IGNORE_ORPHANS=True docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d pgadmin redis-commander
 
 docker-proxy-doctor: ## Diagnose Docker proxy and registry pull issues
 	./scripts/docker-proxy-doctor.sh
 
 dev-down: ## Stop all Docker services
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down
+	COMPOSE_IGNORE_ORPHANS=True docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down
 
 dev-reset: ## Stop services and remove volumes (fresh start)
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v
+	COMPOSE_IGNORE_ORPHANS=True docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v
 
 demo: ## One-command full local demo startup with readiness checks
 	./start-demo.sh
@@ -58,7 +61,7 @@ start: dev-up ## Start Docker services, Spring Boot server, and Next.js web app
 clean: ## Clean all build artifacts
 	mvn -f apps/server/pom.xml clean 2>/dev/null || true
 	cd apps/web && rm -rf .next node_modules/.cache 2>/dev/null || true
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v 2>/dev/null || true
+	COMPOSE_IGNORE_ORPHANS=True docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down -v 2>/dev/null || true
 
 logs-db: ## Tail PostgreSQL logs
 	docker logs -f wb-postgres

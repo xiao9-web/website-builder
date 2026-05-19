@@ -4,6 +4,7 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASE_COMPOSE="$ROOT_DIR/docker/docker-compose.yml"
 DEV_COMPOSE="$ROOT_DIR/docker/docker-compose.dev.yml"
+SKIP_DEV_TOOLS="${SKIP_DEV_TOOLS:-0}"
 
 log() {
   printf "\033[1;34m==>\033[0m %s\n" "$*"
@@ -25,12 +26,28 @@ docker info >/dev/null 2>&1 || fail "Docker is not running. Start Docker Desktop
 cd "$ROOT_DIR"
 
 log "Starting required base services: PostgreSQL + Redis"
-docker compose -f "$BASE_COMPOSE" up -d
+COMPOSE_IGNORE_ORPHANS=True docker compose -f "$BASE_COMPOSE" up -d
+
+if [[ "$SKIP_DEV_TOOLS" == "1" || "$SKIP_DEV_TOOLS" == "true" ]]; then
+  warn "Skipping optional dev tools because SKIP_DEV_TOOLS=${SKIP_DEV_TOOLS}."
+  cat <<'EOF'
+
+Base services
+-------------
+PostgreSQL: localhost:5432
+Redis:      localhost:6379
+
+Optional dev tools were skipped.
+Run without SKIP_DEV_TOOLS after Docker proxy is fixed:
+  make dev-up-full
+EOF
+  exit 0
+fi
 
 log "Starting optional dev tools: pgAdmin + Redis Commander"
 OUTPUT_FILE="$(mktemp)"
 set +e
-docker compose -f "$BASE_COMPOSE" -f "$DEV_COMPOSE" up -d pgadmin redis-commander 2>&1 | tee "$OUTPUT_FILE"
+COMPOSE_IGNORE_ORPHANS=True docker compose -f "$BASE_COMPOSE" -f "$DEV_COMPOSE" up -d pgadmin redis-commander 2>&1 | tee "$OUTPUT_FILE"
 STATUS="${PIPESTATUS[0]}"
 set -e
 
@@ -41,6 +58,7 @@ if [[ "$STATUS" -ne 0 ]]; then
     warn "Set Docker Desktop proxy to http://host.docker.internal:7897 or http://127.0.0.1:7897, then restart Docker Desktop."
     warn "PostgreSQL and Redis are still started, so backend development can continue."
     warn "To use pgAdmin/Redis Commander, start/fix the local proxy or run: make docker-proxy-doctor"
+    warn "To skip optional tools next time, run: make dev-up"
   else
     warn "Optional dev tools failed to start. PostgreSQL and Redis are still started."
     warn "Run 'docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs' for details."

@@ -130,6 +130,8 @@ If you only need PostgreSQL and Redis for local backend/frontend development:
 make dev-up
 ```
 
+This is the recommended command while Docker Desktop is still pointing at the old proxy port. It does not pull pgAdmin or Redis Commander.
+
 If you also want pgAdmin and Redis Commander:
 
 ```bash
@@ -137,6 +139,12 @@ make dev-up-full
 ```
 
 `make dev-up-full` now starts PostgreSQL and Redis first. If Docker cannot pull optional dev-tool images because of proxy/network issues, the script keeps the required base services running and prints a warning.
+
+To retry only the optional tools after fixing Docker Desktop proxy:
+
+```bash
+make dev-up-tools
+```
 
 Run a Docker registry/proxy diagnosis:
 

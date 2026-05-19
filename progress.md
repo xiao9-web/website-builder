@@ -2049,3 +2049,16 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed the latest completed run is `OPS-DOCKER-002`.
 - Confirmed the remaining work is intentionally listed as backlog candidates or requires a new user request.
 - No implementation work is open from this hook.
+
+## OPS-DOCKER-003 Base Dev Startup Cleanup
+
+- User showed `make dev-up-full` output where PostgreSQL and Redis were running, but optional pgAdmin / Redis Commander still failed to pull because Docker Desktop still points at old `127.0.0.1:7890`.
+- Confirmed this means backend development can continue with base services.
+- First attempted to suppress orphan warnings with a fixed compose project name and `--remove-orphans`; this caused fixed `container_name` conflicts with existing `wb-postgres` / `wb-redis` and removed an unrelated orphan container, so that approach was reverted.
+- Updated `scripts/dev-up-full.sh` to use `COMPOSE_IGNORE_ORPHANS=True` instead of `--remove-orphans`.
+- Updated `make dev-up` to run with `SKIP_DEV_TOOLS=1`, so it starts only PostgreSQL and Redis and does not try to pull optional helper images.
+- Added `make dev-up-tools` to retry only pgAdmin / Redis Commander after Docker Desktop proxy is fixed.
+- Verification:
+  - `bash -n scripts/dev-up-full.sh` passed
+  - `make dev-up` passed
+  - output confirms `wb-postgres` and `wb-redis` are running and optional dev tools are skipped
