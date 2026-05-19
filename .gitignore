@@ -37,12 +37,17 @@ out/
 .env
 .env.local
 .env.prod
+.env.blog
 .env.*.local
 *.local
 *.pem
 *.key
 *.p12
+*.p8
+*.pub
 credentials.json
+*secret*.json
+*credentials*.json
 application-local.yml
 application-local.properties
 
@@ -106,16 +111,40 @@ ehthumbs.db
 # ============================================================
 # Project-specific generated files
 # ============================================================
-admin/src/auto-imports.d.ts
-admin/src/components.d.ts
 agentdb.rvf
 agentdb.rvf.lock
+test_upload.txt
+
+# ============================================================
+# Removed legacy tracks / local AI runtime state
+# ============================================================
+admin/
+frontend/
+server/
+blog-server/
+blog-web/
+ai-team-snapshot/
+.claude/
+.claude-flow/
+.swarm/
+.cursor/
+.mcp.json
+example_claude_config.json
+proper_claude_config.json
+update_claude_config.sh
+run_ai_pipeline.py
+Makefile.blog
+docker/docker-compose.blog.yml
+docker/mysql/
+docker/nginx/
+docker/postgres/
+start_admin.bat
+start_all.bat
+start_backend.bat
+start_frontend.bat
 
 # ============================================================
 # Local runtime state (not shared)
 # ============================================================
 .meta-kim/
-.swarm/
-.cursor/
-.claude-flow/
 .run/

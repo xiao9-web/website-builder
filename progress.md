@@ -2214,3 +2214,44 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed `Current Run Steps` has no active run steps.
 - Confirmed latest completed run is `UX-ERROR-001`.
 - No additional implementation work is open from this hook.
+
+## Stop Hook Reconciliation After Commit 53376c5
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after commit `53376c5`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed the latest committed work is `chore: prepare aliyun deployment and toast errors`.
+- No additional implementation work is open from this hook.
+
+## CLEANUP-001 Repository Hygiene
+
+- User requested project optimization, deletion of unnecessary files, and removal of sensitive material from Git.
+- Removed obsolete/non-mainline tracks from Git:
+  - old Vue admin/frontend tracks
+  - old NestJS server track
+  - old standalone blog tracks
+  - AI team snapshot and Claude/Swarm local runtime state
+  - agent database files, test upload file, old Windows launcher scripts, old Claude config helper files
+  - old blog Docker compose and obsolete MySQL/Postgres/Nginx sidecar files
+- Removed obsolete docs with sensitive-looking examples:
+  - `docs/AI_PIPELINE_GUIDE.md`
+  - `TEST_REPORT.md`
+- Deleted untracked root-level old deployment notes that contained OSS/Anthropic example secret fields.
+- Kept current mainline:
+  - `apps/server`
+  - `apps/web`
+  - current `docs`
+  - current Docker/local demo files
+  - `deploy/aliyun-2c2g`
+  - `deploy/k8s`
+  - `.codex` meta-theory runtime assets, because the project still uses them.
+- Updated `.gitignore` to prevent removed legacy tracks, local AI runtime state, local env files, credentials, and generated files from being re-added.
+- Updated docs to describe removed legacy tracks instead of treating them as dormant current-tree directories.
+- Verification:
+  - `npm run build:server` passed.
+  - `npm run build:web` passed.
+  - Aliyun production compose config expansion passed with a temporary `.env.prod`.
+  - Shell syntax checks passed for the Aliyun scripts, `start-demo.sh`, and Docker helper scripts.
+  - Sensitive keyword scan no longer finds tracked API key/JWT-secret-looking material.
+  - Git no longer tracks legacy source trees, local runtime state, generated data, uploads, or OS junk files.
+  - Local dependency/build caches were removed again after verification.

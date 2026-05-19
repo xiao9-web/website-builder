@@ -23,7 +23,6 @@ Read these documents first:
 | [ALIYUN_GO_LIVE_RUNBOOK.md](./ALIYUN_GO_LIVE_RUNBOOK.md) | Step-by-step Aliyun go-live, verification, backup, rollback, and troubleshooting runbook |
 | [JENKINS_CI.md](./JENKINS_CI.md) | Jenkins CI pipeline stages, parameters, and troubleshooting |
 | [DEV_STANDARDS.md](./DEV_STANDARDS.md) | General development standards |
-| [AI_PIPELINE_GUIDE.md](./AI_PIPELINE_GUIDE.md) | AI-assisted workflow reference |
 
 ## Active Direction
 
@@ -55,7 +54,7 @@ docs
 docker
 ```
 
-Do not treat old `admin`, `server`, `frontend`, `blog-server`, or `blog-web` tracks as the phase-one implementation path unless the project direction explicitly changes again.
+Legacy `admin`, `server`, `frontend`, `blog-server`, and `blog-web` tracks were removed from the active repository to keep the project focused on the current MVP implementation.
 
 ## Useful Commands
 

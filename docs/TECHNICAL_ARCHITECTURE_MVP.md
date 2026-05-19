@@ -44,10 +44,10 @@ Planned engineering-expansion stack:
 | Observability | Spring Boot Actuator, Prometheus, Grafana |
 | API docs | OpenAPI / Swagger |
 
-Non-mainline tracks:
+Removed non-mainline tracks:
 
-- `blog-server` and `blog-web` are not first-phase mainline.
-- Older `admin`, `server`, and `frontend` paths are not current entrypoints.
+- `blog-server` and `blog-web` were removed from the active repository.
+- Older `admin`, `server`, and `frontend` paths were removed from the active repository.
 - Old docs that describe Vue, NestJS, MySQL, or drag-and-drop are historical references only.
 
 ## 3. Repository Boundaries

@@ -104,7 +104,7 @@
 - Keeping obsolete docs as "historical references" still creates risk because developers can follow stale links or outdated examples.
 - The current docs directory should prefer a small trusted baseline over a large mixed archive.
 - Obsolete Vue/NestJS/MySQL/drag-and-drop documents were deleted after the new MVP requirements and technical baseline were confirmed.
-- General references that do not directly conflict, such as `DEV_STANDARDS.md` and `AI_PIPELINE_GUIDE.md`, were kept for now.
+- General references that do not directly conflict, such as `DEV_STANDARDS.md`, were kept for now.
 
 ## BE-004 Findings
 
