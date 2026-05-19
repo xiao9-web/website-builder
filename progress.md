@@ -104,6 +104,85 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Recommended next development task: `BE-003: Site API`.
 - BE-003 should align entities/DTOs with V3 fields and ensure creating a `corporate-site` site creates a default `SiteConfig`.
 
+## Hook Check - 2026-05-19
+
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`; `Current Run Steps` explicitly says no active run steps are open.
+- No new backlog work was started from the hook alone.
+- Current user-facing direction remains Aliyun deployment sizing and the likely next implementation slice is a low-memory production deployment package for 2c2g ECS if the user proceeds with that server.
+
+## OPS-ALIYUN-001 2c2g Deployment Package
+
+- User bought an Aliyun ECS practice server:
+  - Public IP: `47.116.137.192`
+  - Spec: `ecs.e-c1m1.large`, 2 vCPU / 2 GiB
+  - OS: Ubuntu 22.04 64-bit
+  - Disk: 40 GiB ESSD Entry
+  - Bandwidth: 3 Mbps fixed
+  - Expiry: 2027-05-19 23:59:59
+- Added a low-memory production-practice deployment package:
+  - `docker-compose.prod.aliyun-2c2g.yml`
+  - `.env.prod.example`
+  - `.dockerignore`
+  - `deploy/aliyun-2c2g/README.md`
+  - `deploy/aliyun-2c2g/nginx/conf.d/website-builder.conf`
+  - `scripts/aliyun-2c2g-init.sh`
+  - `scripts/aliyun-2c2g-deploy.sh`
+  - `scripts/aliyun-2c2g-backup.sh`
+- Production-practice stack intentionally runs only Nginx, Next.js, Spring Boot, PostgreSQL, and Redis.
+- Jenkins, K8s, Prometheus, Grafana, Apollo, XXL-JOB, pgAdmin, and Redis Commander are intentionally not part of the 2c2g always-on stack.
+- Added Makefile targets:
+  - `prod-aliyun-config`
+  - `prod-aliyun-up`
+  - `prod-aliyun-down`
+  - `prod-aliyun-ps`
+  - `prod-aliyun-logs`
+  - `prod-aliyun-health`
+  - `prod-aliyun-backup`
+- Updated docs:
+  - `使用说明.md`
+  - `docs/README.md`
+- Verification:
+  - `bash -n scripts/aliyun-2c2g-init.sh scripts/aliyun-2c2g-deploy.sh scripts/aliyun-2c2g-backup.sh` passed.
+  - `make prod-aliyun-config` passed with temporary test `.env.prod`.
+  - `make -n prod-aliyun-up prod-aliyun-ps prod-aliyun-health prod-aliyun-backup` expanded correctly.
+  - `docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file /tmp/wb-env-prod-test config --services` returned `postgres`, `redis`, `server`, `web`, `nginx`.
+  - `npm run build:server` passed.
+  - `npm run build:web` passed.
+
+## Stop Hook Reconciliation After OPS-ALIYUN-001
+
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed latest completed run is `OPS-ALIYUN-001`.
+- No additional implementation work is open from this hook.
+
+## DOC-ALIYUN-001 Go-Live Runbook
+
+- User invoked `meta-theory` and requested an上线操作文档.
+- Treated the request as a documentation/governance task for the current Aliyun 2c2g practice production server.
+- Added `docs/ALIYUN_GO_LIVE_RUNBOOK.md` with:
+  - target server configuration
+  - deployment architecture
+  - security group rules
+  - first deployment steps
+  - `.env.prod` guidance
+  - health checks
+  - public-site/admin/content/upload/lead acceptance checklist
+  - daily operation commands
+  - backup and restore procedures
+  - update release flow
+  - rollback flow
+  - common troubleshooting
+  - domain/ICP/HTTPS next steps
+  - completion criteria and upgrade roadmap
+- Updated `docs/README.md` to link the runbook.
+- Updated `deploy/aliyun-2c2g/README.md` to point to the full go-live runbook.
+- Verification:
+  - Confirmed the new runbook file exists and key Aliyun links/commands are indexed.
+  - Confirmed no planning hook status markers were introduced into planning-sensitive files.
+
 ## Commit
 
 - Committed the current platform MVP baseline and BE-001/BE-002 implementation as `b1c7139 Define platform MVP and seed corporate site`.
@@ -2101,4 +2180,37 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed `Current Run Steps` has no active run steps.
 - Confirmed latest completed run is `OPS-DEMO-004`.
 - Confirmed backlog entries remain candidates only and require a new user request or explicit selection.
+- No additional implementation work is open from this hook.
+
+## Stop Hook Reconciliation After DOC-ALIYUN-001
+
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed latest completed run is `DOC-ALIYUN-001`.
+- No additional implementation work is open from this hook.
+
+## UX-ERROR-001 Toast Error Feedback
+
+- User reported that errors such as `Request failed with status code 403` were shown at the top of the page, making button clicks feel unresponsive.
+- Root cause:
+  - Axios request failures were converted to thrown `Error` objects.
+  - Content management operations caught those errors and rendered them as a top-of-page red message.
+  - When the user focused on the action area, the top message was easy to miss.
+- Added a lightweight global toast mechanism without adding dependencies:
+  - `apps/web/src/lib/toast.ts`
+  - `apps/web/src/components/ui/ToastProvider.tsx`
+- Wrapped the root layout in `ToastProvider`.
+- Updated the Axios response interceptor to show non-401 request failures as error toasts.
+- Updated the content management page to use toast popups for validation and operation errors instead of the top red error banner.
+- Kept success feedback in the existing green message area.
+- Verification:
+  - `npm run build:web` passed.
+
+## Stop Hook Reconciliation After UX-ERROR-001
+
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed latest completed run is `UX-ERROR-001`.
 - No additional implementation work is open from this hook.

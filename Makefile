@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-up-full dev-up-tools docker-proxy-doctor demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config k8s-validate db-migrate db-status server-start web-start start clean help
+.PHONY: dev-up dev-down dev-up-full dev-up-tools docker-proxy-doctor demo docker-demo-up docker-demo-down docker-demo-reset docker-demo-logs docker-demo-config prod-aliyun-config prod-aliyun-up prod-aliyun-down prod-aliyun-ps prod-aliyun-logs prod-aliyun-health prod-aliyun-backup k8s-validate db-migrate db-status server-start web-start start clean help
 
 # Default target
 help: ## Show this help
@@ -39,6 +39,27 @@ docker-demo-logs: ## Tail full Docker demo stack logs
 
 docker-demo-config: ## Validate full Docker demo compose config
 	docker compose -f docker/docker-compose.full.yml config >/dev/null
+
+prod-aliyun-config: ## Validate Aliyun 2c2g production compose config
+	docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file .env.prod config >/dev/null
+
+prod-aliyun-up: ## Build and start Aliyun 2c2g production stack
+	./scripts/aliyun-2c2g-deploy.sh
+
+prod-aliyun-down: ## Stop Aliyun 2c2g production stack
+	docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file .env.prod down
+
+prod-aliyun-ps: ## Show Aliyun 2c2g production containers
+	docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file .env.prod ps
+
+prod-aliyun-logs: ## Tail Aliyun 2c2g production logs
+	docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file .env.prod logs -f --tail=200
+
+prod-aliyun-health: ## Check Aliyun 2c2g local health endpoints
+	curl -fsS http://127.0.0.1/healthz && curl -fsS http://127.0.0.1/actuator/health
+
+prod-aliyun-backup: ## Backup Aliyun 2c2g PostgreSQL and uploads
+	./scripts/aliyun-2c2g-backup.sh
 
 k8s-validate: ## Validate Kubernetes manifests with kubectl dry-run
 	kubectl kustomize deploy/k8s >/dev/null

@@ -19,6 +19,8 @@ Read these documents first:
 | [FINAL_LAUNCH_CHECKLIST.md](./FINAL_LAUNCH_CHECKLIST.md) | Final company-material and launch approval checklist |
 | [ENGINEERING_PORTFOLIO_ROADMAP.md](./ENGINEERING_PORTFOLIO_ROADMAP.md) | Interview-oriented engineering expansion roadmap |
 | [DOCKER_LOCAL_DEMO.md](./DOCKER_LOCAL_DEMO.md) | Full Docker local demo startup and troubleshooting |
+| [../deploy/aliyun-2c2g/README.md](../deploy/aliyun-2c2g/README.md) | Aliyun 2c2g low-memory production practice deployment |
+| [ALIYUN_GO_LIVE_RUNBOOK.md](./ALIYUN_GO_LIVE_RUNBOOK.md) | Step-by-step Aliyun go-live, verification, backup, rollback, and troubleshooting runbook |
 | [JENKINS_CI.md](./JENKINS_CI.md) | Jenkins CI pipeline stages, parameters, and troubleshooting |
 | [DEV_STANDARDS.md](./DEV_STANDARDS.md) | General development standards |
 | [AI_PIPELINE_GUIDE.md](./AI_PIPELINE_GUIDE.md) | AI-assisted workflow reference |
@@ -62,6 +64,9 @@ npm run build:server
 npm run build:web
 npm run build:all
 make docker-demo-up
+make prod-aliyun-up
+make prod-aliyun-health
+make prod-aliyun-backup
 make -n start
 make -n db-migrate
 make -n db-status

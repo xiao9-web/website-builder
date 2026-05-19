@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import type { ApiResponse } from "@/types/api";
 import { getToken, clearAuth } from "./auth";
+import { showErrorToast } from "./toast";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api",
@@ -38,6 +39,9 @@ api.interceptors.response.use(
     }
     const message =
       error.response?.data?.message || error.message || "网络异常，请稍后再试";
+    if (typeof window !== "undefined" && error.response?.status !== 401) {
+      showErrorToast(message);
+    }
     return Promise.reject(new Error(message));
   },
 );

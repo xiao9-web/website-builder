@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `OPS-DEMO-004`: Fix start-demo local mode process lifetime and docs.
+- `UX-ERROR-001`: Show request errors as toast popups instead of top-of-page messages.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -86,6 +86,9 @@ Next work should be selected from the backlog below or from a new user request.
 - done: OPS-DOCKER-002: Align Docker proxy diagnostics with Clash Verge port 7897.
 - done: OPS-DOCKER-003: Make base dev startup skip optional Docker helper images cleanly.
 - done: OPS-DEMO-004: Fix start-demo local mode process lifetime and docs.
+- done: OPS-ALIYUN-001: Add Aliyun 2c2g production-practice deployment package.
+- done: DOC-ALIYUN-001: Add Aliyun go-live operation runbook.
+- done: UX-ERROR-001: Show request errors as toast popups instead of top-of-page messages.
 
 ## Backlog
 

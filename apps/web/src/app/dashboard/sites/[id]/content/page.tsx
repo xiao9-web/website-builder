@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Loading } from "@/components/ui/Loading";
 import { useSiteStore } from "@/stores/siteStore";
+import { showErrorToast } from "@/lib/toast";
 import { slugify, formatDate } from "@/lib/utils";
 import {
   createNews,
@@ -638,7 +639,6 @@ export default function SiteContentPage() {
   const [leads, setLeads] = useState<LeadDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const [configForm, setConfigForm] = useState({
@@ -766,10 +766,17 @@ export default function SiteContentPage() {
       ? Math.round((readinessReadyCount / readinessItems.length) * 100)
       : 0;
 
+  const notifyError = useCallback((message: string) => {
+    showErrorToast(message);
+  }, []);
+
+  const notifyUnknownError = useCallback((error: unknown, fallback: string) => {
+    notifyError(error instanceof Error ? error.message : fallback);
+  }, [notifyError]);
+
   useEffect(() => {
     async function load() {
       setIsLoading(true);
-      setError("");
       try {
         const [siteConfig, menuList, productList, newsList, leadList] = await Promise.all([
           getSiteConfig(siteId),
@@ -816,10 +823,9 @@ export default function SiteContentPage() {
           contactNotice: textValue(contact.notice),
         });
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "内容管理数据加载失败，请确认后端已启动且已登录。",
+        notifyUnknownError(
+          err,
+          "内容管理数据加载失败，请确认后端已启动且已登录。",
         );
       } finally {
         setIsLoading(false);
@@ -829,12 +835,11 @@ export default function SiteContentPage() {
     if (siteId) {
       load();
     }
-  }, [siteId, fetchSite]);
+  }, [siteId, fetchSite, notifyUnknownError]);
 
   const handleConfigSave = async () => {
     if (!config) return;
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const nextConfig = await updateSiteConfig(siteId, {
@@ -890,7 +895,7 @@ export default function SiteContentPage() {
       setConfig(nextConfig);
       setSuccess("站点配置已保存。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "站点配置保存失败。");
+      notifyUnknownError(err, "站点配置保存失败。");
     } finally {
       setIsSaving(false);
     }
@@ -898,11 +903,10 @@ export default function SiteContentPage() {
 
   const handleCreateProduct = async () => {
     if (!productForm.name || !productForm.summary) {
-      setError("请填写产品名称和摘要。");
+      notifyError("请填写产品名称和摘要。");
       return;
     }
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const created = await createProductService(siteId, {
@@ -924,7 +928,7 @@ export default function SiteContentPage() {
       });
       setSuccess("产品服务已新增。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "产品服务新增失败。");
+      notifyUnknownError(err, "产品服务新增失败。");
     } finally {
       setIsSaving(false);
     }
@@ -952,7 +956,6 @@ export default function SiteContentPage() {
       imageUrl: product.imageUrl || "",
       scenarios: (product.scenarios ?? []).map(String).join("、"),
     });
-    setError("");
     setSuccess("");
   };
 
@@ -969,12 +972,11 @@ export default function SiteContentPage() {
 
   const handleUpdateProduct = async (product: ProductServiceDTO) => {
     if (!productEditForm.name || !productEditForm.summary) {
-      setError("请填写产品名称和摘要。");
+      notifyError("请填写产品名称和摘要。");
       return;
     }
 
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const updated = await updateProductService(siteId, product.id, {
@@ -992,7 +994,7 @@ export default function SiteContentPage() {
       cancelEditProduct();
       setSuccess("产品服务已更新。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "产品服务更新失败。");
+      notifyUnknownError(err, "产品服务更新失败。");
     } finally {
       setIsSaving(false);
     }
@@ -1000,11 +1002,10 @@ export default function SiteContentPage() {
 
   const handleCreateMenu = async () => {
     if (!menuForm.label || !menuForm.slug) {
-      setError("请填写菜单名称和访问标识。");
+      notifyError("请填写菜单名称和访问标识。");
       return;
     }
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const created = await createSiteMenu(siteId, {
@@ -1024,7 +1025,7 @@ export default function SiteContentPage() {
       });
       setSuccess("菜单栏目已新增。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "菜单栏目新增失败。");
+      notifyUnknownError(err, "菜单栏目新增失败。");
     } finally {
       setIsSaving(false);
     }
@@ -1039,7 +1040,6 @@ export default function SiteContentPage() {
       sortOrder: String(menu.sortOrder),
       visible: menu.visible,
     });
-    setError("");
     setSuccess("");
   };
 
@@ -1056,11 +1056,10 @@ export default function SiteContentPage() {
 
   const handleUpdateMenu = async (menu: SiteMenuDTO) => {
     if (!menuEditForm.label || !menuEditForm.slug) {
-      setError("请填写菜单名称和访问标识。");
+      notifyError("请填写菜单名称和访问标识。");
       return;
     }
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const updated = await updateSiteMenu(siteId, menu.id, {
@@ -1083,7 +1082,7 @@ export default function SiteContentPage() {
       cancelEditMenu();
       setSuccess("菜单栏目已更新。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "菜单栏目更新失败。");
+      notifyUnknownError(err, "菜单栏目更新失败。");
     } finally {
       setIsSaving(false);
     }
@@ -1091,7 +1090,6 @@ export default function SiteContentPage() {
 
   const handleDeleteMenu = async (menu: SiteMenuDTO) => {
     if (!window.confirm(`确定删除菜单“${menu.label}”吗？`)) return;
-    setError("");
     setSuccess("");
     try {
       await deleteSiteMenu(siteId, menu.id);
@@ -1103,17 +1101,17 @@ export default function SiteContentPage() {
       );
       setSuccess("菜单栏目已删除。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "菜单栏目删除失败。");
+      notifyUnknownError(err, "菜单栏目删除失败。");
     }
   };
 
   const startCreateNewsForMenu = (menu: SiteMenuDTO) => {
     if (menu.menuType === "HOME") {
-      setError("首页菜单不能直接挂文章，请选择其他栏目。");
+      notifyError("首页菜单不能直接挂文章，请选择其他栏目。");
       return;
     }
     if (!isLeafMenu(menus, menu.id)) {
-      setError("这个菜单下面还有子菜单，文章只能挂在最后一级菜单下。");
+      notifyError("这个菜单下面还有子菜单，文章只能挂在最后一级菜单下。");
       return;
     }
     setActiveTab("news");
@@ -1124,13 +1122,12 @@ export default function SiteContentPage() {
       menuId: String(menu.id),
       category: menu.label,
     }));
-    setError("");
     setSuccess(`已切换到文章编辑，并预选栏目：${menuPath(menus, menu.id)}。`);
   };
 
   const handleCreateNews = async () => {
     if (!newsForm.title || !newsForm.slug) {
-      setError("请填写文章标题和访问标识。");
+      notifyError("请填写文章标题和访问标识。");
       return;
     }
     const menuWarning = articleMenuWarning(
@@ -1138,11 +1135,10 @@ export default function SiteContentPage() {
       newsForm.menuId ? Number(newsForm.menuId) : null,
     );
     if (menuWarning) {
-      setError(`请选择可挂文章的栏目：${menuWarning}。`);
+      notifyError(`请选择可挂文章的栏目：${menuWarning}。`);
       return;
     }
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const created = await createNews(siteId, {
@@ -1162,7 +1158,7 @@ export default function SiteContentPage() {
       });
       setSuccess("栏目文章已保存为草稿。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "栏目文章新增失败。");
+      notifyUnknownError(err, "栏目文章新增失败。");
     } finally {
       setIsSaving(false);
     }
@@ -1185,7 +1181,7 @@ export default function SiteContentPage() {
     if (status === "PUBLISHED") {
       const menuWarning = articleMenuWarning(menus, item.menuId);
       if (menuWarning) {
-        setError(`这篇文章暂不能发布：${menuWarning}。`);
+        notifyError(`这篇文章暂不能发布：${menuWarning}。`);
         return;
       }
       const warnings = newsReadinessWarnings(menus, item);
@@ -1216,7 +1212,6 @@ export default function SiteContentPage() {
       category: item.category || "",
       coverImage: item.coverImage || "",
     });
-    setError("");
     setSuccess("");
   };
 
@@ -1235,7 +1230,7 @@ export default function SiteContentPage() {
 
   const handleUpdateNews = async (item: NewsDTO) => {
     if (!newsEditForm.title || !newsEditForm.slug) {
-      setError("请填写文章标题和访问标识。");
+      notifyError("请填写文章标题和访问标识。");
       return;
     }
     const menuWarning = articleMenuWarning(
@@ -1243,12 +1238,11 @@ export default function SiteContentPage() {
       newsEditForm.menuId ? Number(newsEditForm.menuId) : null,
     );
     if (menuWarning) {
-      setError(`请选择可挂文章的栏目：${menuWarning}。`);
+      notifyError(`请选择可挂文章的栏目：${menuWarning}。`);
       return;
     }
 
     setIsSaving(true);
-    setError("");
     setSuccess("");
     try {
       const updated = await updateNews(siteId, item.id, {
@@ -1267,7 +1261,7 @@ export default function SiteContentPage() {
       cancelEditNews();
       setSuccess("栏目文章已更新。");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "栏目文章更新失败。");
+      notifyUnknownError(err, "栏目文章更新失败。");
     } finally {
       setIsSaving(false);
     }
@@ -1308,11 +1302,6 @@ export default function SiteContentPage() {
         </div>
       </div>
 
-      {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      ) : null}
       {success ? (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {success}
@@ -1492,7 +1481,7 @@ export default function SiteContentPage() {
                 <MediaUploadButton
                   accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                   label="上传 Logo"
-                  onError={setError}
+                  onError={notifyError}
                   onUploaded={(url) =>
                     setConfigForm((form) => ({ ...form, logoUrl: url }))
                   }
@@ -1634,7 +1623,7 @@ export default function SiteContentPage() {
                 <MediaUploadButton
                   accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                   label="上传二维码"
-                  onError={setError}
+                  onError={notifyError}
                   onUploaded={(url) =>
                     setConfigForm((form) => ({ ...form, wechatQrUrl: url }))
                   }
@@ -1722,7 +1711,7 @@ export default function SiteContentPage() {
               <MediaUploadButton
                 accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                 label="上传产品图"
-                onError={setError}
+                onError={notifyError}
                 onUploaded={(url) =>
                   setProductForm((form) => ({ ...form, imageUrl: url }))
                 }
@@ -1798,7 +1787,7 @@ export default function SiteContentPage() {
                           <MediaUploadButton
                             accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                             label="上传产品图"
-                            onError={setError}
+                            onError={notifyError}
                             onUploaded={(url) =>
                               setProductEditForm((form) => ({
                                 ...form,
@@ -2284,7 +2273,7 @@ export default function SiteContentPage() {
               <MediaUploadButton
                 accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                 label="上传封面"
-                onError={setError}
+                onError={notifyError}
                 onUploaded={(url) =>
                   setNewsForm((form) => ({ ...form, coverImage: url }))
                 }
@@ -2310,7 +2299,7 @@ export default function SiteContentPage() {
                     content,
                   }))
                 }
-                onError={setError}
+                onError={notifyError}
               />
               <p className="text-sm text-gray-500">
                 {charCount(newsForm.content)} 字；建议至少 80 字，避免发布后详情页过空。
@@ -2463,7 +2452,7 @@ export default function SiteContentPage() {
                           <MediaUploadButton
                             accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                             label="上传封面"
-                            onError={setError}
+                            onError={notifyError}
                             onUploaded={(url) =>
                               setNewsEditForm((form) => ({
                                 ...form,
@@ -2497,7 +2486,7 @@ export default function SiteContentPage() {
                             content,
                           }))
                         }
-                        onError={setError}
+                        onError={notifyError}
                       />
                       <p className="text-sm text-gray-500">
                         {charCount(newsEditForm.content)} 字；建议至少 80 字。
