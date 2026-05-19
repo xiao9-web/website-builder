@@ -2093,3 +2093,12 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
   - backend health returned 200
 - Verified `./start-demo.sh --stop` stops local backend/frontend processes.
 - Updated Docker local demo docs and Chinese operation manual to describe default local mode, `--docker`, `--detach`, and `--stop`.
+
+## Stop Hook Reconciliation After OPS-DEMO-004
+
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` has no active run steps.
+- Confirmed latest completed run is `OPS-DEMO-004`.
+- Confirmed backlog entries remain candidates only and require a new user request or explicit selection.
+- No additional implementation work is open from this hook.
