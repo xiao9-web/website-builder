@@ -2019,3 +2019,24 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Converted the historical completed ledger from checklist-style `N. complete ...` entries to plain `- done: ...` entries.
 - Converted backlog `pending` markers to plain `- candidate: ...` entries so backlog is not mistaken for active phases.
 - Updated the latest completed run pointer to `OPS-DOCKER-001`.
+
+## OPS-DOCKER-002 Clash Verge Proxy Port Alignment
+
+- User clarified that Clash Verge uses proxy port `7897`, not `7890`.
+- Updated Docker proxy diagnosis and startup warning scripts accordingly:
+  - `scripts/docker-proxy-doctor.sh`
+  - `scripts/dev-up-full.sh`
+  - `start-demo.sh`
+- Kept old `7890` matching in startup error detection because Docker output may still contain the stale Docker Desktop proxy setting.
+- Updated docs to recommend Docker Desktop proxy configuration:
+  - `http://host.docker.internal:7897`
+  - fallback `http://127.0.0.1:7897`
+- Updated:
+  - `docs/DOCKER_LOCAL_DEMO.md`
+  - `docs/JENKINS_CI.md`
+  - `使用说明.md`
+- Verification:
+  - `bash -n scripts/docker-proxy-doctor.sh scripts/dev-up-full.sh start-demo.sh` passed
+  - `make docker-proxy-doctor` confirmed `127.0.0.1:7897` is reachable
+  - Docker registry pull still fails because Docker Desktop is still sending registry traffic to stale `127.0.0.1:7890`
+  - next manual action is to update Docker Desktop proxy settings to `http://host.docker.internal:7897` or `http://127.0.0.1:7897`, then restart Docker Desktop

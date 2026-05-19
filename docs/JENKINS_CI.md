@@ -148,8 +148,8 @@ On the current workstation, Docker image build can be blocked before project cod
 
 Fix options:
 
-- start the local proxy service
-- remove or update the Docker proxy configuration
+- start Clash Verge and confirm its HTTP proxy port is `7897`
+- update Docker Desktop proxy configuration to `http://host.docker.internal:7897` or `http://127.0.0.1:7897`
 - run the Jenkins agent in an environment with direct image registry access
 
 ## Interview Talking Points

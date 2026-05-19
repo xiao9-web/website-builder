@@ -18,6 +18,8 @@ command -v docker >/dev/null 2>&1 || {
   exit 1
 }
 
+CLASH_PORT="${CLASH_PORT:-7897}"
+
 log "Docker context"
 docker context show || true
 
@@ -31,13 +33,13 @@ else
   warn "$HOME/.docker/daemon.json does not exist."
 fi
 
-log "Checking common local proxy port 127.0.0.1:7890"
+log "Checking Clash Verge proxy port 127.0.0.1:${CLASH_PORT}"
 if command -v nc >/dev/null 2>&1; then
-  if nc -z 127.0.0.1 7890 >/dev/null 2>&1; then
-    ok "127.0.0.1:7890 is reachable."
+  if nc -z 127.0.0.1 "$CLASH_PORT" >/dev/null 2>&1; then
+    ok "127.0.0.1:${CLASH_PORT} is reachable."
   else
-    warn "127.0.0.1:7890 is not reachable."
-    warn "If Docker Desktop is configured to use this proxy, image pulls will fail."
+    warn "127.0.0.1:${CLASH_PORT} is not reachable."
+    warn "Clash Verge should be running and listening on port ${CLASH_PORT}."
   fi
 else
   warn "'nc' is not available; skipping local port check."
@@ -57,10 +59,17 @@ else
 
 Recommended fixes:
 
-1. Start your local proxy/VPN client if you normally use one.
-2. Or open Docker Desktop -> Settings -> Resources -> Proxies and disable/fix the proxy.
-3. Restart Docker Desktop after changing proxy settings.
-4. Then run:
+1. Start Clash Verge and confirm its HTTP proxy port is 7897.
+2. Open Docker Desktop -> Settings -> Resources -> Proxies.
+3. Set HTTP Proxy and HTTPS Proxy to one of:
+
+   http://host.docker.internal:7897
+   http://127.0.0.1:7897
+
+   If Docker Desktop does not accept 127.0.0.1, use host.docker.internal.
+
+4. Restart Docker Desktop after changing proxy settings.
+5. Then run:
 
    make dev-up-full
 

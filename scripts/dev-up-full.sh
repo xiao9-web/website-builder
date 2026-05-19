@@ -35,9 +35,10 @@ STATUS="${PIPESTATUS[0]}"
 set -e
 
 if [[ "$STATUS" -ne 0 ]]; then
-  if grep -Eq "127\\.0\\.0\\.1:7890|proxy|registry-1\\.docker\\.io|connect: connection refused" "$OUTPUT_FILE" 2>/dev/null; then
+  if grep -Eq "127\\.0\\.0\\.1:7890|127\\.0\\.0\\.1:7897|proxy|registry-1\\.docker\\.io|connect: connection refused" "$OUTPUT_FILE" 2>/dev/null; then
     warn "Optional dev tools were skipped because Docker cannot reach Docker Hub through its configured proxy."
-    warn "The common local symptom is: 127.0.0.1:7890 connect: connection refused."
+    warn "Your Clash Verge proxy port is 7897; Docker Desktop may still be pointing at the old 7890 port."
+    warn "Set Docker Desktop proxy to http://host.docker.internal:7897 or http://127.0.0.1:7897, then restart Docker Desktop."
     warn "PostgreSQL and Redis are still started, so backend development can continue."
     warn "To use pgAdmin/Redis Commander, start/fix the local proxy or run: make docker-proxy-doctor"
   else

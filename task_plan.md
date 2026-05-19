@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `OPS-DOCKER-001`: Make dev helper startup resilient to Docker proxy pull failures.
+- `OPS-DOCKER-002`: Align Docker proxy diagnostics with Clash Verge port 7897.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -83,6 +83,7 @@ Next work should be selected from the backlog below or from a new user request.
 - done: ENG-DEMO-001: Add one-command local demo launcher with readiness checks.
 - done: DOC-OPS-001: Update the Chinese operation manual for the current local demo and admin workflow.
 - done: OPS-DOCKER-001: Make dev helper startup resilient to Docker proxy pull failures.
+- done: OPS-DOCKER-002: Align Docker proxy diagnostics with Clash Verge port 7897.
 
 ## Backlog
 
@@ -908,3 +909,26 @@ Verification:
   - `wb-postgres`
   - `wb-redis`
 - `make docker-proxy-doctor` correctly reports that `127.0.0.1:7890` is unreachable and Docker registry pull still fails until the local proxy/Docker Desktop proxy config is fixed.
+
+## Completed Execution: OPS-DOCKER-002
+
+Primary deliverable:
+
+- Align Docker proxy scripts and docs with the actual Clash Verge proxy port `7897`.
+
+Result:
+
+- Updated `scripts/docker-proxy-doctor.sh` to check `127.0.0.1:7897` by default.
+- Kept compatibility with old error detection for Docker output that still mentions `127.0.0.1:7890`.
+- Updated `scripts/dev-up-full.sh` and `start-demo.sh` warnings to tell the user Docker Desktop may still point to the old `7890` port.
+- Documented recommended Docker Desktop proxy values:
+  - `http://host.docker.internal:7897`
+  - fallback: `http://127.0.0.1:7897`
+- Updated Docker demo docs, Jenkins docs, and Chinese operation manual.
+
+Verification:
+
+- `bash -n scripts/docker-proxy-doctor.sh scripts/dev-up-full.sh start-demo.sh` passed.
+- `make docker-proxy-doctor` now checks `127.0.0.1:7897` and confirms the Clash Verge port is reachable.
+- `make docker-proxy-doctor` still reports Docker registry pull failure because Docker Desktop is still routing registry traffic to old `127.0.0.1:7890`.
+- Next manual action: update Docker Desktop proxy settings to `http://host.docker.internal:7897` or `http://127.0.0.1:7897`, then restart Docker Desktop.

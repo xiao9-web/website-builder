@@ -166,7 +166,23 @@ If image builds are stale:
 docker compose -f docker/docker-compose.full.yml build --no-cache
 ```
 
-If Docker image pull fails with a proxy error such as `127.0.0.1:7890 connect: connection refused`, Docker Desktop is configured to use a local proxy that is not running. Start the proxy/VPN client, or disable/fix Docker Desktop proxy settings, then rerun:
+If Docker image pull fails with a proxy error such as `127.0.0.1:7890 connect: connection refused`, Docker Desktop is still using an old local proxy port. On this machine Clash Verge uses port `7897`.
+
+Recommended Docker Desktop proxy settings:
+
+```text
+HTTP Proxy:  http://host.docker.internal:7897
+HTTPS Proxy: http://host.docker.internal:7897
+```
+
+If Docker Desktop does not accept `host.docker.internal`, try:
+
+```text
+HTTP Proxy:  http://127.0.0.1:7897
+HTTPS Proxy: http://127.0.0.1:7897
+```
+
+After changing Docker Desktop proxy settings, restart Docker Desktop and rerun:
 
 ```bash
 ./start-demo.sh

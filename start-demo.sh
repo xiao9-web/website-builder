@@ -94,13 +94,14 @@ COMPOSE_STATUS="${PIPESTATUS[0]}"
 set -e
 
 if [[ "$COMPOSE_STATUS" -ne 0 ]]; then
-  if grep -Eq "127\\.0\\.0\\.1:7890|proxy|registry-1\\.docker\\.io|connect: connection refused" "$COMPOSE_OUTPUT" 2>/dev/null; then
+  if grep -Eq "127\\.0\\.0\\.1:7890|127\\.0\\.0\\.1:7897|proxy|registry-1\\.docker\\.io|connect: connection refused" "$COMPOSE_OUTPUT" 2>/dev/null; then
     warn "Docker image pull/build failed because Docker is using a proxy that is not reachable."
-    warn "On this machine the usual symptom is 127.0.0.1:7890 connection refused."
+    warn "Your Clash Verge proxy port is 7897; Docker Desktop may still be pointing at the old 7890 port."
     warn "Fix one of these, then rerun ./start-demo.sh:"
-    warn "1. Start your local proxy/VPN client."
-    warn "2. Or disable/fix Docker Desktop proxy settings."
-    warn "3. Or pre-pull required images from a reachable mirror."
+    warn "1. Start Clash Verge and confirm the HTTP proxy port is 7897."
+    warn "2. Set Docker Desktop proxy to http://host.docker.internal:7897 or http://127.0.0.1:7897."
+    warn "3. Restart Docker Desktop after changing proxy settings."
+    warn "4. Or pre-pull required images from a reachable mirror."
   fi
   rm -f "$COMPOSE_OUTPUT"
   fail "Docker Compose startup failed."
