@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Loading } from "@/components/ui/Loading";
 import { useSiteStore } from "@/stores/siteStore";
 import { showErrorToast } from "@/lib/toast";
+import { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 import { slugify, formatDate } from "@/lib/utils";
 import {
   createNews,
@@ -771,7 +772,8 @@ export default function SiteContentPage() {
   }, []);
 
   const notifyUnknownError = useCallback((error: unknown, fallback: string) => {
-    notifyError(error instanceof Error ? error.message : fallback);
+    if (!shouldShowInlineError(error)) return;
+    notifyError(getErrorMessage(error, fallback));
   }, [notifyError]);
 
   useEffect(() => {

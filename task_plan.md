@@ -25,7 +25,7 @@ No active run steps are open.
 
 The latest completed run was:
 
-- `DOC-ALIYUN-QUICK-001`: Add a copy-paste Aliyun ECS deployment manual.
+- `UX-DOC-CHUNCHANG-002`: Localize request errors, add public-site navigation transition, update Chunchang company/domain docs, and add a non-technical operation manual.
 
 Next work should be selected from the backlog below or from a new user request.
 
@@ -89,6 +89,8 @@ Next work should be selected from the backlog below or from a new user request.
 - done: OPS-ALIYUN-001: Add Aliyun 2c2g production-practice deployment package.
 - done: DOC-ALIYUN-001: Add Aliyun go-live operation runbook.
 - done: DOC-ALIYUN-QUICK-001: Add a copy-paste Aliyun ECS deployment manual.
+- done: BRAND-CHUNCHANG-001: Replace Xiaojiu Builder branding with the company name in frontend titles and nav chrome.
+- done: UX-DOC-CHUNCHANG-002: Localize request errors, add public-site navigation transition, update Chunchang company/domain docs, and add a non-technical operation manual.
 - done: UX-ERROR-001: Show request errors as toast popups instead of top-of-page messages.
 - done: CLEANUP-001: Remove obsolete tracks and sensitive/local runtime artifacts.
 

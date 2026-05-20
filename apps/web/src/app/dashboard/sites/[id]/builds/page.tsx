@@ -13,6 +13,7 @@ import {
   siteStatusLabel,
 } from "@/lib/site-status";
 import { formatDate } from "@/lib/utils";
+import { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 import { useSiteStore } from "@/stores/siteStore";
 import type { BuildRecord } from "@/types/site";
 
@@ -33,7 +34,9 @@ export default function SiteBuildsPage() {
     }
 
     load().catch((err) => {
-      setError(err instanceof Error ? err.message : "构建历史加载失败。");
+      if (shouldShowInlineError(err)) {
+        setError(getErrorMessage(err, "构建历史加载失败。"));
+      }
     });
   }, [siteId, fetchSite, fetchBuilds]);
 
@@ -45,7 +48,9 @@ export default function SiteBuildsPage() {
       setBuilds(await fetchBuilds(currentSite.id));
       await fetchSite(currentSite.id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "触发构建失败。");
+      if (shouldShowInlineError(err)) {
+        setError(getErrorMessage(err, "触发构建失败。"));
+      }
     }
   };
 

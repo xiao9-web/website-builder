@@ -9,6 +9,7 @@ import { z } from "zod";
 import { useAuthStore } from "@/stores/authStore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 
 const registerSchema = z
   .object({
@@ -47,11 +48,9 @@ export default function RegisterPage() {
       });
       router.push("/dashboard");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "注册失败，请稍后再试。",
-      );
+      if (shouldShowInlineError(err)) {
+        setError(getErrorMessage(err, "注册失败，请稍后再试。"));
+      }
     }
   };
 
@@ -60,7 +59,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-bold text-primary-600">
-            小九建站
+            春昌（山东）健康科技有限公司
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">
             创建账号

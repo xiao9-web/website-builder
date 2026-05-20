@@ -11,7 +11,7 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl font-bold text-primary-600">
-            小九建站
+            春昌（山东）健康科技有限公司
           </Link>
           {isAuthenticated && (
             <nav className="hidden items-center gap-6 md:flex">

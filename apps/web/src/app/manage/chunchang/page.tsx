@@ -54,7 +54,7 @@ export default function ChunchangManagePage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             <p className="text-sm font-medium text-emerald-700">
-              小九建站 · 本地运营管理台
+              春昌（山东）健康科技有限公司 · 本地运营管理台
             </p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight">
               {companyName}

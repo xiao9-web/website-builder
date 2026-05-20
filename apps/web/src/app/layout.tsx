@@ -3,9 +3,9 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "小九建站 - 多站点建站平台",
+  title: "春昌（山东）健康科技有限公司",
   description:
-    "面向企业官网和个人博客的多站点建站平台，支持模板配置、内容管理、公开预览和留言获客。",
+    "春昌（山东）健康科技有限公司官网，展示产品服务、企业动态、合作机会和咨询联系方式。",
 };
 
 export default function RootLayout({

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
 import type { Template } from "@/types/template";
 import { slugify } from "@/lib/utils";
+import { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 
 const createSiteSchema = z.object({
   name: z.string().min(2, "站点名称至少 2 个字符"),
@@ -72,7 +73,9 @@ export default function NewSitePage() {
       });
       router.push(`/dashboard/sites/${site.id}/edit`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "创建站点失败，请稍后再试。");
+      if (shouldShowInlineError(err)) {
+        setError(getErrorMessage(err, "创建站点失败，请稍后再试。"));
+      }
     }
   };
 
@@ -157,7 +160,7 @@ export default function NewSitePage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Input
                 label="站点名称"
-                placeholder="山东春昌食品科技股份有限公司"
+                placeholder="春昌（山东）健康科技有限公司"
                 error={errors.name?.message}
                 {...register("name", { onChange: handleNameChange })}
               />

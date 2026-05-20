@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { Template, TemplateCategory } from "@/types/template";
-import api from "@/lib/api";
+import api, { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 
 interface TemplatePageResponse {
   content?: Template[];
@@ -49,7 +49,9 @@ export function useTemplates(category?: string) {
       const data = await api.get("/templates", { params });
       setTemplates(normalizeTemplates(data));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "模板加载失败");
+      if (shouldShowInlineError(err)) {
+        setError(getErrorMessage(err, "模板加载失败"));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -96,9 +98,9 @@ export function useTemplate(id: string | null) {
         const data = (await api.get(`/templates/${id}`)) as Template;
         setTemplate(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "模板加载失败",
-        );
+        if (shouldShowInlineError(err)) {
+          setError(getErrorMessage(err, "模板加载失败"));
+        }
       } finally {
         setIsLoading(false);
       }

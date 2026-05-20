@@ -32,7 +32,7 @@ Required first-phase flow:
 The first real site is:
 
 ```text
-山东春昌食品科技股份有限公司
+春昌（山东）健康科技有限公司
 ```
 
 Business goal:
@@ -92,7 +92,7 @@ A website instance created by a user.
 
 Examples:
 
-- 山东春昌食品科技股份有限公司官网
+- 春昌（山东）健康科技有限公司官网
 - Xiao9 personal blog
 
 ### Template
@@ -1008,7 +1008,7 @@ Hero content for Chunchang:
 Title:
 
 ```text
-山东春昌食品科技股份有限公司
+春昌（山东）健康科技有限公司
 ```
 
 Subtitle:
@@ -1040,7 +1040,7 @@ Hero imagery:
 Title:
 
 ```text
-为什么选择春昌食品科技
+为什么选择春昌健康科技
 ```
 
 Default cards:
@@ -1104,13 +1104,13 @@ Scenario copy should be short and direct.
 Title:
 
 ```text
-关于春昌食品科技
+关于春昌健康科技
 ```
 
 Default text:
 
 ```text
-山东春昌食品科技股份有限公司专注于黄油等乳制品相关产品与食品科技服务。公司坚持绿色、健康、生态的发展方向，重视产品品质、客户沟通与长期合作，致力于成为食品加工、烘焙餐饮、渠道客户可信赖的合作伙伴。
+春昌（山东）健康科技有限公司专注于黄油等乳制品相关产品与食品科技服务。公司坚持绿色、健康、生态的发展方向，重视产品品质、客户沟通与长期合作，致力于成为食品加工、烘焙餐饮、渠道客户可信赖的合作伙伴。
 ```
 
 Do not invent specific founding years, production capacity, certifications, or customer names without verified materials.
@@ -1126,7 +1126,7 @@ Title:
 Description:
 
 ```text
-我们欢迎食品加工企业、烘焙餐饮客户、经销商及区域合作伙伴与春昌食品科技建立联系，共同拓展乳制品产品与市场机会。
+我们欢迎食品加工企业、烘焙餐饮客户、经销商及区域合作伙伴与春昌健康科技建立联系，共同拓展乳制品产品与市场机会。
 ```
 
 Default cooperation types:
@@ -1158,7 +1158,7 @@ Default categories:
 
 Placeholder examples:
 
-- 春昌食品科技官网建设启动，进一步提升客户服务效率
+- 春昌健康科技官网建设启动，进一步提升客户服务效率
 - 黄油产品在烘焙与餐饮场景中的常见应用
 - 面向企业采购客户的乳制品供应合作说明
 
@@ -1167,7 +1167,7 @@ Placeholder examples:
 Title:
 
 ```text
-联系春昌食品科技
+联系春昌健康科技
 ```
 
 Description:
@@ -1219,14 +1219,14 @@ Corporate-site default config:
 ```json
 {
   "brand": {
-    "companyName": "山东春昌食品科技股份有限公司",
+    "companyName": "春昌（山东）健康科技有限公司",
     "logoUrl": "",
     "slogan": "绿色健康的乳制品合作伙伴",
     "primaryColor": "#2F7D46",
     "accentColor": "#D6A84F"
   },
   "hero": {
-    "title": "山东春昌食品科技股份有限公司",
+    "title": "春昌（山东）健康科技有限公司",
     "subtitle": "专注黄油等乳制品供应，服务食品加工、烘焙餐饮与渠道合作客户",
     "description": "我们坚持绿色、健康、生态的发展理念，围绕黄油及乳制品相关产品，为客户提供稳定、专业、可信赖的食品科技与供应服务。",
     "primaryButtonText": "立即咨询",
@@ -1242,8 +1242,8 @@ Corporate-site default config:
     "workingHours": "周一至周六 8:30-18:00"
   },
   "about": {
-    "title": "关于春昌食品科技",
-    "summary": "山东春昌食品科技股份有限公司专注于黄油等乳制品相关产品与食品科技服务。",
+    "title": "关于春昌健康科技",
+    "summary": "春昌（山东）健康科技有限公司专注于黄油等乳制品相关产品与食品科技服务。",
     "imageUrl": ""
   },
   "cooperation": {
@@ -1252,9 +1252,9 @@ Corporate-site default config:
     "process": ["提交需求", "沟通产品与合作方式", "确认方案", "建立合作"]
   },
   "seo": {
-    "title": "山东春昌食品科技股份有限公司官网",
-    "description": "山东春昌食品科技股份有限公司专注黄油等乳制品供应与食品科技服务。",
-    "keywords": ["黄油", "乳制品", "食品科技", "山东春昌食品"]
+    "title": "春昌（山东）健康科技有限公司官网",
+    "description": "春昌（山东）健康科技有限公司专注黄油等乳制品供应与食品科技服务。",
+    "keywords": ["黄油", "乳制品", "食品科技", "春昌健康科技"]
   }
 }
 ```

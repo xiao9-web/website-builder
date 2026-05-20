@@ -171,7 +171,7 @@ Request:
 
 ```json
 {
-  "name": "山东春昌食品科技股份有限公司官网",
+  "name": "春昌（山东）健康科技有限公司官网",
   "description": "企业官网",
   "slug": "chunchang",
   "subdomain": "chunchang",
@@ -196,7 +196,7 @@ Response:
 ```json
 {
   "id": 1,
-  "name": "山东春昌食品科技股份有限公司官网",
+  "name": "春昌（山东）健康科技有限公司官网",
   "description": "企业官网",
   "slug": "chunchang",
   "domain": null,

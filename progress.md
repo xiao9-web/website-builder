@@ -2290,3 +2290,84 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Confirmed `Current Run Steps` still says no active run steps are open.
 - Confirmed the latest completed run is `DOC-ALIYUN-QUICK-001`.
 - No additional implementation phase is open from the hook; current uncommitted work is the deployment manual documentation update.
+
+## BRAND-CHUNCHANG-001 Frontend Company Branding
+
+- User requested that the title bar and visible brand should not say `小九建站`; it should use the company name instead.
+- Replaced frontend `小九建站` occurrences with `山东春昌食品科技股份有限公司` in:
+  - root metadata title and description
+  - home page header and footer
+  - login and register page brand
+  - authenticated header
+  - dashboard sidebar
+  - local Chunchang management header
+- Verified no `小九建站` occurrences remain under `apps/web`.
+- Verification:
+  - Initial `npm run build:web` failed because local `apps/web/node_modules` had been cleaned and `next` was missing.
+  - Ran `npm install` under `apps/web`.
+  - Re-ran `npm run build:web`; build passed.
+
+## Stop Hook Reconciliation After BRAND-CHUNCHANG-001
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after the branding update.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` says no active run steps are open.
+- Confirmed the latest completed run is `BRAND-CHUNCHANG-001`.
+- No additional implementation phase is open from the hook.
+
+## UX-DOC-CHUNCHANG-002 Error UX, Public Transition, Domain, and Ordinary Manual
+
+- User requested:
+  - error messages should not appear twice
+  - error messages should be Chinese
+  - static public site menu navigation should have a gradient transition
+  - operation manual should be understandable by non-technical users
+  - domain is `chunchang.tech`
+  - company name is `春昌（山东）健康科技有限公司`
+- Root cause for duplicate errors:
+  - Axios response interceptor showed a toast.
+  - Several page-level catch handlers also rendered inline errors using the same thrown error.
+- Implemented request error handling:
+  - Added `ApiRequestError` with `toastShown` metadata in `apps/web/src/lib/api.ts`.
+  - Converted common HTTP/Axios errors to Chinese messages, including 403, 404, timeout, unavailable service, and network failure.
+  - Updated affected pages/hooks to skip inline errors when the global toast already showed the same request failure.
+- Implemented public-site transition:
+  - Added `apps/web/src/components/public-site/PublicSiteTransition.tsx`.
+  - Added `apps/web/src/app/sites/[slug]/layout.tsx` so `/sites/...` navigation shows a short gradient fade.
+- Updated company/domain:
+  - Replaced old frontend/default company text with `春昌（山东）健康科技有限公司`.
+  - Updated production domain examples to `http://chunchang.tech` because current Nginx deployment only exposes HTTP until HTTPS certificate work is added.
+- Added ordinary-user manual:
+  - `docs/ORDINARY_USER_OPERATION_MANUAL.md`
+  - Linked it from `docs/README.md`.
+- Verification:
+  - `npm run build:web` passed.
+  - Scanned for old company name, old `小九建站` label, English Axios `Request failed with status code` user-facing strings, and old IP-based public access URLs.
+
+## Stop Hook Reconciliation After UX-DOC-CHUNCHANG-002
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after the error UX, public transition, domain, and ordinary-user manual update.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` says no active run steps are open.
+- Confirmed the latest completed run is `UX-DOC-CHUNCHANG-002`.
+- No additional implementation phase is open from the hook; current uncommitted work is the finished UX/documentation update.
+
+## Stop Hook Reconciliation After User Confirmation Check
+
+- User asked whether the previous changes were finished.
+- Confirmed the work was completed and previously verified with `npm run build:web` and `git diff --check`.
+- Stop hook then reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` still says no active run steps are open.
+- Confirmed the latest completed run remains `UX-DOC-CHUNCHANG-002`.
+- No additional implementation phase is open from this hook.
+
+## Stop Hook Reconciliation After Memory Hook Review
+
+- User referenced `.codex/hooks/meta-kim-memory-save.mjs`.
+- Reviewed the hook and `.codex/hooks.json`; confirmed the Meta_Kim memory hook is wired for session start, user prompt, and stop events.
+- Confirmed the memory hook is separate from the `planning-with-files` `Task incomplete (0/0 phases done)` stop warning.
+- Stop hook then reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` still says no active run steps are open.
+- No additional implementation phase is open from this hook.

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import api from "@/lib/api";
+import api, { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 import { Loading } from "@/components/ui/Loading";
 import type { Site } from "@/types/site";
 
@@ -19,7 +19,11 @@ export default function PreviewPage() {
         const data = (await api.get(`/sites/${siteId}`)) as Site;
         setSite(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "站点加载失败");
+        if (shouldShowInlineError(err)) {
+          setError(getErrorMessage(err, "站点加载失败"));
+        } else {
+          setError("站点加载失败，请根据右上角提示处理。");
+        }
       } finally {
         setIsLoading(false);
       }

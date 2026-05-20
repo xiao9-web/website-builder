@@ -6,6 +6,7 @@
 
 ```text
 公网 IP：47.116.137.192
+域名：chunchang.tech
 系统：Ubuntu 22.04 64 位
 配置：2 核 / 2G / 40G
 带宽：3 Mbps
@@ -14,10 +15,10 @@
 上线后访问地址：
 
 ```text
-企业官网：http://47.116.137.192/sites/chunchang
-后台登录：http://47.116.137.192/login
-后台首页：http://47.116.137.192/dashboard
-健康检查：http://47.116.137.192/actuator/health
+企业官网：http://chunchang.tech/sites/chunchang
+后台登录：http://chunchang.tech/login
+后台首页：http://chunchang.tech/dashboard
+健康检查：http://chunchang.tech/actuator/health
 ```
 
 后台默认账号：
@@ -138,7 +139,7 @@ vim .env.prod
 把文件改成类似下面这样：
 
 ```text
-PUBLIC_BASE_URL=http://47.116.137.192
+PUBLIC_BASE_URL=http://chunchang.tech
 
 POSTGRES_DB=website_builder
 POSTGRES_USER=wb_user
@@ -152,7 +153,7 @@ JWT_SECRET=这里粘贴刚才 openssl rand -base64 48 生成的随机字符串
 - `POSTGRES_PASSWORD` 不能还是 `change-this-postgres-password`
 - `JWT_SECRET` 不能还是 `change-this-jwt-secret-at-least-32-chars`
 - `JWT_SECRET` 至少 32 位
-- 暂时没有域名时，`PUBLIC_BASE_URL` 就用 `http://47.116.137.192`
+- 当前域名是 `chunchang.tech`，`PUBLIC_BASE_URL` 就用 `http://chunchang.tech`
 
 保存 `vim`：
 
@@ -245,7 +246,7 @@ docker compose -f docker-compose.prod.aliyun-2c2g.yml --env-file .env.prod logs 
 在你本地电脑浏览器打开：
 
 ```text
-http://47.116.137.192/sites/chunchang
+http://chunchang.tech/sites/chunchang
 ```
 
 确认：
@@ -258,7 +259,7 @@ http://47.116.137.192/sites/chunchang
 打开后台登录：
 
 ```text
-http://47.116.137.192/login
+http://chunchang.tech/login
 ```
 
 使用默认账号登录：
@@ -271,7 +272,7 @@ admin123
 登录后检查：
 
 ```text
-http://47.116.137.192/dashboard
+http://chunchang.tech/dashboard
 ```
 
 进入内容管理后，至少试一下：
@@ -489,7 +490,7 @@ cat .env.prod
 确认：
 
 ```text
-PUBLIC_BASE_URL=http://47.116.137.192
+PUBLIC_BASE_URL=http://chunchang.tech
 ```
 
 然后强制重新构建：
@@ -500,7 +501,7 @@ PUBLIC_BASE_URL=http://47.116.137.192
 
 ## 14. 后续换域名
 
-等你有域名、备案完成后：
+当前域名是 `chunchang.tech`。如果还没做解析，先到域名控制台添加解析：
 
 1. 在域名 DNS 里添加 A 记录，指向 `47.116.137.192`
 2. 修改服务器 `.env.prod`
@@ -510,16 +511,10 @@ cd /opt/website-builder
 vim .env.prod
 ```
 
-把：
+确认：
 
 ```text
-PUBLIC_BASE_URL=http://47.116.137.192
-```
-
-改成：
-
-```text
-PUBLIC_BASE_URL=https://你的域名
+PUBLIC_BASE_URL=http://chunchang.tech
 ```
 
 3. 重新构建部署：
@@ -528,16 +523,16 @@ PUBLIC_BASE_URL=https://你的域名
 ./scripts/aliyun-2c2g-deploy.sh --build
 ```
 
-HTTPS 证书后续可以接入 Certbot 或阿里云 SSL 证书。当前练手阶段先用 IP + HTTP 跑通。
+HTTPS 证书后续可以接入 Certbot 或阿里云 SSL 证书。当前阶段先用 `http://chunchang.tech` 跑通。
 
 ## 15. 最终确认清单
 
 部署完成后，逐项确认：
 
-- `http://47.116.137.192/sites/chunchang` 能打开
-- `http://47.116.137.192/login` 能登录
-- `http://47.116.137.192/dashboard` 能进入后台
-- `http://47.116.137.192/actuator/health` 返回 `UP`
+- `http://chunchang.tech/sites/chunchang` 能打开
+- `http://chunchang.tech/login` 能登录
+- `http://chunchang.tech/dashboard` 能进入后台
+- `http://chunchang.tech/actuator/health` 返回 `UP`
 - 新增菜单后可以保存
 - 最后一级菜单下可以新增文章
 - 富文本可以保存文字、图片、链接

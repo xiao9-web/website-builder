@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
 import { formatDate } from "@/lib/utils";
+import { getErrorMessage, shouldShowInlineError } from "@/lib/api";
 import {
   buildStatusClass,
   buildStatusLabel,
@@ -45,7 +46,9 @@ export default function SiteDetailPage() {
       setBuilds(buildHistory);
     }
     load().catch((error) => {
-      setBuildError(error instanceof Error ? error.message : "构建记录加载失败。");
+      if (shouldShowInlineError(error)) {
+        setBuildError(getErrorMessage(error, "构建记录加载失败。"));
+      }
     });
   }, [siteId, fetchSite, fetchLatestBuild, fetchBuilds]);
 
@@ -74,7 +77,9 @@ export default function SiteDetailPage() {
       setLatestBuild(build);
       await refreshBuildState(currentSite.id);
     } catch (error) {
-      setBuildError(error instanceof Error ? error.message : "触发构建失败。");
+      if (shouldShowInlineError(error)) {
+        setBuildError(getErrorMessage(error, "触发构建失败。"));
+      }
     }
   };
 

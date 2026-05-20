@@ -15,6 +15,7 @@ docs/ALIYUN_GO_LIVE_RUNBOOK.md
 这套部署面向当前 ECS：
 
 - 公网 IP：`47.116.137.192`
+- 域名：`chunchang.tech`
 - 规格：2 vCPU / 2 GiB
 - 系统盘：40 GiB ESSD Entry
 - 系统：Ubuntu 22.04
@@ -74,7 +75,7 @@ vim .env.prod
 - `POSTGRES_PASSWORD`
 - `JWT_SECRET`
 
-如果暂时没有域名，`PUBLIC_BASE_URL` 保持：
+当前域名是 `chunchang.tech`，`PUBLIC_BASE_URL` 使用：
 
 ```text
 http://47.116.137.192
@@ -96,10 +97,10 @@ sudo ./scripts/aliyun-2c2g-init.sh
 
 | 页面 | 地址 |
 | --- | --- |
-| 企业官网 | `http://47.116.137.192/sites/chunchang` |
-| 后台登录 | `http://47.116.137.192/login` |
-| 控制台 | `http://47.116.137.192/dashboard` |
-| 健康检查 | `http://47.116.137.192/actuator/health` |
+| 企业官网 | `http://chunchang.tech/sites/chunchang` |
+| 后台登录 | `http://chunchang.tech/login` |
+| 控制台 | `http://chunchang.tech/dashboard` |
+| 健康检查 | `http://chunchang.tech/actuator/health` |
 
 默认后台账号：
 
@@ -142,7 +143,7 @@ backups/
 备案和域名解析完成后，把 `.env.prod` 改成：
 
 ```text
-PUBLIC_BASE_URL=https://你的域名
+PUBLIC_BASE_URL=http://chunchang.tech
 ```
 
 然后重新构建：

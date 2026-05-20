@@ -116,7 +116,7 @@ http://localhost:3000/sites/chunchang
 
 Check:
 
-- First viewport clearly identifies 山东春昌食品科技股份有限公司.
+- First viewport clearly identifies 春昌（山东）健康科技有限公司.
 - Visual direction feels green, healthy, ecological, professional, stable, simple, and approachable.
 - The main CTA leads to contact/inquiry.
 - Product/service cards are clear.

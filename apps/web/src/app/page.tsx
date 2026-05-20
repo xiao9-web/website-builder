@@ -5,7 +5,9 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <span className="text-xl font-bold text-emerald-700">小九建站</span>
+          <span className="text-xl font-bold text-emerald-700">
+            春昌（山东）健康科技有限公司
+          </span>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
@@ -34,7 +36,7 @@ export default function HomePage() {
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-600">
               用模板和结构化表单管理企业官网、产品服务、最近动态和留言线索。
-              第一阶段先跑通山东春昌食品科技股份有限公司官网，再扩展个人博客。
+              第一阶段先跑通春昌（山东）健康科技有限公司官网，再扩展个人博客。
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
@@ -144,7 +146,7 @@ export default function HomePage() {
 
       <footer className="border-t border-gray-200 bg-white py-8">
         <p className="text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} 小九建站。当前为本地 MVP 预览。
+          &copy; {new Date().getFullYear()} 春昌（山东）健康科技有限公司。当前为本地 MVP 预览。
         </p>
       </footer>
     </div>

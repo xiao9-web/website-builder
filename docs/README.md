@@ -16,6 +16,7 @@ Read these documents first:
 | [SITE_CONFIG_SCHEMA_MVP.md](./SITE_CONFIG_SCHEMA_MVP.md) | SiteConfig JSON schema baseline |
 | [LOCAL_DEMO_ACCEPTANCE.md](./LOCAL_DEMO_ACCEPTANCE.md) | Local demo URLs, login, and acceptance checks |
 | [../使用说明.md](../使用说明.md) | Chinese operation manual for startup, admin usage, content maintenance, and troubleshooting |
+| [ORDINARY_USER_OPERATION_MANUAL.md](./ORDINARY_USER_OPERATION_MANUAL.md) | Plain-language operation manual for non-technical users |
 | [FINAL_LAUNCH_CHECKLIST.md](./FINAL_LAUNCH_CHECKLIST.md) | Final company-material and launch approval checklist |
 | [ENGINEERING_PORTFOLIO_ROADMAP.md](./ENGINEERING_PORTFOLIO_ROADMAP.md) | Interview-oriented engineering expansion roadmap |
 | [DOCKER_LOCAL_DEMO.md](./DOCKER_LOCAL_DEMO.md) | Full Docker local demo startup and troubleshooting |
@@ -28,7 +29,7 @@ Read these documents first:
 ## Active Direction
 
 - Build a multi-site website builder platform.
-- The first real site is the Shandong Chunchang Food Technology Co., Ltd. corporate website.
+- The first real site is the Chunchang (Shandong) Health Technology Co., Ltd. corporate website.
 - The personal blog is reserved until the corporate-site flow is stable.
 - Phase one uses form-driven template configuration.
 - Phase one does not include drag-and-drop editing.

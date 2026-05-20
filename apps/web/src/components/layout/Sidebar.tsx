@@ -85,7 +85,7 @@ export function Sidebar() {
             href="/dashboard"
             className="text-lg font-bold text-primary-600"
           >
-            小九建站
+            春昌（山东）健康科技有限公司
           </Link>
         )}
         <button

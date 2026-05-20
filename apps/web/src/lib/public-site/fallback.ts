@@ -8,11 +8,11 @@ import type {
 export const fallbackSiteConfig: PublicSiteConfig = {
   siteId: 1,
   slug: "chunchang",
-  name: "山东春昌食品科技股份有限公司",
+  name: "春昌（山东）健康科技有限公司",
   description: "黄油等乳制品相关产品与食品科技服务",
   siteType: "CORPORATE",
   seoConfig: {
-    title: "山东春昌食品科技股份有限公司",
+    title: "春昌（山东）健康科技有限公司",
     description: "绿色健康乳制品供应与合作服务",
   },
   themeConfig: {
@@ -37,8 +37,8 @@ export const fallbackSiteConfig: PublicSiteConfig = {
     leadEntryPoints: ["phone", "wechat", "message"],
   },
   brandConfig: {
-    companyName: "山东春昌食品科技股份有限公司",
-    shortName: "春昌食品科技",
+    companyName: "春昌（山东）健康科技有限公司",
+    shortName: "春昌健康科技",
     logoUrl: null,
     brandWords: ["绿色", "健康", "生态", "专业稳重", "简洁", "亲民"],
     businessDirection: "黄油等乳制品相关产品与食品科技服务",
@@ -53,7 +53,7 @@ export const fallbackSiteConfig: PublicSiteConfig = {
     },
     about: {
       summary:
-        "山东春昌食品科技股份有限公司专注黄油等乳制品相关产品与食品科技服务。当前页面使用已确认业务方向和占位内容展示，电话、地址、资质、案例和产品规格等待企业真实资料补充。",
+        "春昌（山东）健康科技有限公司专注黄油等乳制品相关产品与食品科技服务。当前页面使用已确认业务方向和占位内容展示，电话、地址、资质、案例和产品规格等待企业真实资料补充。",
     },
     cooperation: {
       title: "合作机会",
@@ -174,7 +174,7 @@ export const fallbackNews: PublicNews[] = [
     title: "企业动态资料待补充",
     slug: "company-news-placeholder",
     summary:
-      "这里将展示山东春昌食品科技股份有限公司的真实动态、产品知识和合作信息。",
+      "这里将展示春昌（山东）健康科技有限公司的真实动态、产品知识和合作信息。",
     content:
       "当前不编造企业新闻。请后续补充真实动态、产品知识或行业资讯后再发布到前台。",
     category: "公司动态",
