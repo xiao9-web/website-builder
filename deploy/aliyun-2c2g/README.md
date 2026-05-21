@@ -15,7 +15,7 @@ docs/ALIYUN_GO_LIVE_RUNBOOK.md
 这套部署面向当前 ECS：
 
 - 公网 IP：`47.116.137.192`
-- 域名：`chunchang.tech`
+- 域名：`www.chunchang.tech`
 - 规格：2 vCPU / 2 GiB
 - 系统盘：40 GiB ESSD Entry
 - 系统：Ubuntu 22.04
@@ -75,10 +75,10 @@ vim .env.prod
 - `POSTGRES_PASSWORD`
 - `JWT_SECRET`
 
-当前域名是 `chunchang.tech`，`PUBLIC_BASE_URL` 使用：
+当前域名是 `www.chunchang.tech`，`PUBLIC_BASE_URL` 使用：
 
 ```text
-http://47.116.137.192
+http://www.chunchang.tech
 ```
 
 初始化服务器：
@@ -97,10 +97,10 @@ sudo ./scripts/aliyun-2c2g-init.sh
 
 | 页面 | 地址 |
 | --- | --- |
-| 企业官网 | `http://chunchang.tech/sites/chunchang` |
-| 后台登录 | `http://chunchang.tech/login` |
-| 控制台 | `http://chunchang.tech/dashboard` |
-| 健康检查 | `http://chunchang.tech/actuator/health` |
+| 企业官网 | `http://www.chunchang.tech/sites/chunchang` |
+| 后台登录 | `http://www.chunchang.tech/login` |
+| 控制台 | `http://www.chunchang.tech/dashboard` |
+| 健康检查 | `http://www.chunchang.tech/actuator/health` |
 
 默认后台账号：
 
@@ -143,7 +143,7 @@ backups/
 备案和域名解析完成后，把 `.env.prod` 改成：
 
 ```text
-PUBLIC_BASE_URL=http://chunchang.tech
+PUBLIC_BASE_URL=http://www.chunchang.tech
 ```
 
 然后重新构建：
@@ -152,4 +152,4 @@ PUBLIC_BASE_URL=http://chunchang.tech
 ./scripts/aliyun-2c2g-deploy.sh --build
 ```
 
-Next.js 的浏览器 API 地址在构建时写入前端包，所以换域名后必须重新构建前端镜像。
+当前版本浏览器 API 使用同域 `/api`，换 www / 非 www 不需要改前端 API；但修改公司名、首页跳转、页面样式后仍要重新构建前端镜像。

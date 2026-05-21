@@ -17,6 +17,31 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Blog server Gradle wrapper: broken or incomplete.
 - Blog web build: blocked by missing dependencies.
 
+## 2026-05-21 - BUG-PROD-CHUNCHANG-004 Production Domain/Login Fix
+
+Status: completed locally; production still requires pulling this commit and rebuilding the web image.
+
+What changed:
+
+- Fixed Aliyun production frontend API configuration to compile browser requests as same-origin `/api` instead of an absolute `PUBLIC_BASE_URL/api`.
+- Added an Nginx exact-root redirect from `/` to `/sites/chunchang`, so `http://www.chunchang.tech/` cannot keep serving the old platform landing page after redeploy.
+- Updated `.env.prod.example` and Aliyun operation docs to use `http://www.chunchang.tech`.
+- Added post-deploy checks in `scripts/aliyun-2c2g-deploy.sh` for root redirect and public homepage company title.
+
+Evidence:
+
+- Live server currently still serves the old build before redeploy: root returns `200 OK` and HTML contains `小九建站 - 多站点建站平台`.
+- Live login JS currently contains `baseURL:"http://47.116.137.192/api"`, which explains browser-side `Network Error` from `http://www.chunchang.tech/login`.
+- Direct backend login through `http://www.chunchang.tech/api/auth/login` succeeds, so the account/backend are not the root cause.
+
+Next production action:
+
+```bash
+cd /opt/website-builder
+git pull
+./scripts/aliyun-2c2g-deploy.sh --build
+```
+
 ## Entrypoint Stabilization
 
 - Root scripts updated to the active `apps/server` and `apps/web` layout.

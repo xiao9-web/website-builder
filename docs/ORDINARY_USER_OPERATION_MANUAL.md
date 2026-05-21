@@ -12,16 +12,16 @@
 官网地址：
 
 ```text
-http://chunchang.tech/sites/chunchang
+http://www.chunchang.tech/sites/chunchang
 ```
 
 后台登录地址：
 
 ```text
-http://chunchang.tech/login
+http://www.chunchang.tech/login
 ```
 
-说明：当前服务器先使用 HTTP。等开发人员配置 HTTPS 证书后，地址会升级为 `https://chunchang.tech`。
+说明：当前服务器先使用 HTTP。等开发人员配置 HTTPS 证书后，地址会升级为 `https://www.chunchang.tech`。
 
 默认后台账号：
 
@@ -38,7 +38,7 @@ http://chunchang.tech/login
 2. 在地址栏输入：
 
 ```text
-http://chunchang.tech/sites/chunchang
+http://www.chunchang.tech/sites/chunchang
 ```
 
 3. 按回车。
@@ -52,7 +52,7 @@ http://chunchang.tech/sites/chunchang
 2. 在地址栏输入：
 
 ```text
-http://chunchang.tech/login
+http://www.chunchang.tech/login
 ```
 
 3. 输入账号：
@@ -92,7 +92,7 @@ admin123
 8. 打开官网：
 
 ```text
-http://chunchang.tech/sites/chunchang
+http://www.chunchang.tech/sites/chunchang
 ```
 
 9. 刷新页面，看修改是否生效。
@@ -220,9 +220,9 @@ butter-product-intro
 每天可以检查这几个地址：
 
 ```text
-http://chunchang.tech/sites/chunchang
-http://chunchang.tech/login
-http://chunchang.tech/actuator/health
+http://www.chunchang.tech/sites/chunchang
+http://www.chunchang.tech/login
+http://www.chunchang.tech/actuator/health
 ```
 
 正常情况：
@@ -248,7 +248,7 @@ http://chunchang.tech/actuator/health
 ```text
 我在后台新增文章时，点击保存后报错。
 报错内容是：没有权限执行此操作，请确认账号权限。
-我使用的页面是：http://chunchang.tech/dashboard
+我使用的页面是：http://www.chunchang.tech/dashboard
 ```
 
 常见中文报错含义：

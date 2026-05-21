@@ -7,7 +7,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 公网 IP | `47.116.137.192` |
-| 域名 | `chunchang.tech` |
+| 域名 | `www.chunchang.tech` |
 | 实例规格 | `ecs.e-c1m1.large` |
 | CPU / 内存 | 2 vCPU / 2 GiB |
 | 系统 | Ubuntu 22.04 64 位 |
@@ -23,10 +23,10 @@
 
 | 功能 | 地址 |
 | --- | --- |
-| 春昌官网 | `http://chunchang.tech/sites/chunchang` |
-| 后台登录 | `http://chunchang.tech/login` |
-| 后台首页 | `http://chunchang.tech/dashboard` |
-| 后端健康检查 | `http://chunchang.tech/actuator/health` |
+| 春昌官网 | `http://www.chunchang.tech/sites/chunchang` |
+| 后台登录 | `http://www.chunchang.tech/login` |
+| 后台首页 | `http://www.chunchang.tech/dashboard` |
+| 后端健康检查 | `http://www.chunchang.tech/actuator/health` |
 
 后台默认账号：
 
@@ -155,7 +155,7 @@ vim .env.prod
 当前域名：
 
 ```text
-PUBLIC_BASE_URL=http://chunchang.tech
+PUBLIC_BASE_URL=http://www.chunchang.tech
 ```
 
 必须修改：
@@ -168,7 +168,7 @@ JWT_SECRET=换成至少32位的随机字符串
 示例：
 
 ```text
-PUBLIC_BASE_URL=http://chunchang.tech
+PUBLIC_BASE_URL=http://www.chunchang.tech
 POSTGRES_DB=website_builder
 POSTGRES_USER=wb_user
 POSTGRES_PASSWORD=请替换成强密码
@@ -242,7 +242,7 @@ make prod-aliyun-health
 在本地浏览器访问：
 
 ```text
-http://chunchang.tech/actuator/health
+http://www.chunchang.tech/actuator/health
 ```
 
 期望返回包含：
@@ -258,7 +258,7 @@ http://chunchang.tech/actuator/health
 在本地电脑浏览器打开：
 
 ```text
-http://chunchang.tech/sites/chunchang
+http://www.chunchang.tech/sites/chunchang
 ```
 
 确认：
@@ -276,7 +276,7 @@ http://chunchang.tech/sites/chunchang
 打开：
 
 ```text
-http://chunchang.tech/login
+http://www.chunchang.tech/login
 ```
 
 使用：
@@ -298,7 +298,7 @@ admin123
 进入：
 
 ```text
-http://chunchang.tech/dashboard/sites/1/content
+http://www.chunchang.tech/dashboard/sites/1/content
 ```
 
 至少验证：
@@ -481,9 +481,9 @@ make prod-aliyun-health
 发布后验收：
 
 ```text
-http://chunchang.tech/sites/chunchang
-http://chunchang.tech/login
-http://chunchang.tech/actuator/health
+http://www.chunchang.tech/sites/chunchang
+http://www.chunchang.tech/login
+http://www.chunchang.tech/actuator/health
 ```
 
 如果只改文档，不需要重新部署容器。
@@ -595,10 +595,10 @@ admin@xiao9.com
 检查浏览器 Network 中 API 地址是否为：
 
 ```text
-http://47.116.137.192/api/...
+/api/...
 ```
 
-如果仍指向 `localhost:8080`，说明前端构建时 `PUBLIC_BASE_URL` 不对。修复：
+如果仍指向 `localhost:8080`、服务器 IP、或非当前域名，说明线上前端还是旧构建。现在浏览器 API 应该走同域 `/api`。修复：
 
 ```bash
 vim .env.prod
@@ -617,7 +617,7 @@ docker volume ls | grep wb_prod_uploads
 确认 `.env.prod`：
 
 ```text
-PUBLIC_BASE_URL=http://chunchang.tech
+PUBLIC_BASE_URL=http://www.chunchang.tech
 ```
 
 当前媒体访问路径由：
@@ -675,7 +675,7 @@ docker builder prune -f
 当前公网访问入口：
 
 ```text
-http://chunchang.tech
+http://www.chunchang.tech
 ```
 
 ### 11.2 域名备案后
@@ -686,7 +686,7 @@ http://chunchang.tech
 2. 修改 `.env.prod`：
 
 ```text
-PUBLIC_BASE_URL=http://chunchang.tech
+PUBLIC_BASE_URL=http://www.chunchang.tech
 ```
 
 3. 修改 Nginx `server_name`。
@@ -697,7 +697,7 @@ PUBLIC_BASE_URL=http://chunchang.tech
 ./scripts/aliyun-2c2g-deploy.sh --build
 ```
 
-HTTPS 可以后续单独接入。当前阶段先用 `http://chunchang.tech` 跑通：
+HTTPS 可以后续单独接入。当前阶段先用 `http://www.chunchang.tech` 跑通：
 
 - 阿里云免费证书。
 - Nginx 证书挂载。
@@ -707,9 +707,9 @@ HTTPS 可以后续单独接入。当前阶段先用 `http://chunchang.tech` 跑�
 
 满足以下条件才算上线完成：
 
-- `http://chunchang.tech/actuator/health` 返回 UP。
-- `http://chunchang.tech/sites/chunchang` 可打开。
-- `http://chunchang.tech/login` 可登录。
+- `http://www.chunchang.tech/actuator/health` 返回 UP。
+- `http://www.chunchang.tech/sites/chunchang` 可打开。
+- `http://www.chunchang.tech/login` 可登录。
 - 后台内容管理可打开。
 - 菜单、文章、产品服务至少完成一次保存验证。
 - 官网咨询留言能提交。

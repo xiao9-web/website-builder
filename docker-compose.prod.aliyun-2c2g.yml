@@ -105,7 +105,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${PUBLIC_BASE_URL}/api
+        NEXT_PUBLIC_API_URL: /api
     image: website-builder-web:prod-aliyun-2c2g
     container_name: wb-prod-web
     restart: unless-stopped
@@ -113,7 +113,7 @@ services:
       server:
         condition: service_healthy
     environment:
-      NEXT_PUBLIC_API_URL: ${PUBLIC_BASE_URL}/api
+      NEXT_PUBLIC_API_URL: /api
       INTERNAL_API_URL: http://server:8080/api
       NODE_OPTIONS: "--max-old-space-size=256"
       PORT: 3000

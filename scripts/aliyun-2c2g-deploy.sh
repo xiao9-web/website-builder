@@ -36,6 +36,14 @@ for i in $(seq 1 60); do
      curl -fsS http://127.0.0.1/actuator/health >/dev/null 2>&1; then
     echo "Deployment healthy."
     docker compose -f "${COMPOSE_FILE}" --env-file .env.prod ps
+    echo "==> Checking public homepage redirect and title"
+    if ! curl -fsSI http://127.0.0.1/ | grep -q "Location: /sites/chunchang"; then
+      echo "WARN: Root path did not redirect to /sites/chunchang. Check nginx config."
+    fi
+    if ! curl -fsS http://127.0.0.1/sites/chunchang | grep -q "春昌（山东）健康科技有限公司"; then
+      echo "WARN: Public homepage does not contain the company name. The web image may not have rebuilt."
+      echo "Run: ./scripts/aliyun-2c2g-deploy.sh --build"
+    fi
     exit 0
   fi
   sleep 3
