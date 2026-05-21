@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { LeadForm } from "@/components/public-site/LeadForm";
 import { PublicSiteHeader } from "@/components/public-site/PublicSiteHeader";
 import { getPublicSiteData } from "@/lib/public-site/api";
@@ -6,6 +7,28 @@ import { getPublicSiteData } from "@/lib/public-site/api";
 interface PublicSitePageProps {
   params: {
     slug: string;
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: PublicSitePageProps): Promise<Metadata> {
+  const { config } = await getPublicSiteData(params.slug);
+  const seoTitle =
+    typeof config.seoConfig?.title === "string" ? config.seoConfig.title : "";
+  const seoDescription =
+    typeof config.seoConfig?.description === "string"
+      ? config.seoConfig.description
+      : "";
+  return {
+    title:
+      seoTitle ||
+      config.brandConfig.companyName ||
+      "春昌（山东）健康科技有限公司",
+    description:
+      seoDescription ||
+      config.description ||
+      "春昌（山东）健康科技有限公司官网",
   };
 }
 

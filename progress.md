@@ -2371,3 +2371,39 @@ Starting `BE-001: Align Database Migrations With MVP Schema` using a small agent
 - Re-read `task_plan.md`.
 - Confirmed `Current Run Steps` still says no active run steps are open.
 - No additional implementation phase is open from this hook.
+
+## Stop Hook Reconciliation After Blog Preflight
+
+- User invoked `meta-theory` to start the personal blog project.
+- Completed read-only preflight and asked the required positioning question before implementation.
+- Stop hook reported `Task incomplete (0/0 phases done)`.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` still says no active run steps are open.
+- No implementation phase has started; waiting for the user to choose the blog positioning direction.
+
+## BUG-CHUNCHANG-HOME-003 Root Domain, Title, and Public Navigation Transition
+
+- User reported:
+  - `http://www.chunchang.tech/` still opens the platform navigation page instead of the company home page.
+  - Browser tab title still shows old platform branding on the public site.
+  - Public-site menu/article navigation transition is not visible.
+- Root causes:
+  - Root route `apps/web/src/app/page.tsx` still rendered the platform landing/navigation page.
+  - Public-site page did not provide its own metadata, so tab title could fall back to root/default metadata or deployed stale assets.
+  - `PublicSiteTransition` only showed an overlay while normal Next navigation immediately proceeded, making the transition too fast to notice.
+- Fixes:
+  - Replaced root page with `redirect("/sites/chunchang")`.
+  - Added `generateMetadata` to `apps/web/src/app/sites/[slug]/page.tsx` using public site SEO/company data with safe string checks.
+  - Updated `PublicSiteTransition` to intercept internal `/sites/...` navigation, show the gradient overlay/spinner, then navigate after a short delay.
+- Verification:
+  - First `npm run build:web` found a metadata type issue because `seoConfig` is `Record<string, unknown>`.
+  - Fixed metadata string narrowing.
+  - Re-ran `npm run build:web`; build passed.
+
+## Stop Hook Reconciliation After BUG-CHUNCHANG-HOME-003
+
+- Stop hook reported `Task incomplete (0/0 phases done)` after the root-domain/title/navigation-transition fix.
+- Re-read `task_plan.md`.
+- Confirmed `Current Run Steps` says no active run steps are open.
+- Confirmed the latest completed run is `BUG-CHUNCHANG-HOME-003`.
+- No additional implementation phase is open from this hook.
