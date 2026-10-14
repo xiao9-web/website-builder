@@ -1,34 +1,41 @@
 {
-  "name": "website-builder",
-  "version": "1.0.0",
-  "description": "可视化官网构建系统，支持一键部署到阿里云",
+  "name": "chunchang-company-website",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "install:all": "npm install && cd apps/web && npm install",
-    "dev:server": "DB_USERNAME=wb_user DB_PASSWORD=wb_pass mvn -f apps/server/pom.xml spring-boot:run",
-    "dev:web": "cd apps/web && npm run dev",
-    "build:server": "mvn -f apps/server/pom.xml -DskipTests package",
-    "build:web": "cd apps/web && npm run build",
-    "build:all": "npm run build:server && npm run build:web",
-    "start:server": "DB_USERNAME=wb_user DB_PASSWORD=wb_pass java -jar apps/server/target/website-builder-0.1.0-SNAPSHOT.jar",
-    "lint": "npm run lint:web",
-    "lint:web": "cd apps/web && npm run lint"
-  },
-  "keywords": [
-    "website-builder",
-    "cms",
-    "static-site-generator",
-    "aliyun-oss",
-    "nextjs",
-    "spring-boot"
-  ],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "dev": "next dev --hostname 127.0.0.1 --port 3001",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 3001",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap",
+    "bootstrap": "tsx --env-file=.env scripts/bootstrap.ts",
+    "verify:backend": "tsx --env-file=.env scripts/verify-backend.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "graphify": "^1.0.0"
+    "@payloadcms/db-sqlite": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "^3.90.2",
+    "@payloadcms/translations": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "graphql": "16.14.2",
+    "next": "16.3.3",
+    "payload": "3.90.2",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sharp": "0.35.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.9",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "sass": "1.100.0",
+    "tsx": "4.22.4",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": ">=22.22.1 <23"
   }
 }

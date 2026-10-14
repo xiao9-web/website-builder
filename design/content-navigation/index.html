@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>春昌食品 · 内容导航设计原型</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body data-direction="b">
+  <div class="prototype-bar"><span>第 2 步 · 可点击设计原型 · 演示内容不代表实际产品</span><div class="variant-switch" role="group" aria-label="选择菜单设计方向"><button type="button" data-direction-choice="a">A 逐级下拉</button><button type="button" data-direction-choice="b" aria-pressed="true">B 横向内容菜单</button><button type="button" data-direction-choice="c">C 内容页侧栏</button></div><a href="admin.html">看后台管理原型 ↗</a></div>
+  <header class="site-header wrap"><a class="brand" href="#home" id="brand-home" aria-label="返回官网首页"><b>春昌食品<span class="brand-dot"></span></b><small>黄油与乳制品原料</small></a><nav class="top-nav" aria-label="网站导航"><a href="#home" data-home>首页</a><a href="#products" data-products>产品与应用</a><button type="button" id="menu-toggle" aria-expanded="false" aria-controls="menu-panel">内容导航 <span aria-hidden="true">⌄</span></button><a href="#contact" data-contact>采购咨询</a></nav><button type="button" class="mobile-menu" id="mobile-menu" aria-expanded="false">菜单</button></header>
+  <div class="nav-shell wrap"><section class="menu-panel" id="menu-panel" aria-label="三级内容菜单" hidden><div class="menu-heading"><div><p class="eyebrow">内容导航</p><h2 id="direction-name">B · 横向内容菜单</h2><p id="direction-desc">三级同时可见；点击每级的「查看文章」进入该级列表。</p></div><button type="button" class="close" id="menu-close" aria-label="关闭内容菜单">×</button></div><div class="menu-columns" id="menu-columns"></div></section></div>
+  <main id="home-view"><section class="hero" aria-label="首页轮播设计预览"><img id="hero-image" src="assets/butter-bright.webp" alt="黄油与可颂的 AI 原料概念图" /><div class="hero-inner wrap"><p class="eyebrow">面向食品加工与烘焙采购</p><h1>好原料，<br />成就每一份好味道。</h1><p>专注黄油与乳制品原料，连接企业采购需求与产品资料。</p><a class="primary" href="#products" data-products>查看产品与应用</a></div><div class="hero-controls" role="group" aria-label="首页图片轮播"><button type="button" id="slide-prev" aria-label="上一张图片">←</button><span id="slide-count">1 / 2</span><button type="button" id="slide-next" aria-label="下一张图片">→</button></div><span class="image-label">原料示意图</span></section>
+    <div class="quick-links wrap"><a href="#products" data-products>黄油原料 <span>↗</span></a><button type="button" data-open-menu>浏览三级内容 <span>↗</span></button><a href="#contact" data-contact>沟通采购需求 <span>↗</span></a></div>
+    <section class="content-intro wrap"><div><p class="eyebrow">资料中心 · 演示内容</p><h2>从原料到应用，<br />把信息说清楚。</h2></div><p>菜单可由后台维护到三级。每一级都拥有独立的文章列表，文章可以有图，也可以只用文字完整呈现。</p></section>
+    <section class="feature-grid wrap"><button type="button" class="feature-card" data-list="baking"><span>第三级文章示例</span><h3>烘焙应用资料示例</h3><p>展示带图片的文章列表与详情。</p><b>查看文章 ↗</b></button><button type="button" class="feature-card plain" data-list="company"><span>第一级文章示例</span><h3>企业信息说明</h3><p>展示不带图片的文章。</p><b>查看文章 ↗</b></button></section>
+    <section class="video-section wrap" aria-label="首页视频设计预览"><div class="video-copy"><p class="eyebrow">企业影像 · 设计占位</p><h2>用影像了解原料与合作。</h2><p>管理员在后台上传 MP4。页面打开时不创建视频播放器，也不会请求视频文件；访客点播放后才加载。下方是三秒设计样片，并非真实公司宣传片。</p></div><div class="video-frame" id="video-frame"><img src="assets/butter-dark.webp" alt="视频封面，黄油原料 AI 概念摄影" /><button type="button" id="video-play" aria-label="播放设计样片">▶ <span>点击播放设计样片</span></button></div></section>
+  </main>
+  <main id="list-view" class="inner-page wrap" hidden><nav class="breadcrumbs" id="list-breadcrumbs" aria-label="当前位置"></nav><div class="page-heading"><div><p class="eyebrow">本级文章 · 演示内容</p><h1 id="list-title"></h1><p id="list-description"></p></div><button type="button" class="outline" data-open-menu>查看其他菜单</button></div><div class="article-grid" id="article-grid"></div><div class="children-panel" id="children-panel"></div></main>
+  <main id="article-view" class="article-page wrap" hidden><nav class="breadcrumbs" id="article-breadcrumbs" aria-label="当前位置"></nav><article><p class="eyebrow">设计演示文章 · 非真实产品资料</p><h1 id="article-title"></h1><p class="article-lede" id="article-lede"></p><div id="article-image"></div><div class="article-body"><h2>本文用途</h2><p>这里展示后台文章发布后的阅读形式。正式内容将由管理员按真实公司资料填写；原型中的文字不构成规格、价格或供货承诺。</p><h2>图片可选</h2><p>管理员可以上传封面和在正文插入图片，也可以发布只有文字的文章。没有图片时正文直接从标题和摘要开始。</p></div><button type="button" class="outline" id="back-to-list">返回文章列表</button></article></main>
+  <footer class="site-footer wrap"><b>春昌食品</b><span>设计原型 · 后台发布、视频上传和真实站点将在第 3 步实现</span><a href="admin.html">后台设计 ↗</a></footer>
+</body>
+</html>

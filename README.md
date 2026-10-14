@@ -1,138 +1,52 @@
-# Website Builder Platform
+# 春昌食品公司官网与管理后台
 
-多站点建站平台，支持模板驱动的网站创建、可视化编辑和一键部署。
+本仓库已由原多站点建站平台替换为春昌食品的独立官网。旧项目仍可从 Git 历史中的 `e9530f0` 版本查看；本次代码提交不会自动完成阿里云部署。
 
-## 技术栈
+面向黄油与乳制品的企业采购官网。访客浏览产品和文章并提交采购需求；管理员维护公司资料、产品、最多三级的内容菜单、各级文章、首页图片轮播和视频。技术组合为 Next.js 16.3.3、React 19.2.6、Payload 3.90.2 与 SQLite，官网和后台由同一个应用提供。
 
-| 层级 | 技术 |
-|------|------|
-| 后端 | Java 17 + Spring Boot 3 + PostgreSQL 16 |
-| 前端 | Next.js 14 + TypeScript + Tailwind CSS |
-| 缓存 | Redis 7 |
-| 构建 | Maven (server) + npm (web) |
-| 部署 | Docker + 阿里云 OSS/CDN |
+这是可本地试用的交付源码，前台采用已选定的 A 版「现代食品品牌」视觉和 B 版三级内容导航。固定入口为「首页」「产品与应用」「采购咨询」，管理员可增加内容菜单；每一级都能单独发布文章，文章可带封面和正文图片，也可无图。首页最多可配置五张轮播图：每六秒自动切换，可手动前后切换或暂停；手动操作、悬停、聚焦及页面隐藏时暂停，系统要求减少动态效果时不自动切换。首页视频由后台上传，访客点击播放前不创建视频播放器，也不请求 MP4。后台编辑方法见 [后台操作手册](HANDOFF.md)。法定公司名称、联系方式、产品参数、商标与实拍图片仍需公司确认；演示产品会明确标为示例。阿里云正式部署步骤见 [上线检查](deploy/上线检查.md)。
 
-## 项目结构
+## 本地运行
 
-```
-website-builder/
-├── apps/
-│   ├── server/          # Spring Boot 后端服务
-│   │   └── src/main/resources/db/migration/  # Flyway 数据库迁移
-│   └── web/             # Next.js 前端
-├── docker/
-│   ├── docker-compose.yml       # 基础服务 (PostgreSQL + Redis)
-│   └── docker-compose.dev.yml   # 开发工具 (pgAdmin + Redis Commander)
-├── docker-compose.yml   # 根入口，引用 docker/ 配置
-├── Makefile             # 常用开发命令
-└── docs/                # 文档
+需要 Node.js `22.22.1` 或更新的 `22.x` 版本，以及 npm。进入此目录，执行：
+
+```sh
+npm ci
+cp .env.example .env
 ```
 
-## 快速开始
+编辑 `.env`：使用数据目录的绝对路径，填写自己的管理员邮箱和至少 14 字符的独立密码，并将 `PAYLOAD_SECRET` 替换为随机秘密。可通过 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` 在本机生成秘密；不要将其发到聊天或提交到 Git。数据库目录和媒体目录需提前建立。
 
-当前本地演示、验收地址、账号和 smoke check 见：
-
-- [docs/LOCAL_DEMO_ACCEPTANCE.md](docs/LOCAL_DEMO_ACCEPTANCE.md)
-
-真实公司资料和最终上线确认清单见：
-
-- [docs/FINAL_LAUNCH_CHECKLIST.md](docs/FINAL_LAUNCH_CHECKLIST.md)
-
-### 环境要求
-
-- Docker Desktop (含 Docker Compose v2)
-- Java 17+
-- Node.js 20+
-- npm 10+
-
-### 1. 启动基础服务
-
-```bash
-# 启动 PostgreSQL + Redis
-make dev-up
-
-# 启动全部（含 pgAdmin + Redis Commander）
-make dev-up-full
+```sh
+mkdir -p data/media
+NODE_ENV=production node --env-file=.env node_modules/payload/bin.js migrate
+npm run bootstrap
+npm run dev
 ```
 
-服务端口：
-- PostgreSQL: `localhost:5432` (用户: wb_user / 密码: wb_pass / 库: website_builder)
-- Redis: `localhost:6379`
-- pgAdmin: `localhost:5050` (邮箱: admin@local.dev / 密码: admin123)
-- Redis Commander: `localhost:8081`
+打开官网 `http://127.0.0.1:3001/` 和后台 `http://127.0.0.1:3001/admin`。登录使用刚才填写的管理员账号。初始化工具只创建第一个管理员，不会覆盖已有账号或修改已有密码。`DEMO_MODE=true` 时会准备一条明确标识的演示产品。
 
-### 2. 运行数据库迁移
+本机已经准备过试用库时，先双击 [设置本地管理员.command](设置本地管理员.command)，在自己的电脑上输入邮箱和新密码；再双击 [启动本地试用.command](启动本地试用.command)。后者会打开后台登录页，**保持弹出的终端窗口打开**，关闭窗口就会停止本地网站。两个脚本只面向本机试用，不会把管理员密码发到聊天；下载的源码包在另一台电脑上仍需先完成上面的安装、迁移、管理员初始化和构建。试用操作见 [后台操作手册](HANDOFF.md)。
 
-```bash
-make db-migrate
+不要跳过数据库迁移，也不要运行 `migrate:fresh`、`migrate:reset` 等清空数据命令。发布后的结构变更应使用随版本交付的迁移文件。项目不使用 Docker，SQLite 和上传目录必须保留。
+
+## 构建与校验
+
+```sh
+npm run typecheck
+npm run build
+npm run start
 ```
 
-### 3. 启动后端
+后台自动校验命令 `npm run verify:backend` 和内容校验脚本 `scripts/verify-content.ts` 会写入、发布、恢复和删除验证数据，**只能**对新建的隔离试验数据库和隔离媒体目录运行，不能用于正式或试用主库。脚本要求数据库文件名以 `verification-` 开头，这是防误操作检查，不能代替核对绝对路径和媒体目录。检查管理员权限、发布状态和采购需求保存时，还需在浏览器实际走通一次操作。构建和内容校验已在本地完成，不能据此推定阿里云服务器已通过验收。
 
-```bash
-make server-start
-```
+`npm run start` 只监听本机 `127.0.0.1:3001`。对外访问由 Nginx 提供 HTTPS；直接 IP 访问个人博客的配置与公司域名分开。生产环境使用 `deploy/chunchang.service` 与外部环境文件，不能把本地 `.env` 原样发布到服务器。
 
-### 4. 启动前端
+## 数据与素材
 
-```bash
-make web-start
-```
-
-### 一键启动
-
-```bash
-make start
-```
-
-该命令会先启动 PostgreSQL/Redis，然后并行启动后端和前端开发服务。
-
-## 常用命令
-
-```bash
-make help          # 查看所有可用命令
-make dev-up        # 启动 Docker 服务
-make dev-down      # 停止 Docker 服务
-make dev-reset     # 停止服务并清除数据卷（全新开始）
-make db-migrate    # 执行数据库迁移
-make db-status     # 查看迁移状态
-make clean         # 清理所有构建产物
-make logs-db       # 查看 PostgreSQL 日志
-make logs-redis    # 查看 Redis 日志
-```
-
-## 当前本地演示入口
-
-| 入口 | 地址 |
-| --- | --- |
-| 前端 | `http://localhost:3000` |
-| 后端 API | `http://localhost:8080` |
-| 后台登录 | `http://localhost:3000/login` |
-| 春昌公开站 | `http://localhost:3000/sites/chunchang` |
-| 内容管理 | `http://localhost:3000/dashboard/sites/1/content` |
-| 构建历史 | `http://localhost:3000/dashboard/sites/1/builds` |
-
-默认管理员账号：
-
-```text
-email: admin@xiao9.com
-password: admin123
-```
-
-## 数据库
-
-使用 Flyway 管理数据库迁移，迁移文件位于：
-
-```
-apps/server/src/main/resources/db/migration/
-├── V1__init_schema.sql    # 初始表结构
-└── V2__seed_data.sql      # 种子数据（管理员账号 + 示例模板）
-```
-
-默认管理员账号：
-- 邮箱: `admin@xiao9.com`
-- 密码: `admin123`
-
-## 许可证
-
-MIT License
+- `DATABASE_URL` 指向 SQLite 文件，`MEDIA_DIR` 指向上传目录。两者必须放在持久化位置。
+- 首页视频只接受 MP4，单文件不超过 30 MB。图片素材仍为单张 5 MB；演示视频和验证数据库不应与正式资料混用。公网带宽和实际播放效果须上线前实测。
+- `.env`、数据库、上传的客户素材以及临时管理员凭证不进入 Git 或公开下载包。
+- 本地两张轮播图是 AI 生成的设计素材，已在后台标记为概念示意图；「关于我们」区域复用第二张，只有一张时复用第一张。它们不作为实售产品、工厂或资质的证明。公开前可由管理员在后台用公司确认且有使用权的素材替换，并关闭相应图片的标记。上传到媒体库的文件可能被公开访问，不应上传未获准公开的资料。
+- 本次没有配置邮件自动通知。询盘保存在后台，管理员需要定期查看。
+- 密码忘记后不能依赖未配置的邮件找回功能。由受信任的管理员处理账号恢复；不要公开注册或把临时账号留在正式环境。

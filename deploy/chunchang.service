@@ -1,0 +1,24 @@
+[Unit]
+Description=Chunchang company website and content administration
+After=network.target
+
+[Service]
+Type=simple
+User=chunchang
+Group=chunchang
+WorkingDirectory=/opt/chunchang/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/chunchang/site.env
+# Verify Node.js 22.22.1 or a later 22.x version is installed at this exact path before enabling the service.
+ExecStart=/usr/bin/node /opt/chunchang/current/node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3001
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/chunchang /opt/chunchang/current/.next/cache
+
+[Install]
+WantedBy=multi-user.target
